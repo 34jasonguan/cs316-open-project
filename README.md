@@ -1,8 +1,9 @@
 # Team RAvolution 
 
 Members: Jason Guan, Jiayu (Gloria) Gao, Raymond Xiong, Shuhuai Yu, Sudhir Chowdhry
+Open Project, CS316 Fall 2024
 
-This repository is for the open project for Fall 2024 CS316 (Intro to Databse Systems). The project focuses on creating a collaborative platform designed for Duke residents and residential staff to efficiently access and manage available HRL resources.
+This repository contains our final project (open) for CS316 (Intro to Database Systems) in the Fall 2024 semester. Our project focuses on creating a collaborative platform designed for Duke residents and residential staff to efficiently access and manage available HRL resources.
 
 Progress Since Milestone 1: 
 - Assigned tasks to each team member (see report)
