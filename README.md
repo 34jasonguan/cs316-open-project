@@ -1,4 +1,4 @@
-# Team [TBD] 
+# Team RAvolution 
 
 Members: Jason Guan, Jiayu (Gloria) Gao, Raymond Xiong, Shuhuai Yu, Sudhir Chowdhry
 
