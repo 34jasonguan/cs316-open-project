@@ -25,3 +25,9 @@ body {
     text-wrap: balance;
   }
 }
+
+.react-calendar__tile--highlight {
+  background-color: #aaffaa;
+  color: white;
+}
+
