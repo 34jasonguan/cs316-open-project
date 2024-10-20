@@ -50,11 +50,35 @@ const HomePage = () => {
     };
 
     // Handle button click to generate output based on selected task and input
-    const handleGenerateOutput = () => {
+    const handleGenerateOutput = async () => {
       let generatedOutput = ':)';
 
-      if (selectedTask === 'Task 1') {
-          generatedOutput = ':)';
+      if (selectedTask === 'Task 2') {
+        try {
+          const raNetID = taskInput;  // Assuming taskInput contains the RA ID input by the user
+          
+          // Fetch residents by RA ID using the API route
+          const response = await fetch(`/api/getResidents?raNetID=${raNetID}`);
+          
+          if (response.ok) {
+            const residents = await response.json();
+            
+            // Format the output to display the list of residents
+            if (residents.length > 0) {
+              generatedOutput = residents
+                .map(resident => `${resident.studentFirstName} ${resident.studentLastName} (${resident.studentNetID})`)
+                .join('\n');
+            } else {
+              generatedOutput = 'No residents found for this RA.';
+            }
+          } else {
+            const errorData = await response.json();
+            generatedOutput = errorData.message || 'An error occurred';
+          }
+        } catch (error) {
+          console.error('Error fetching residents:', error);
+          generatedOutput = 'Failed to fetch residents.';
+        }
       }
 
       if (selectedTask === 'Task 6') {
@@ -81,6 +105,11 @@ const HomePage = () => {
                             <div style={{ marginTop: '10px' }}>
                                 <Link href="/availability" style={{ cursor: 'pointer', color: 'green', textDecoration: 'underline' }}>
                                     Select Availability
+                                </Link>
+                            </div>
+                            <div style={{ marginTop: '10px' }}>
+                                <Link href="/safety_report" style={{ cursor: 'pointer', color: 'green', textDecoration: 'underline' }}>
+                                    Submit Report
                                 </Link>
                             </div>
                         </div>
