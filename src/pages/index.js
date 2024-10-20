@@ -17,7 +17,7 @@ const HomePage = () => {
     const [output, setOutput] = useState('');
     
     // Username indicating login status and access level
-    const { username } = useUser(); // Access username from context
+    const { username, setUsername } = useUser(); // Access username from context
 
     // Array of task descriptions
     const taskDescriptions = {
@@ -55,6 +55,10 @@ const HomePage = () => {
       setOutput(generatedOutput);
     };
 
+    const handleLogout = () => {
+        setUsername('');
+    };
+
     return (
         <div>
             <div style={{ padding: '20px', textAlign: 'right' }}>
@@ -71,6 +75,9 @@ const HomePage = () => {
                                     Select Availability
                                 </Link>
                             </div>
+                            <button onClick={handleLogout} style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}>
+                                Logout
+                            </button>
                         </div>
                     )}
                 </div>
