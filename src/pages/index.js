@@ -10,7 +10,6 @@ const Staff = {
     "u3": true,
 }
 
-
 const HomePage = () => {
     // State to hold the selected task and input/output values
     const [selectedTask, setSelectedTask] = useState('Task 1');
@@ -59,13 +58,23 @@ const HomePage = () => {
     return (
         <div>
             <div style={{ padding: '20px', textAlign: 'right' }}>
-                {username == '' ? (
-                    <Link href="/login" style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}>Login</Link>
-                ) : (
-                    <label>Hello, {username}</label>
-                )}
-            </div>
-            
+                    {username === '' ? (
+                        <Link href="/login" style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}>
+                            Login
+                        </Link>
+                    ) : (
+                        <div>
+                            <label>Hello, {username}</label>
+                            {/* Conditionally display the availability selection link if logged in */}
+                            <div style={{ marginTop: '10px' }}>
+                                <Link href="/availability" style={{ cursor: 'pointer', color: 'green', textDecoration: 'underline' }}>
+                                    Select Availability
+                                </Link>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
             <div style={{ padding: '20px', textAlign: 'center' }}>
                 <h1>Development Page for CS 316 Open Project</h1>
 
