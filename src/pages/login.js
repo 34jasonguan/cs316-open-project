@@ -32,27 +32,21 @@ export default function LoginForm() {
         <div>
             <h1>Login Page</h1>
             <form onSubmit={handleLogin}>
-                <div>
-                    <label htmlFor="username">Username: </label>
-                    <input
-                        type="text"
-                        id="username"
-                        value={usernameInput}
-                        onChange={(e) => setUsernameInput(e.target.value)} // Update the username input state
-                        required
-                    />
+                <div class="container">
+                    <label for="uname"><b>Username</b></label>
+                    <input type="text" placeholder="Enter Username" name="uname" id="username" value={usernameInput} onChange={(e) => setUsernameInput(e.target.value)} required/>
+                    <label for="psw"><b>Password</b></label>
+                    <input type="password" placeholder="Enter Password" name="psw" id="password" value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)} required/>
+                    <button type="submit">Login</button>
+                    <label>
+                    <input type="checkbox" checked="checked" name="remember"/> Remember me
+                    </label>
                 </div>
-                <div>
-                    <label htmlFor="password">Password: </label>
-                    <input
-                        type="password"
-                        id="password"
-                        value={passwordInput}
-                        onChange={(e) => setPasswordInput(e.target.value)} // Update the password input state
-                        required
-                    />
+
+                <div class="container" style="background-color:#f1f1f1">
+                    <button type="button" class="cancelbtn">Cancel</button>
+                    <span class="psw">Forgot <a href="#">password?</a></span>
                 </div>
-                <button type="submit">Login</button>
             </form>
         </div>
     );

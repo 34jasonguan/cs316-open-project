@@ -75,6 +75,11 @@ const HomePage = () => {
                                     Select Availability
                                 </Link>
                             </div>
+                            <div style={{ marginTop: '10px' }}>
+                                <Link href="/safety_report" style={{ cursor: 'pointer', color: 'green', textDecoration: 'underline' }}>
+                                    Safety Report
+                                </Link>
+                            </div>
                             <button onClick={handleLogout} style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}>
                                 Logout
                             </button>
