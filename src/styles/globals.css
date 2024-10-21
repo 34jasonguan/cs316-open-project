@@ -26,8 +26,22 @@ body {
   }
 }
 
-.react-calendar__tile--highlight {
-  background-color: #aaffaa;
-  color: white;
+.highlight {
+  background-color: green !important;
+  color: white !important;
+  border-radius: 50%;
+}
+
+.iconTextLink {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  text-decoration: none;
+  color: #333; 
+  transition: color 0.3s ease; 
+}
+
+.iconTextLink:hover {
+  color: #0070f3 !important;  
 }
 

@@ -21,9 +21,9 @@ const netIDToFirstNameMap = {
 };
 
 const taskDescriptions = {
-  'Task 1': 'Given a RC id, find all of his/her RAs',
-  'Task 2': 'Given a RA id, find all of his/her residents',
-  'Task 3': 'Given a dorm location, find all activity taking at that place',
+  'Task 1': 'Given a RC id, find all of his/her RAs (e.g. pa543)',
+  'Task 2': 'Given a RA id, find all of his/her residents (e.g. kj240)',
+  'Task 3': 'Given a dorm location, find all activity taking at that place (e.g. Belltower)',
   'Task 4': 'Given a RA id, find his/her availability',
   'Task 5': 'Given a resident name, find his/her report history',
   'Task 6': 'Given a resident username, check whether the inputed password matches the one in record'
@@ -126,65 +126,76 @@ const HomePage = () => {
       setOutput(generatedOutput);
     };
 
-
     const handleLogout = () => {
         setUsername('');
     };
 
     return (
-        <div style={styles.container}>
-            <div style={styles.header}>
-                {username === '' ? (
-                    <Link href="/login" style={styles.loginLink}>Login</Link>
-                ) : (
-                    <div>
-                        <span style={styles.username}>Hello, {netIDToFirstNameMap[username]}</span>
-                        <div style={styles.navLinks}>
-                            <Link href="/availability" style={styles.link}>Select Availability</Link>
-                            <Link href="/safety_report" style={styles.link}>Submit Report</Link>
-                        </div>
-                    </div>
-                )}
+      <div style={styles.pageContainer}>
+        <header style={styles.header}>
+          <div style={styles.headerRight}>
+            {username === '' ? (
+              <Link href="/login" style={styles.loginLink}>Login</Link>
+            ) : (
+              <span style={styles.username}>Hello, {username}</span>
+            )}
+          </div>
+        </header>
+  
+        <aside style={styles.sidebar}>
+          <h2 style={styles.sidebarHeading}>Menu</h2>
+          {username ? (
+            <>
+              <a href="/availability" className="iconTextLink" style={styles.iconTextLink}>
+                <img src="/icons/availability.png" alt="Availability Icon" style={styles.icon} />
+                <span style={styles.text}>Availability</span>
+              </a>
+              <a href="/report" className="iconTextLink" style={styles.iconTextLink}>
+                <img src="/icons/report.png" alt="Report Icon" style={styles.icon} />
+                <span style={styles.text}>Report</span>
+              </a>
+            </>
+          ) : (
+            <p style={styles.text}>Login in required for additional features</p>
+          )}
+        </aside>
+  
+        <main style={styles.contentArea}>
+          <h1 style={styles.heading}>Development Page for CS 316 Open Project</h1>
+  
+          <label htmlFor="task-select" style={styles.label}>Choose a Task:</label>
+          <select id="task-select" value={selectedTask} onChange={handleTaskChange} style={styles.select}>
+            {Object.keys(taskDescriptions).map((task, index) => (
+              <option key={index} value={task}>{task}</option>
+            ))}
+          </select>
+  
+          <div style={styles.mainArea}>
+            <div style={styles.taskDescription}>
+              <h3 style={styles.subheading}>Task Description</h3>
+              <p>{taskDescriptions[selectedTask]}</p>
+              <button style={styles.button} onClick={handleGenerateOutput}>Generate Output</button>
             </div>
-
-            <div style={styles.content}>
-                <h1 style={styles.heading}>Development Page for CS 316 Open Project</h1>
-
-                <label htmlFor="task-select" style={styles.label}>Choose a Task:</label>
-                <select id="task-select" value={selectedTask} onChange={handleTaskChange} style={styles.select}>
-                    {Object.keys(taskDescriptions).map((task, index) => (
-                        <option key={index} value={task}>{task}</option>
-                    ))}
-                </select>
-
-                <div style={styles.mainArea}>
-                    <div style={styles.taskDescription}>
-                        <h3 style={styles.subheading}>Task Description</h3>
-                        <p>{taskDescriptions[selectedTask]}</p>
-                    </div>
-                    
-                    <div style={styles.taskInput}>
-                        <h3 style={styles.subheading}>Task Input</h3>
-                        <textarea
-                            rows="6"
-                            cols="50"
-                            placeholder="Enter task-related input here"
-                            value={taskInput}
-                            onChange={handleInputChange}
-                            style={styles.textArea}
-                        ></textarea>
-                    </div>
-                </div>
-                
-                <button style={styles.button} onClick={handleGenerateOutput}>Generate Output</button>
-
-                <div style={styles.outputArea}>
-                    <h3 style={styles.subheading}>Output</h3>
-                    <pre style={styles.output}>{output}</pre>
-                </div>
+            <div style={styles.taskInput}>
+              <h3 style={styles.subheading}>Task Input</h3>
+              <textarea
+                rows="5"
+                cols="1000"
+                placeholder="Enter task-related input here"
+                value={taskInput}
+                onChange={handleInputChange}
+                style={styles.textArea}
+              ></textarea>
             </div>
-        </div>
+          </div>
+  
+          <div style={styles.outputArea}>
+            <h3 style={styles.subheading}>Output</h3>
+            <pre style={styles.output}>{output}</pre>
+          </div>
+        </main>
+      </div>
     );
-};
+  };
 
 export default HomePage;
