@@ -4,9 +4,12 @@ import { useUser } from './Context';
 
 // Define the Username and Password map
 const UsernamePwdMap = {
-    "u1": "p1",
-    "u2": "p2",
-    "u3": "p3",
+    "admin": "admin",
+    "kj240": "kj240",
+    "rt341": "rt341",
+    "mm442": "mm442",
+    "pa543": "pa543",
+    "hl644": "hl644"
 };
 
 export default function LoginForm() {
