@@ -15,8 +15,7 @@ const taskDescriptions = {
   'Task 2': 'Given a RA id, find all of his/her residents',
   'Task 3': 'Given a dorm location, find all activity taking at that place',
   'Task 4': 'Given a RA id, find his/her availability',
-  'Task 5': 'Given a resident name, find his/her report history',
-  'Task 6': 'Given a resident username, check whether the inputed password matches the one in record'
+  'Task 5': 'Given a resident name, find his/her report history'
 };
 
 const HomePage = () => {
@@ -25,8 +24,8 @@ const HomePage = () => {
     const [taskInput, setTaskInput] = useState('');
     const [output, setOutput] = useState('');
     
-    // Username indicating login status and access level
-    const { username, setUsername } = useUser(); // Access username from context
+    // UserID indicating login status and access level
+    const { userID, setUserID } = useUser(); // Access userID from context
 
     // Array of task descriptions
     const taskDescriptions = {
@@ -35,7 +34,7 @@ const HomePage = () => {
         'Task 3': 'Given a dorm location, find all activity taking at that place',
         'Task 4': 'Given a RA id, find his/her availability',
         'Task 5': 'Given a resident name, find his/her report history',
-        'Task 6': 'Given a resident username, check whether the inputed password matches the one in record'
+        'Task 6': 'Given a user id, find the class of the user (resident / RA / RC)'
     };
 
     // Handle task selection
@@ -64,19 +63,25 @@ const HomePage = () => {
     };
 
     const handleLogout = () => {
-        setUsername('');
+        setUserID('');
     };
 
     return (
         <div>
             <div style={{ padding: '20px', textAlign: 'right' }}>
-                    {username === '' ? (
-                        <Link href="/login" style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}>
-                            Login
-                        </Link>
+                    {userID === '' ? (
+                        <div>
+                            <Link href="/login" style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}>
+                                Login
+                            </Link>
+                            <br></br>
+                            <Link href="/register" style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}>
+                                Register
+                            </Link>
+                        </div>
                     ) : (
                         <div>
-                            <label>Hello, {username}</label>
+                            <label>Hello, {userID}</label>
                             {/* Conditionally display the availability selection link if logged in */}
                             <div style={{ marginTop: '10px' }}>
                                 <Link href="/availability" style={{ cursor: 'pointer', color: 'green', textDecoration: 'underline' }}>
