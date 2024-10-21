@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { useUser } from './Context'; // Adjust the path as needed
+import { useUser } from './Context';
 
 // Define the Username and Password map
 const UsernamePwdMap = {

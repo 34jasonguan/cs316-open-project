@@ -10,6 +10,15 @@ const Staff = {
     "u3": true,
 }
 
+const taskDescriptions = {
+  'Task 1': 'Given a RC id, find all of his/her RAs',
+  'Task 2': 'Given a RA id, find all of his/her residents',
+  'Task 3': 'Given a dorm location, find all activity taking at that place',
+  'Task 4': 'Given a RA id, find his/her availability',
+  'Task 5': 'Given a resident name, find his/her report history',
+  'Task 6': 'Given a resident username, check whether the inputed password matches the one in record'
+};
+
 const HomePage = () => {
     // State to hold the selected task and input/output values
     const [selectedTask, setSelectedTask] = useState('Task 1');
@@ -32,7 +41,7 @@ const HomePage = () => {
     // Handle task selection
     const handleTaskChange = (event) => {
         setSelectedTask(event.target.value);
-        setOutput(''); // Clear output when the task changes
+        setOutput('');
     };
 
     // Handle task input change
@@ -51,7 +60,6 @@ const HomePage = () => {
       if (selectedTask === 'Task 6') {
         generatedOutput = Staff[taskInput] ? 'Staff' : 'Resident';
     }
-      // Set the output state to display in the output window
       setOutput(generatedOutput);
     };
 
