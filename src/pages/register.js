@@ -1,14 +1,5 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { useUser } from './Context';
-import { userAgentFromString } from 'next/server';
-
-// Define the UserID and Password map
-const UserIDPwdMap = {
-    "u1": "p1",
-    "u2": "p2",
-    "u3": "p3",
-};
 
 export default function RegisterForm() {
     const [idInput, setIDInput] = useState('');
@@ -19,9 +10,13 @@ export default function RegisterForm() {
     const [passwordInput, setPasswordInput] = useState('');
     const router = useRouter();
 
-    // Handle login form submission
+    // Handle create account form submission
     const handleRegister = (e) => {
         e.preventDefault(); // Prevent page reload on form submit
+
+        // if (checkUserNew(idInput)) {
+        //     insertUser(idInput, firstnameInput, lastnameInput, phoneInput, emailInput, passwordInput);
+        // }
 
         router.push('/login');
     };
@@ -50,3 +45,10 @@ export default function RegisterForm() {
         </div>
     );
 }
+
+
+
+// CAVEATS:
+//   TODO: connect to sqlite db
+//   1. Multiple users can have the same phone / email / password
+//   2. Phone number / Email might be invalid
