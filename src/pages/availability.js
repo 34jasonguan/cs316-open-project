@@ -24,18 +24,13 @@ export default function AvailabilityCalendar() {
   };
 
   const handleSubmit = () => {
-    // For demonstration, log the selected dates (or send them to the server here)
     console.log("Selected Dates:", selectedDates);
-
-    // Redirect back to the index page after submission
     router.push('/');
   };
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-      {/* Container for the Calendar and Selected Dates */}
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        {/* Right-aligned Calendar */}
         <div style={{ marginRight: '50px' }}>
           <h1>Select Your Availability</h1>
           <Calendar
@@ -50,7 +45,6 @@ export default function AvailabilityCalendar() {
           />
         </div>
 
-        {/* Column for Selected Dates */}
         <div style={{ border: '1px solid #ddd', padding: '10px', minWidth: '200px' }}>
           <h3>Selected Dates</h3>
           <ul style={{ listStyleType: 'none', padding: 0 }}>

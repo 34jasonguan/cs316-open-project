@@ -53,6 +53,34 @@ const HomePage = () => {
     const handleGenerateOutput = async () => {
       let generatedOutput = ':)';
 
+      if (selectedTask === 'Task 1') {
+        try {
+          const rcNetID = taskInput;  // Assuming taskInput contains the RA ID input by the user
+          
+          // Fetch residents by RA ID using the API route
+          const response = await fetch(`/api/getRAs?raNetID=${rcNetID}`);
+          
+          if (response.ok) {
+            const RAs = await response.json();
+            
+            // Format the output to display the list of residents
+            if (residents.length > 0) {
+              generatedOutput = residents
+                .map(resident => `${resident.studentFirstName} ${resident.studentLastName} (${resident.studentNetID})`)
+                .join('\n');
+            } else {
+              generatedOutput = 'No RA found for this RC.';
+            }
+          } else {
+            const errorData = await response.json();
+            generatedOutput = errorData.message || 'An error occurred';
+          }
+        } catch (error) {
+          console.error('Error fetching residents:', error);
+          generatedOutput = 'Failed to fetch RA.';
+        }
+      }
+
       if (selectedTask === 'Task 2') {
         try {
           const raNetID = taskInput;  // Assuming taskInput contains the RA ID input by the user
