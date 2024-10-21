@@ -9,10 +9,61 @@ const SafetyReportForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // 
     console.log({ reportType, urgency, description });
-
     router.push('/');
+  };
+
+  // 
+  const renderTemplateFields = () => {
+    switch (reportType) {
+      case 'noise':
+        return (
+          <>
+            <label>
+              Location:
+              <input type="text" placeholder="Enter location of noise" />
+            </label>
+            <br />
+            <label>
+              Time:
+              <input type="text" placeholder="Enter time of noise" />
+            </label>
+          </>
+        );
+      case 'safety':
+        return (
+          <>
+            <label>
+              Safety Issue Type:
+              <select>
+                <option value="slip">Slip/Fall</option>
+                <option value="fire">Fire Hazard</option>
+              </select>
+            </label>
+            <br />
+            <label>
+              Location:
+              <input type="text" placeholder="Enter location" />
+            </label>
+          </>
+        );
+      case 'maintenance':
+        return (
+          <>
+            <label>
+              Equipment/Facility:
+              <input type="text" placeholder="Enter equipment needing repair" />
+            </label>
+            <br />
+            <label>
+              Description:
+              <textarea placeholder="Describe the issue" />
+            </label>
+          </>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
@@ -26,6 +77,8 @@ const SafetyReportForm = () => {
           <option value="maintenance">Maintenance Request</option>
         </select>
       </label>
+      <br />
+      {renderTemplateFields()}
       <br />
       <label>
         Urgency Level:
