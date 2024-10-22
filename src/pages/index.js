@@ -143,7 +143,7 @@ const HomePage = () => {
           <h2 style={styles.sidebarHeading}>Menu</h2>
           {userID ? (
             <>
-              <a href="/availability" className="iconTextLink" style={styles.iconTextLink}>
+              <a href="/calendar" className="iconTextLink" style={styles.iconTextLink}>
                 <img src="/icons/availability.png" alt="Availability Icon" style={styles.icon} />
                 <span style={styles.text}>Availability</span>
               </a>

@@ -165,8 +165,9 @@ CREATE TABLE password (
 );
 
 CREATE TABLE availability (
-    netID VARCHAR(255) PRIMARY KEY, 
-    available_date DATE              
+    netID VARCHAR(255), 
+    available_date DATE,
+    PRIMARY KEY (netID, available_date)
 );
 
 
