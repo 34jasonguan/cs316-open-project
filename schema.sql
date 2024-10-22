@@ -140,9 +140,9 @@ VALUES (123, 'Pumpkin Carving', '2024-10-23', '17:00:00', '134', 'GA'),
        (789, 'Costume Party', '2024-10-28', '20:00:00', '107', 'Pegram');
 
 CREATE TABLE report (
-    id INT PRIMARY KEY AUTO_INCREMENT,        
-    type ENUM('Noise Complaint', 'Safety Issues', 'Maintenance Request') NOT NULL,
-    urgency ENUM('Low', 'Medium', 'High') NOT NULL,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,  
+    type TEXT NOT NULL CHECK (type IN ('Noise Complaint', 'Safety Issues', 'Maintenance Request')),  
+    urgency TEXT NOT NULL CHECK (urgency IN ('Low', 'Medium', 'High')),  
     submitted_by VARCHAR(255) NOT NULL
 );
 
@@ -158,6 +158,16 @@ VALUES ('Safety Issues', 'High', 'ir918'),
        ('Noise Complaint', 'Low', 'nw038'),
        ('Noise Complaint', 'Medium', 'bs514');
 
+CREATE TABLE password (
+    netID VARCHAR(10),
+    password VARCHAR(25),
+    PRIMARY KEY (netID)
+);
+
+CREATE TABLE availability (
+    netID VARCHAR(255) PRIMARY KEY, 
+    available_date DATE              
+);
 
 
 
