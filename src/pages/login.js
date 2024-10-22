@@ -2,13 +2,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useUser } from './Context';
 
-// Define the UserID and Password map
-const UserIDPwdMap = {
-    "u1": "p1",
-    "u2": "p2",
-    "u3": "p3",
-};
-
 export default function LoginForm() {
     const { setUserID } = useUser(); // Get setUserID from context
     const [userIDInput, setUserIDInput] = useState('');
@@ -16,15 +9,22 @@ export default function LoginForm() {
     const router = useRouter();
 
     // Handle login form submission
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault(); // Prevent page reload on form submit
+        
+        const response = await fetch(`/api/getPassword?netID=${userIDInput}`);
 
-        // Check if the userID exists and the password is correct
-        if (UserIDPwdMap[userIDInput] && UserIDPwdMap[userIDInput] === passwordInput) {
-            setUserID(userIDInput); // Set the userID using the context's handler
-            router.push('/'); // Redirect to the dashboard page
-        } else {
-            window.alert('Invalid NetID or password!'); // Show error message if credentials are incorrect
+        if (response.ok) {
+            const returnedJSON = await response.json();
+            const passwordTrue = returnedJSON['password'];
+
+            // Check if the userID exists and the password is correct
+            if (passwordTrue && passwordInput && passwordTrue == passwordInput) {
+                setUserID(userIDInput); // Set the userID using the context's handler
+                router.push('/'); // Redirect to the dashboard page
+            } else {
+                window.alert('Invalid NetID or password!'); // Show error message if credentials are incorrect
+            }
         }
     };
 

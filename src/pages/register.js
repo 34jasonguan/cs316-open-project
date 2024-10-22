@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import { ResponseCookies } from 'next/dist/compiled/@edge-runtime/cookies';
 
 export default function RegisterForm() {
     const [idInput, setIDInput] = useState('');
@@ -11,14 +12,27 @@ export default function RegisterForm() {
     const router = useRouter();
 
     // Handle create account form submission
-    const handleRegister = (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault(); // Prevent page reload on form submit
 
-        // if (checkUserNew(idInput)) {
-        //     insertUser(idInput, firstnameInput, lastnameInput, phoneInput, emailInput, passwordInput);
-        // }
+        const userInsertedData = {
+            'netID': idInput,
+            'firstname': firstnameInput,
+            'lastname': lastnameInput,
+            'phone': phoneInput,
+            'email': emailInput, 
+            'password': passwordInput
+        };
+        
+        const response = await fetch(`/api/insertUser`, {
+            method: 'POST',
+            body: JSON.stringify(userInsertedData)
+        });
 
-        router.push('/login');
+        if (response.ok) {
+            window.alert('Account created successfully!');
+            router.push('/login');
+        }
     };
 
     return (
