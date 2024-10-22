@@ -6,6 +6,7 @@ import styles from './style'
 
 const netIDToFirstNameMap = {
   "admin": "admin",
+  "tu123": "Test User"
 };
 
 const taskDescriptions = {
