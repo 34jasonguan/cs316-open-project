@@ -4,17 +4,12 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import styles from './style'
 
-const netIDToFirstNameMap = {
-  "admin": "admin",
-  "tu123": "Test User"
-};
-
 const taskDescriptions = {
   'Task 1': 'Given a RC id, find all of his/her RAs (e.g. pa543)',
   'Task 2': 'Given a RA id, find all of his/her residents (e.g. kj240)',
   'Task 3': 'Given a dorm location, find all activity taking at that place (e.g. Belltower)',
   'Task 4': 'Given a RA id, find his/her availability',
-  'Task 5': 'Given a resident name, find his/her report history'
+  // 'Task 5': 'Given a resident name, find his/her report history'
 };
 
 const HomePage = () => {
@@ -162,7 +157,7 @@ const HomePage = () => {
                </div>
             ) : (
               <div
-              style={styles.userID}>Hello, {netIDToFirstNameMap[userID]}
+              style={styles.userID}>Hello, {userID}
                &ensp;
                <h2 onClick={handleLogout} style = {styles.logout}>Logout</h2>
               </div>

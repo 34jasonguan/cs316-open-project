@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -6,7 +6,14 @@ import styles from './style.js'
 
 const HomePage = () => {
   const [selectedDates, setSelectedDates] = useState([]);
-  const netID = 'admin';
+  const [userID, setUserID] = useState('');
+  useEffect(() => {
+    const storedUserID = localStorage.getItem('userID');
+    if (storedUserID) {
+      setUserID(storedUserID);
+    }
+  }, []);
+  const netID = userID;
   const router = useRouter();
 
   const handleDateClick = (date) => {
