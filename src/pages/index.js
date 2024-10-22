@@ -5,12 +5,6 @@ import Link from 'next/link';
 import { useUser } from './Context';
 import styles from './style'
 
-const Staff = {
-    "u1": true,
-    "u2": false,
-    "u3": true,
-};
-
 const netIDToFirstNameMap = {
   "admin": "admin",
   "kj240": "Kim",
@@ -33,7 +27,7 @@ const HomePage = () => {
     const [taskInput, setTaskInput] = useState('');
     const [output, setOutput] = useState('');
 
-    const { username } = useUser(); 
+    const { userID } = useUser(); 
 
     const handleTaskChange = (event) => {
         setSelectedTask(event.target.value);
@@ -133,21 +127,21 @@ const HomePage = () => {
       <div style={styles.pageContainer}>
         <header style={styles.header}>
           <div style={styles.headerRight}>
-            {username === '' ? (
+            {userID === '' ? (
                <div>
                <Link href="/login" style={styles.loginLink}>Login</Link>
-               <br></br>
-               <Link href="/register" style={styles.loginLink}>Register</Link>
+               &ensp;
+               <Link href="/register" style={styles.registerLink}>Register</Link>
                </div>
             ) : (
-              <span style={styles.username}>Hello, {netIDToFirstNameMap[username]}</span>
+              <span style={styles.userID}>Hello, {netIDToFirstNameMap[userID]}</span>
             )}
           </div>
         </header>
   
         <aside style={styles.sidebar}>
           <h2 style={styles.sidebarHeading}>Menu</h2>
-          {username ? (
+          {userID ? (
             <>
               <a href="/availability" className="iconTextLink" style={styles.iconTextLink}>
                 <img src="/icons/availability.png" alt="Availability Icon" style={styles.icon} />

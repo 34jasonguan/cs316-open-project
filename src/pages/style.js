@@ -17,7 +17,7 @@ const styles = {
       display: 'flex',
       alignItems: 'center',
     },
-    username: {
+    userID: {
       fontSize: '16px',
       fontWeight: 'bold',
       color: '#333',
@@ -27,6 +27,16 @@ const styles = {
       padding: '20px'
     },
     loginLink: {
+      fontSize: '16px',
+      fontWeight: 'bold',
+      textDecoration: 'none',
+      color: '#0070f3',
+      position: 'absolute',
+      top: '0',
+      right: '100px',
+      padding: '20px'
+    },
+    registerLink: {
       fontSize: '16px',
       fontWeight: 'bold',
       textDecoration: 'none',
