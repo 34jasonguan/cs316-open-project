@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useUser } from './Context';
+import styles from './style'
 
 // Define the Username and Password map
 const UsernamePwdMap = {
@@ -40,7 +41,7 @@ export default function LoginForm() {
 
     return (
         <div>
-            <h1>Login Page</h1>
+            <h1 style = {styles.heading}>Login Page</h1>
             <form onSubmit={handleLogin}>
                 <div class="container">
                     <label for="uname"><b>NetID</b></label>

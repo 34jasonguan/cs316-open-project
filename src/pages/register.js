@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { ResponseCookies } from 'next/dist/compiled/@edge-runtime/cookies';
+import styles from './style'
 
 export default function RegisterForm() {
     const [idInput, setIDInput] = useState('');
@@ -37,7 +38,7 @@ export default function RegisterForm() {
 
     return (
         <div>
-            <h1>Create an Account</h1>
+            <h1 style = {styles.heading}>Create an Account</h1>
             <form onSubmit={handleRegister}>
                 <div class="container">
                     <label for="uname"><b>NetID</b></label>

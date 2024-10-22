@@ -151,6 +151,10 @@ const HomePage = () => {
                 <img src="/icons/report.png" alt="Report Icon" style={styles.icon} />
                 <span style={styles.text}>Report</span>
               </a>
+              <a href="/proposal" className="iconTextLink" style={styles.iconTextLink}>
+                <img src="/icons/proposal.png" alt="Proposal Icon" style={styles.icon} />
+                <span style={styles.text}>Activity</span>
+              </a>
             </>
           ) : (
             <p style={styles.text}>Login in required for additional features</p>
