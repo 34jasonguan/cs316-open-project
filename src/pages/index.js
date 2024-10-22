@@ -137,7 +137,7 @@ const HomePage = () => {
             {username === '' ? (
               <Link href="/login" style={styles.loginLink}>Login</Link>
             ) : (
-              <span style={styles.username}>Hello, {username}</span>
+              <span style={styles.username}>Hello, {netIDToFirstNameMap[username]}</span>
             )}
           </div>
         </header>

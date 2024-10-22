@@ -82,6 +82,8 @@ const styles = {
       fontWeight: '500',
       marginBottom: '10px',
       display: 'block',
+      marginLeft: '50px',
+      marginRight: '50px',
     },
     select: {
       padding: '10px',
@@ -134,6 +136,7 @@ const styles = {
       borderRadius: '8px',
       border: '1px solid #ccc',
       fontSize: '16px',
+      padding: '10px'
     },
     outputArea: {
       backgroundColor: '#fff',
