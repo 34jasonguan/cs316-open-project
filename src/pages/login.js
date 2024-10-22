@@ -32,6 +32,7 @@ export default function LoginForm() {
             // Check if the userID exists and the password is correct
             if (passwordTrue && passwordInput && passwordTrue == passwordInput) {
                 setUserID(userIDInput); // Set the userID using the context's handler
+                localStorage.setItem('userID', userIDInput);
                 router.push('/'); // Redirect to the dashboard page
             } else {
                 window.alert('Invalid NetID or password!'); // Show error message if credentials are incorrect

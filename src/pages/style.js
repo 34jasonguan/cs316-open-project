@@ -36,6 +36,9 @@ const styles = {
       right: '100px',
       padding: '20px'
     },
+    logout: {
+      color: 'blue',
+    },
     registerLink: {
       fontSize: '16px',
       fontWeight: 'bold',

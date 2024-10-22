@@ -1,17 +1,11 @@
 // pages/index.js
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useUser } from './Context';
 import styles from './style'
 
 const netIDToFirstNameMap = {
   "admin": "admin",
-  "kj240": "Kim",
-  "rt341": "Ryan",
-  "mm442": "Mia",
-  "pa543": "Peter",
-  "hl644": "Hana"
 };
 
 const taskDescriptions = {
@@ -26,8 +20,14 @@ const HomePage = () => {
     const [selectedTask, setSelectedTask] = useState('Task 1');
     const [taskInput, setTaskInput] = useState('');
     const [output, setOutput] = useState('');
+    const [userID, setUserID] = useState('');
 
-    const { userID } = useUser(); 
+    useEffect(() => {
+      const storedUserID = localStorage.getItem('userID');
+      if (storedUserID) {
+        setUserID(storedUserID);
+      }
+    }, []);
 
     const handleTaskChange = (event) => {
         setSelectedTask(event.target.value);
@@ -116,11 +116,37 @@ const HomePage = () => {
           generatedOutput = 'Failed to fetch activity.';
         }
       }
+
+      if (selectedTask === 'Task 4') {
+        try {
+          const netID = taskInput;
+          const response = await fetch(`/api/getAvailability?netID=${netID}`);
+          
+          if (response.ok) {
+            const availability = await response.json();
+
+            if (availability.length > 0) {
+              generatedOutput = availability
+                .map(date => `${date.available_date} `)
+                .join('\n');
+            } else {
+              generatedOutput = 'No available date.';
+            }
+          } else {
+            const errorData = await response.json();
+            generatedOutput = errorData.message || 'An error occurred';
+          }
+        } catch (error) {
+          console.error('Error fetching availability:', error);
+          generatedOutput = 'Failed to fetch availability.';
+        }
+      }
       setOutput(generatedOutput);
     };
 
     const handleLogout = () => {
         setUserID('');
+        localStorage.removeItem('userID');
     };
 
     return (
@@ -134,7 +160,11 @@ const HomePage = () => {
                <Link href="/register" style={styles.registerLink}>Register</Link>
                </div>
             ) : (
-              <span style={styles.userID}>Hello, {netIDToFirstNameMap[userID]}</span>
+              <div
+              style={styles.userID}>Hello, {netIDToFirstNameMap[userID]}
+               &ensp;
+               <h2 onClick={handleLogout} style = {styles.logout}>Logout</h2>
+              </div>
             )}
           </div>
         </header>
