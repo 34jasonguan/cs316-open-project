@@ -1,85 +1,98 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
+import styles from './style'; // Assuming the same style file is used
 
 const ActivityProposalForm = () => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [programName, setProgramName] = useState('');
   const [location, setLocation] = useState('');
-  const [date, setDate] = useState('');
-  const [participants, setParticipants] = useState('');
+  const [time, setTime] = useState('');
+  const [targetAudience, setTargetAudience] = useState('');
+  const [description, setDescription] = useState('');
+  const [isRecurring, setIsRecurring] = useState(false);
   const router = useRouter();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simulate form submission - In real projects, you'd send data to a backend server here
-    console.log({ title, description, location, date, participants });
-
-    // Redirect or show a success message after submission
+    const proposalData = {
+      programName,
+      location,
+      time,
+      targetAudience,
+      description,
+      isRecurring,
+    };
+    console.log(proposalData);
     router.push('/');
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Activity Title:
-        <input 
-          type="text" 
-          value={title} 
-          onChange={(e) => setTitle(e.target.value)} 
-          placeholder="Enter activity title" 
-          required 
-        />
-      </label>
-      <br />
+    <div style={styles.container}>
+      <form onSubmit={handleSubmit} style={styles.content}>
+        <h2 style={styles.heading}>Submit an Activity/Program Proposal</h2>
 
-      <label>
-        Description:
-        <textarea 
-          value={description} 
-          onChange={(e) => setDescription(e.target.value)} 
-          placeholder="Describe the activity here" 
-          required 
-        />
-      </label>
-      <br />
+        <label style={styles.label}>
+          Program Name:
+          <input
+            type="text"
+            value={programName}
+            onChange={(e) => setProgramName(e.target.value)}
+            placeholder="Enter program name"
+            style={styles.textArea}
+          />
+        </label>
+        <br />
 
-      <label>
-        Location:
-        <input 
-          type="text" 
-          value={location} 
-          onChange={(e) => setLocation(e.target.value)} 
-          placeholder="Location for the activity" 
-          required 
-        />
-      </label>
-      <br />
+        <label style={styles.label}>
+          Location:
+          <input
+            type="text"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder="Enter location of the program"
+            style={styles.textArea}
+          />
+        </label>
+        <br />
 
-      <label>
-        Date & Time:
-        <input 
-          type="datetime-local" 
-          value={date} 
-          onChange={(e) => setDate(e.target.value)} 
-          required 
-        />
-      </label>
-      <br />
+        <label style={styles.label}>
+          Time:
+          <input
+            type="text"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            placeholder="Enter time of the program"
+            style={styles.textArea}
+          />
+        </label>
+        <br />
 
-      <label>
-        Expected Number of Participants:
-        <input 
-          type="number" 
-          value={participants} 
-          onChange={(e) => setParticipants(e.target.value)} 
-          placeholder="Enter expected participants" 
-          required 
-        />
-      </label>
-      <br />
+        <label style={styles.label}>
+          Target Audience:
+          <input
+            type="text"
+            value={targetAudience}
+            onChange={(e) => setTargetAudience(e.target.value)}
+            placeholder="Enter target audience (e.g., first-year students)"
+            style={styles.textArea}
+          />
+        </label>
+        <br />
 
-      <button type="submit">Submit Proposal</button>
-    </form>
+        <label style={styles.label}>
+          Description:
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Describe the program here"
+            style={styles.textArea}
+          />
+        </label>
+        <br />
+
+
+        <button type="submit" style={styles.button}>Submit Proposal</button>
+      </form>
+    </div>
   );
 };
 
