@@ -13,21 +13,28 @@ const UsernamePwdMap = {
 };
 
 export default function LoginForm() {
-    const { setUsername } = useUser(); // Get setUsername from context
-    const [usernameInput, setUsernameInput] = useState('');
+    const { setUserID } = useUser(); // Get setUserID from context
+    const [userIDInput, setUserIDInput] = useState('');
     const [passwordInput, setPasswordInput] = useState('');
     const router = useRouter();
 
     // Handle login form submission
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault(); // Prevent page reload on form submit
+        
+        const response = await fetch(`/api/getPassword?netID=${userIDInput}`);
 
-        // Check if the username exists and the password is correct
-        if (UsernamePwdMap[usernameInput] && UsernamePwdMap[usernameInput] === passwordInput) {
-            setUsername(usernameInput); // Set the username using the context's handler
-            router.push('/'); // Redirect to the dashboard page
-        } else {
-            window.alert('Invalid username or password!'); // Show error message if credentials are incorrect
+        if (response.ok) {
+            const returnedJSON = await response.json();
+            const passwordTrue = returnedJSON['password'];
+
+            // Check if the userID exists and the password is correct
+            if (passwordTrue && passwordInput && passwordTrue == passwordInput) {
+                setUserID(userIDInput); // Set the userID using the context's handler
+                router.push('/'); // Redirect to the dashboard page
+            } else {
+                window.alert('Invalid NetID or password!'); // Show error message if credentials are incorrect
+            }
         }
     };
 
@@ -35,27 +42,17 @@ export default function LoginForm() {
         <div>
             <h1>Login Page</h1>
             <form onSubmit={handleLogin}>
-                <div>
-                    <label htmlFor="username">Username: </label>
-                    <input
-                        type="text"
-                        id="username"
-                        value={usernameInput}
-                        onChange={(e) => setUsernameInput(e.target.value)} // Update the username input state
-                        required
-                    />
+                <div class="container">
+                    <label for="uname"><b>NetID</b></label>
+                    <input type="text" placeholder="Enter NetID" name="userid" id="userid" value={userIDInput} onChange={(e) => setUserIDInput(e.target.value)} required/>
+                    <label for="psw"><b>Password</b></label>
+                    <input type="password" placeholder="Enter Password" name="psw" id="password" value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)} required/>
+                    <button class="login" type="submit">Login</button>
+                    <label>
+                    <input type="checkbox" name="remember"/> Remember me
+                    </label>
                 </div>
-                <div>
-                    <label htmlFor="password">Password: </label>
-                    <input
-                        type="password"
-                        id="password"
-                        value={passwordInput}
-                        onChange={(e) => setPasswordInput(e.target.value)} // Update the password input state
-                        required
-                    />
-                </div>
-                <button type="submit">Login</button>
+
             </form>
         </div>
     );

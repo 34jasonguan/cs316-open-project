@@ -25,8 +25,7 @@ const taskDescriptions = {
   'Task 2': 'Given a RA id, find all of his/her residents (e.g. kj240)',
   'Task 3': 'Given a dorm location, find all activity taking at that place (e.g. Belltower)',
   'Task 4': 'Given a RA id, find his/her availability',
-  'Task 5': 'Given a resident name, find his/her report history',
-  'Task 6': 'Given a resident username, check whether the inputed password matches the one in record'
+  'Task 5': 'Given a resident name, find his/her report history'
 };
 
 const HomePage = () => {
@@ -127,7 +126,7 @@ const HomePage = () => {
     };
 
     const handleLogout = () => {
-        setUsername('');
+        setUserID('');
     };
 
     return (
@@ -135,7 +134,11 @@ const HomePage = () => {
         <header style={styles.header}>
           <div style={styles.headerRight}>
             {username === '' ? (
-              <Link href="/login" style={styles.loginLink}>Login</Link>
+               <div>
+               <Link href="/login" style={styles.loginLink}>Login</Link>
+               <br></br>
+               <Link href="/register" style={styles.loginLink}>Register</Link>
+               </div>
             ) : (
               <span style={styles.username}>Hello, {netIDToFirstNameMap[username]}</span>
             )}
