@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import styles from './style.js'
 
 
 export default function AvailabilityCalendar() {
@@ -14,30 +15,25 @@ export default function AvailabilityCalendar() {
       (d) => d.toDateString() === date.toDateString()
     );
 
-    // Toggle date selection: If date is already selected, remove it; otherwise, add it
+    // select and deselect dates
     if (index !== -1) {
-      newDates.splice(index, 1); // Deselect the date
+      newDates.splice(index, 1); 
     } else {
-      newDates.push(date); // Select the date
+      newDates.push(date);
     }
     setSelectedDates(newDates);
   };
 
   const handleSubmit = () => {
-    // For demonstration, log the selected dates (or send them to the server here)
     console.log("Selected Dates:", selectedDates);
-
-    // Redirect back to the index page after submission
     router.push('/');
   };
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-      {/* Container for the Calendar and Selected Dates */}
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        {/* Right-aligned Calendar */}
         <div style={{ marginRight: '50px' }}>
-          <h1>Select Your Availability</h1>
+          <h1 style = {styles.heading}> Select Your Availability</h1>
           <Calendar
             onClickDay={handleDateClick}
             tileClassName={({ date }) =>
@@ -49,27 +45,33 @@ export default function AvailabilityCalendar() {
             }
           />
         </div>
-
-        {/* Column for Selected Dates */}
-        <div style={{ border: '1px solid #ddd', padding: '10px', minWidth: '200px' }}>
-          <h3>Selected Dates</h3>
+        
+        <div>
+          <h1 style={styles.heading}> Selected Dates</h1>
+          <div style={styles.outputArea}>
           <ul style={{ listStyleType: 'none', padding: 0 }}>
             {selectedDates.length === 0 ? (
               <li>No dates selected</li>
             ) : (
               selectedDates.map((date, index) => (
-                <li key={index}>{date.toDateString()}</li>
+                <li key={index}>
+                  {date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} 
+                  ({date.toLocaleDateString('en-US', { weekday: 'short' })})
+                </li>
               ))
             )}
           </ul>
 
-          <button 
+        </div>
+        <button 
             onClick={handleSubmit} 
-            style={{ marginTop: '20px', padding: '10px 20px', backgroundColor: 'green', color: 'white', border: 'none', cursor: 'pointer' }}
+            style={styles.button}
           >
-            Submit
+          Submit
           </button>
         </div>
+
+        
       </div>
     </div>
   );
