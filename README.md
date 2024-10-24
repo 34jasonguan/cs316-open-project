@@ -21,3 +21,8 @@ Progress Since Milestone 2:
 
 Implementation: 
 Our project is currently running using a tech stack of Next.js (frontend) and SQLite (DB). All of our code for the APIs and frontend widgets can be found in the 'src' folder: the 'pages' folder contains all of the javascript code which forms our frontend, while the 'api' folder within 'pages' contains all of the api routing for fetching data from the SQLite database. 
+
+Demo: 
+Here is the link to our demo video for Milestone 3 --> 
+https://youtu.be/RnyqVl3LJzo 
+
