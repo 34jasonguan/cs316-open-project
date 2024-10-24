@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model activities {
+  activityid    Int       @id
+  name          String?   @db.VarChar(255)
+  date          DateTime? @db.Date
+  time          DateTime? @db.Time(6)
+  room_number   String?   @db.VarChar(10)
+  building_name String?   @db.VarChar(255)
+}
+
+model hasra {
+  studentnetid     String  @db.VarChar(10)
+  studentlastname  String? @db.VarChar(100)
+  studentfirstname String? @db.VarChar(100)
+  ranetid          String  @db.VarChar(10)
+  ralastname       String? @db.VarChar(100)
+  rafirstname      String? @db.VarChar(100)
+
+  @@id([studentnetid, ranetid])
+}
+
+model hasrc {
+  ranetid     String  @db.VarChar(10)
+  ralastname  String? @db.VarChar(100)
+  rafirstname String? @db.VarChar(100)
+  rcnetid     String  @db.VarChar(10)
+  rclastname  String? @db.VarChar(100)
+  rcfirstname String? @db.VarChar(100)
+
+  @@id([ranetid, rcnetid])
+}
+
+model users {
+  netid     String  @id @db.VarChar(10)
+  lastname  String? @db.VarChar(100)
+  firstname String? @db.VarChar(100)
+  year      String? @db.VarChar(10)
+  email     String? @db.VarChar(100)
+  phone     String? @db.VarChar(15)
+  class     String? @db.VarChar(10)
+}

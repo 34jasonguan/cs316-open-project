@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import styles from './style'
+import prisma from '../../lib/prisma';
 
 const taskDescriptions = {
   'Task 1': 'Given a RC id, find all of his/her RAs (e.g. pa543)',
@@ -35,83 +36,90 @@ const HomePage = () => {
     };
 
     const handleGenerateOutput = async () => {
-      let generatedOutput = ':)';
-
-      if (selectedTask === 'Task 1') {
-        try {
-          const rcNetID = taskInput;
-
-          const response = await fetch(`/api/getRAs?rcNetID=${rcNetID}`);
-          
-          if (response.ok) {
-            const RAs = await response.json();
+        let generatedOutput = ':)';
+      
+        if (selectedTask === 'Task 1') {
+            try {
+                const rcnetid = taskInput.trim();
+                console.log("Fetching RAs for RC NetID:", rcnetid); // Debugging line
             
-            if (RAs.length > 0) {
-              generatedOutput = RAs
-                .map(RA => `${RA.raFirstName} ${RA.raLastName} (${RA.raNetID})`)
-                .join('\n');
-            } else {
-              generatedOutput = 'No RA found for this RC.';
-            }
-          } else {
-            const errorData = await response.json();
-            generatedOutput = errorData.message || 'An error occurred';
-          }
-        } catch (error) {
-          console.error('Error fetching RA:', error);
-          generatedOutput = 'Failed to fetch RA.';
+                const response = await fetch(`/api/getRAs?rcnetid=${encodeURIComponent(rcnetid)}`);
+            
+                if (response.ok) {
+                    const RAs = await response.json();
+                    
+                    if (RAs.length > 0) {
+                    generatedOutput = RAs
+                        .map(RA => `${RA.rafirstname} ${RA.ralastname} (${RA.ranetid})`)
+                        .join('\n');
+                    } else {
+                    generatedOutput = 'No RA found for this RC.';
+                    }
+                } else {
+                    const errorData = await response.json();
+                    generatedOutput = errorData.message || 'An error occurred';
+                }
+                } catch (error) {
+                console.error('Error fetching RA:', error);
+                generatedOutput = 'Failed to fetch RA.';
+                }
         }
-      }
 
-      if (selectedTask === 'Task 2') {
-        try {
-          const raNetID = taskInput;
-          const response = await fetch(`/api/getResidents?raNetID=${raNetID}`);
+        if (selectedTask === 'Task 2') {
+          try {
+              const ranetid = taskInput.trim();
+              console.log("Fetching Residents for RA NetID:", ranetid); // Debugging line
           
-          if (response.ok) {
-            const residents = await response.json();
-
-            if (residents.length > 0) {
-              generatedOutput = residents
-                .map(resident => `${resident.studentFirstName} ${resident.studentLastName} (${resident.studentNetID})`)
-                .join('\n');
-            } else {
-              generatedOutput = 'No resident found for this RA.';
-            }
-          } else {
-            const errorData = await response.json();
-            generatedOutput = errorData.message || 'An error occurred';
-          }
-        } catch (error) {
-          console.error('Error fetching residents:', error);
-          generatedOutput = 'Failed to fetch resident.';
-        }
-      }
-
-      if (selectedTask === 'Task 3') {
-        try {
-          const buildingName = taskInput;
-          const response = await fetch(`/api/getActivities?buildingName=${buildingName}`);
+              const response = await fetch(`/api/getResidents?ranetid=${encodeURIComponent(ranetid)}`);
           
-          if (response.ok) {
-            const activities = await response.json();
-
+              if (response.ok) {
+                  const residents = await response.json();
+                  
+                  if (residents.length > 0) {
+                  generatedOutput = residents
+                      .map(resident => `${resident.studentfirstname} ${resident.studentlastname} (${resident.studentnetid})`)
+                      .join('\n');
+                  } else {
+                  generatedOutput = 'No Residents found for this RA.';
+                  }
+              } else {
+                  const errorData = await response.json();
+                  generatedOutput = errorData.message || 'An error occurred';
+              }
+              } catch (error) {
+              console.error('Error fetching Residents:', error);
+              generatedOutput = 'Failed to fetch Residents.';
+              }
+      }
+      
+        if (selectedTask === 'Task 3') {
+          try {
+            const buildingName = taskInput;
+      
+            // Prisma query to fetch activities for the given building name
+            const activities = await prisma.activity.findMany({
+              where: { buildingName },
+              select: {
+                name: true,
+                time: true,
+                date: true,
+                room_number: true,
+              }
+            });
+      
             if (activities.length > 0) {
               generatedOutput = activities
-                .map(activity => `${activity.name} takes place at ${activity.time} ${activity.date} in room ${activity.room_number} `)
+                .map(activity => `${activity.name} takes place at ${activity.time} ${activity.date} in room ${activity.room_number}`)
                 .join('\n');
             } else {
-              generatedOutput = 'No acitivty found for this building.';
+              generatedOutput = 'No activity found for this building.';
             }
-          } else {
-            const errorData = await response.json();
-            generatedOutput = errorData.message || 'An error occurred';
+          } catch (error) {
+            console.error('Error fetching activities:', error);
+            generatedOutput = 'Failed to fetch activities.';
           }
-        } catch (error) {
-          console.error('Error fetching activites:', error);
-          generatedOutput = 'Failed to fetch activity.';
         }
-      }
+        setOutput(generatedOutput);
 
       if (selectedTask === 'Task 4') {
         try {
@@ -139,6 +147,8 @@ const HomePage = () => {
       }
       setOutput(generatedOutput);
     };
+
+      
 
     const handleLogout = () => {
         setUserID('');
