@@ -7,6 +7,8 @@ const SafetyReportForm = () => {
   const [urgency, setUrgency] = useState('');
   const [description, setDescription] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
+  const [safetyIssueType, setSafetyIssueType] = useState(''); 
+  const [otherIssue, setOtherIssue] = useState('');
   const router = useRouter();
 
   const handleSubmit = (e) => {
@@ -16,6 +18,7 @@ const SafetyReportForm = () => {
       urgency,
       description,
       isAnonymous, 
+      safetyIssueType: safetyIssueType === 'Other' ? otherIssue : safetyIssueType 
     };
     console.log(reportData);
     router.push('/');
@@ -30,11 +33,6 @@ const SafetyReportForm = () => {
               Location:
               <input type="text" placeholder="Enter location of noise" style={styles.textArea} />
             </label>
-            <br />
-            <label style={styles.label}>
-              Time:
-              <input type="text" placeholder="Enter time of noise" style={styles.textArea} />
-            </label>
           </>
         );
       case 'safety':
@@ -42,11 +40,31 @@ const SafetyReportForm = () => {
           <>
             <label style={styles.label}>
               Safety Issue Type:
-              <select style={styles.select}>
+              <select
+                value={safetyIssueType}
+                onChange={(e) => setSafetyIssueType(e.target.value)}
+                style={styles.select}>
+                <option value="">Select an issue</option>
                 <option value="slip">Slip/Fall</option>
                 <option value="fire">Fire Hazard</option>
+                <option value="suspicious">Suspicious Activity</option>
+                <option value="smoke">Smoke Detected</option>
+                <option value="Other">Other (please specify)</option>
               </select>
             </label>
+            <br />
+            {safetyIssueType === 'Other' && (
+              <label style={styles.label}>
+                Please specify:
+                <input
+                  type="text"
+                  value={otherIssue}
+                  onChange={(e) => setOtherIssue(e.target.value)}
+                  placeholder="Describe the issue"
+                  style={styles.textArea}
+                />
+              </label>
+            )}
             <br />
             <label style={styles.label}>
               Location:
@@ -63,8 +81,8 @@ const SafetyReportForm = () => {
             </label>
             <br />
             <label style={styles.label}>
-              Description:
-              <textarea placeholder="Describe the issue" style={styles.textArea} />
+              Location:
+              <textarea placeholder="Enter Location" style={styles.textArea} />
             </label>
           </>
         );
