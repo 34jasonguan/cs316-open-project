@@ -143,20 +143,27 @@ CREATE TABLE report (
     id INTEGER PRIMARY KEY AUTOINCREMENT,  
     type TEXT NOT NULL CHECK (type IN ('Noise Complaint', 'Safety Issues', 'Maintenance Request')),  
     urgency TEXT NOT NULL CHECK (urgency IN ('Low', 'Medium', 'High')),  
-    submitted_by VARCHAR(255) NOT NULL
+    description TEXT,  
+    submitted_by VARCHAR(255), 
+    is_anonymous BOOLEAN NOT NULL DEFAULT 0, 
+    location TEXT,  
+    issue_type TEXT,  
+    equipment TEXT, 
+    timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO report (type, urgency, submitted_by) 
-VALUES ('Safety Issues', 'High', 'ir918'),
-       ('Maintenance Request', 'Low', 'mk120'),
-       ('Maintenance Request', 'Medium', 'zb625'),
-       ('Safety Issues', 'High', 'at211'),
-       ('Safety Issues', 'High', 'og808'),
-       ('Safety Issues', 'High', 'sm110'),
-       ('Safety Issues', 'High', 'rb432'),
-       ('Maintenance Request', 'High', 'kv735'),
-       ('Noise Complaint', 'Low', 'nw038'),
-       ('Noise Complaint', 'Medium', 'bs514');
+INSERT INTO report (type, urgency, description, submitted_by, is_anonymous, location, issue_type, equipment, timestamp) 
+VALUES 
+    ('Safety Issues', 'High', 'Fire hazard near Belltower', 'ir918', 0, 'Belltower', 'Fire Hazard', NULL, '2024-10-21 14:30:00'),
+    ('Maintenance Request', 'Low', 'Air conditioning needs repair in room 102', 'mk120', 0, 'East House, Room 102', NULL, 'Air Conditioning', '2024-10-21 09:00:00'),
+    ('Maintenance Request', 'Medium', 'Water leakage in restroom', 'zb625', 0, 'Trinity, Room 203', NULL, 'Water Pipe', '2024-10-21 11:15:00'),
+    ('Safety Issues', 'High', 'Slip risk due to wet floor', 'at211', 0, 'Belltower, Hallway', 'Slip/Fall', NULL, '2024-10-21 13:45:00'),
+    ('Safety Issues', 'High', 'Suspicious person sighted', NULL, 1, 'Parking Lot near Trinity', 'Suspicious Activity', NULL, '2024-10-21 15:20:00'), 
+    ('Safety Issues', 'High', 'Fire alarm malfunctioning', 'sm110', 0, 'East House, Building C', 'Fire Alarm', NULL, '2024-10-21 17:00:00'),
+    ('Safety Issues', 'High', 'Smoke detected in hallway', 'rb432', 0, 'Trinity, Hallway 3', 'Smoke Detected', NULL, '2024-10-21 18:30:00'),
+    ('Maintenance Request', 'High', 'Elevator malfunction', 'kv735', 0, 'Belltower, Elevator', NULL, 'Elevator', '2024-10-21 08:45:00'),
+    ('Noise Complaint', 'Low', 'Loud music from East House, Room 204', NULL, 1, 'East House, Room 204', NULL, NULL, '2024-10-20 22:30:00'),  
+    ('Noise Complaint', 'Medium', 'Construction noise during quiet hours', 'bs514', 0, 'Trinity, North Wing', NULL, NULL, '2024-10-22 14:00:00');
 
 CREATE TABLE password (
     netID VARCHAR(10),
@@ -165,8 +172,9 @@ CREATE TABLE password (
 );
 
 CREATE TABLE availability (
-    netID VARCHAR(255) PRIMARY KEY, 
-    available_date DATE              
+    netID VARCHAR(255), 
+    available_date DATE,
+    PRIMARY KEY (netID, available_date)
 );
 
 

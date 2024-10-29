@@ -1,31 +1,49 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import styles from './style.js'
 
-
-export default function AvailabilityCalendar() {
+const HomePage = () => {
   const [selectedDates, setSelectedDates] = useState([]);
+  const [userID, setUserID] = useState('');
+  useEffect(() => {
+    const storedUserID = localStorage.getItem('userID');
+    if (storedUserID) {
+      setUserID(storedUserID);
+    }
+  }, []);
+  const netID = userID;
   const router = useRouter();
 
   const handleDateClick = (date) => {
-    const newDates = [...selectedDates];
-    const index = newDates.findIndex(
-      (d) => d.toDateString() === date.toDateString()
-    );
-
-    // select and deselect dates
-    if (index !== -1) {
-      newDates.splice(index, 1); 
+    if (selectedDates.find(d => d.toDateString() === date.toDateString())) {
+      setSelectedDates(selectedDates.filter(d => d.toDateString() !== date.toDateString()));
     } else {
-      newDates.push(date);
+      setSelectedDates([...selectedDates, date]);
     }
-    setSelectedDates(newDates);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log("Selected Dates:", selectedDates);
+    const formattedDates = selectedDates.map((date) =>
+      date.toISOString().split('T')[0]
+    );
+
+    const response = await fetch('/api/addAvailability', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ netID, dates: formattedDates }),
+    });
+
+    const result = await response.json();
+    if (response.ok) {
+      alert(result.message);
+    } else {
+      alert('Failed to submit dates: ' + result.error);
+    }
     router.push('/');
   };
 
@@ -75,4 +93,6 @@ export default function AvailabilityCalendar() {
       </div>
     </div>
   );
-}
+};
+
+export default HomePage;

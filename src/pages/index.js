@@ -1,39 +1,29 @@
 // pages/index.js
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useUser } from './Context';
 import styles from './style'
-
-const Staff = {
-    "u1": true,
-    "u2": false,
-    "u3": true,
-};
-
-const netIDToFirstNameMap = {
-  "admin": "admin",
-  "kj240": "Kim",
-  "rt341": "Ryan",
-  "mm442": "Mia",
-  "pa543": "Peter",
-  "hl644": "Hana"
-};
 
 const taskDescriptions = {
   'Task 1': 'Given a RC id, find all of his/her RAs (e.g. pa543)',
   'Task 2': 'Given a RA id, find all of his/her residents (e.g. kj240)',
   'Task 3': 'Given a dorm location, find all activity taking at that place (e.g. Belltower)',
   'Task 4': 'Given a RA id, find his/her availability',
-  'Task 5': 'Given a resident name, find his/her report history'
+  // 'Task 5': 'Given a resident name, find his/her report history'
 };
 
 const HomePage = () => {
     const [selectedTask, setSelectedTask] = useState('Task 1');
     const [taskInput, setTaskInput] = useState('');
     const [output, setOutput] = useState('');
+    const [userID, setUserID] = useState('');
 
-    const { username } = useUser(); 
+    useEffect(() => {
+      const storedUserID = localStorage.getItem('userID');
+      if (storedUserID) {
+        setUserID(storedUserID);
+      }
+    }, []);
 
     const handleTaskChange = (event) => {
         setSelectedTask(event.target.value);
@@ -122,40 +112,74 @@ const HomePage = () => {
           generatedOutput = 'Failed to fetch activity.';
         }
       }
+
+      if (selectedTask === 'Task 4') {
+        try {
+          const netID = taskInput;
+          const response = await fetch(`/api/getAvailability?netID=${netID}`);
+          
+          if (response.ok) {
+            const availability = await response.json();
+
+            if (availability.length > 0) {
+              generatedOutput = availability
+                .map(date => `${date.available_date} `)
+                .join('\n');
+            } else {
+              generatedOutput = 'No available date.';
+            }
+          } else {
+            const errorData = await response.json();
+            generatedOutput = errorData.message || 'An error occurred';
+          }
+        } catch (error) {
+          console.error('Error fetching availability:', error);
+          generatedOutput = 'Failed to fetch availability.';
+        }
+      }
       setOutput(generatedOutput);
     };
 
     const handleLogout = () => {
         setUserID('');
+        localStorage.removeItem('userID');
     };
 
     return (
       <div style={styles.pageContainer}>
         <header style={styles.header}>
           <div style={styles.headerRight}>
-            {username === '' ? (
+            {userID === '' ? (
                <div>
                <Link href="/login" style={styles.loginLink}>Login</Link>
-               <br></br>
-               <Link href="/register" style={styles.loginLink}>Register</Link>
+               &ensp;
+               <Link href="/register" style={styles.registerLink}>Register</Link>
                </div>
             ) : (
-              <span style={styles.username}>Hello, {netIDToFirstNameMap[username]}</span>
+              <div
+              style={styles.userID}>Hello, {userID}
+               &ensp;
+               <h2 onClick={handleLogout} style = {styles.logout}>Logout</h2>
+              </div>
             )}
           </div>
         </header>
   
         <aside style={styles.sidebar}>
           <h2 style={styles.sidebarHeading}>Menu</h2>
-          {username ? (
+          {userID ? (
             <>
-              <a href="/availability" className="iconTextLink" style={styles.iconTextLink}>
+              <a href="/calendar" className="iconTextLink" style={styles.iconTextLink}>
                 <img src="/icons/availability.png" alt="Availability Icon" style={styles.icon} />
                 <span style={styles.text}>Availability</span>
               </a>
               <a href="/report" className="iconTextLink" style={styles.iconTextLink}>
                 <img src="/icons/report.png" alt="Report Icon" style={styles.icon} />
                 <span style={styles.text}>Report</span>
+              </a>
+              <a href="/proposal" className="iconTextLink" style={styles.iconTextLink}>
+                <img src="/icons/proposal.png" alt="Proposal Icon" style={styles.icon} />
+                <span style={styles.text}>Activity</span>
               </a>
             </>
           ) : (

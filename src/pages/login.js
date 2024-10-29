@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useUser } from './Context';
+import styles from './style'
 
 // Define the Username and Password map
 const UsernamePwdMap = {
@@ -31,6 +32,7 @@ export default function LoginForm() {
             // Check if the userID exists and the password is correct
             if (passwordTrue && passwordInput && passwordTrue == passwordInput) {
                 setUserID(userIDInput); // Set the userID using the context's handler
+                localStorage.setItem('userID', userIDInput);
                 router.push('/'); // Redirect to the dashboard page
             } else {
                 window.alert('Invalid NetID or password!'); // Show error message if credentials are incorrect
@@ -40,7 +42,7 @@ export default function LoginForm() {
 
     return (
         <div>
-            <h1>Login Page</h1>
+            <h1 style = {styles.heading}>Login Page</h1>
             <form onSubmit={handleLogin}>
                 <div class="container">
                     <label for="uname"><b>NetID</b></label>
