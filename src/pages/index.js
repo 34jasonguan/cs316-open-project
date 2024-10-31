@@ -146,83 +146,107 @@ const HomePage = () => {
     };
 
     return (
-      <div style={styles.pageContainer}>
-        <header style={styles.header}>
-          <div style={styles.headerRight}>
-            {userID === '' ? (
-               <div>
-               <Link href="/login" style={styles.loginLink}>Login</Link>
-               &ensp;
-               <Link href="/register" style={styles.registerLink}>Register</Link>
-               </div>
-            ) : (
-              <div
-              style={styles.userID}>Hello, {userID}
-               &ensp;
-               <h2 onClick={handleLogout} style = {styles.logout}>Logout</h2>
-              </div>
-            )}
-          </div>
-        </header>
-  
-        <aside style={styles.sidebar}>
-          <h2 style={styles.sidebarHeading}>Menu</h2>
+      <div className="min-h-screen flex bg-gray-100">
+        {/* Sidebar */}
+        <aside className="w-64 p-6 bg-white shadow-lg flex-shrink-0">
+          <h2 className="text-xl font-semibold mb-4">Menu</h2>
           {userID ? (
             <>
-              <a href="/calendar" className="iconTextLink" style={styles.iconTextLink}>
-                <img src="/icons/availability.png" alt="Availability Icon" style={styles.icon} />
-                <span style={styles.text}>Availability</span>
-              </a>
-              <a href="/report" className="iconTextLink" style={styles.iconTextLink}>
-                <img src="/icons/report.png" alt="Report Icon" style={styles.icon} />
-                <span style={styles.text}>Report</span>
-              </a>
-              <a href="/proposal" className="iconTextLink" style={styles.iconTextLink}>
-                <img src="/icons/proposal.png" alt="Proposal Icon" style={styles.icon} />
-                <span style={styles.text}>Activity</span>
-              </a>
+              <Link href="/calendar" className="flex items-center mb-2 text-gray-700 hover:text-blue-600">
+                <svg className="h-8 w-8 text-black-500 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                Availability
+              </Link>
+              <Link href="/report" className="flex items-center mb-2 text-gray-700 hover:text-blue-600">
+                <svg className="h-8 w-8 text-black-500 mr-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+              Report
+              </Link>
+              <Link href="/proposal" className="flex items-center mb-2 text-gray-700 hover:text-blue-600">
+              <svg className="h-8 w-8 text-black-500 mr-2" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" />
+                <path d="M3 12h1M12 3v1M20 12h1M5.6 5.6l.7 .7M18.4 5.6l-.7 .7" />
+                <path d="M9 16a5 5 0 1 1 6 0a3.5 3.5 0 0 0 -1 3a2 2 0 0 1 -4 0a3.5 3.5 0 0 0 -1 -3" />
+                <line x1="9.7" y1="17" x2="14.3" y2="17" />
+              </svg>
+              Activity
+              </Link>
             </>
           ) : (
-            <p style={styles.text}>Login in required for additional features</p>
+            <p className="text-gray-500">Login required for additional features</p>
           )}
         </aside>
   
-        <main style={styles.contentArea}>
-          <h1 style={styles.heading}>Development Page for CS 316 Open Project</h1>
+        {/* Main Content Area */}
+        <div className="flex-grow flex flex-col">
+          <header className="w-full flex justify-end p-4 bg-white text-white shadow-md">
+            {userID ? (
+              <div className="flex items-center space-x-4">
+                <span>
+                <a class="text-black">Hello, {userID}</a></span>
+                <button onClick={handleLogout} className="text-red-400 hover:underline">
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="flex space-x-4">
+                <Link href="/login" className="hover:underline text-black">Login</Link>
+                <Link href="/register" className="hover:underline text-black">Register</Link>
+              </div>
+            )}
+          </header>
   
-          <label htmlFor="task-select" style={styles.label}>Choose a Task:</label>
-          <select id="task-select" value={selectedTask} onChange={handleTaskChange} style={styles.select}>
-            {Object.keys(taskDescriptions).map((task, index) => (
-              <option key={index} value={task}>{task}</option>
-            ))}
-          </select>
+          <main className="flex flex-col items-center w-full max-w-4xl p-6 bg-white shadow-md rounded-lg mx-auto mt-8">
+            <h1 className="text-2xl font-bold mb-6 text-gray-800">Development Page for CS 316 Open Project</h1>
   
-          <div style={styles.mainArea}>
-            <div style={styles.taskDescription}>
-              <h3 style={styles.subheading}>Task Description</h3>
-              <p>{taskDescriptions[selectedTask]}</p>
-              <button style={styles.button} onClick={handleGenerateOutput}>Generate Output</button>
+            <label htmlFor="task-select" className="block text-gray-700 mb-2 font-semibold">Choose a Task:</label>
+            <select
+              id="task-select"
+              value={selectedTask}
+              onChange={handleTaskChange}
+              className="w-full p-2 mb-6 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {Object.keys(taskDescriptions).map((task, index) => (
+                <option key={index} value={task}>{task}</option>
+              ))}
+            </select>
+  
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-700">Task Description</h3>
+                <p className="mb-4">{taskDescriptions[selectedTask]}</p>
+                <button
+                  onClick={handleGenerateOutput}
+                  className="px-4 py-2 bg-stone-800 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Generate Output
+                </button>
+              </div>
+  
+              <div>
+                <h3 className="text-lg font-semibold text-gray-700">Task Input</h3>
+                <textarea
+                  rows="5"
+                  placeholder="Enter task-related input here"
+                  value={taskInput}
+                  onChange={handleInputChange}
+                  className="w-full p-2 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                ></textarea>
+              </div>
             </div>
-            <div style={styles.taskInput}>
-              <h3 style={styles.subheading}>Task Input</h3>
-              <textarea
-                rows="5"
-                cols="1000"
-                placeholder="Enter task-related input here"
-                value={taskInput}
-                onChange={handleInputChange}
-                style={styles.textArea}
-              ></textarea>
-            </div>
-          </div>
   
-          <div style={styles.outputArea}>
-            <h3 style={styles.subheading}>Output</h3>
-            <pre style={styles.output}>{output}</pre>
-          </div>
-        </main>
+            <div className="mt-6 w-full">
+              <h3 className="text-lg font-semibold text-gray-700">Output</h3>
+              <pre className="w-full p-4 bg-gray-100 rounded-lg border border-gray-300 overflow-x-auto whitespace-pre-wrap">{output}</pre>
+            </div>
+          </main>
+        </div>
       </div>
     );
   };
-
-export default HomePage;
+  
+  export default HomePage;
