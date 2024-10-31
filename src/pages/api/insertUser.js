@@ -37,8 +37,61 @@ export default async function handler(req, res) {
 
       await db.run(
         'INSERT INTO users (netID, lastname, firstname, year, email, phone, class) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [userData['netID'], userData['lastname'], userData['firstname'], 'freshman', userData['email'], userData['phone'], 'Student']
+        [userData['netID'], userData['lastname'], userData['firstname'], userData['year'], userData['email'], userData['phone'], userData['class']]
       );
+
+      switch (userData['class']) {
+        case 'student':
+          for (const RA of userData['RA']) {
+            await db.run(
+              `
+                INSERT INTO hasRA (studentNetID, studentLastName, studentFirstName, raNetID, raLastName, raFirstName)
+                SELECT u1.netID, u1.lastname, u1.firstname, u2.netID, u2.lastname, u2.firstname
+                FROM users u1, users u2
+                WHERE u1.netID = ? AND u2.netID = ?
+              `,
+              [userData['netID'], RA.value]
+            );
+          }
+        case 'RA':
+          for (const student of userData['student']) {
+            await db.run(
+              `
+                INSERT INTO hasRA (studentNetID, studentLastName, studentFirstName, raNetID, raLastName, raFirstName)
+                SELECT u1.netID, u1.lastname, u1.firstname, u2.netID, u2.lastname, u2.firstname
+                FROM users u1, users u2
+                WHERE u1.netID = ? AND u2.netID = ?
+              `,
+              [student.value, userData['netID']]
+            );
+          }
+          for (const RC of userData['RC']) {
+            await db.run(
+              `
+                INSERT INTO hasRC (raNetID, raLastName, raFirstName, rcNetID, rcLastName, rcFirstName)
+                SELECT u1.netID, u1.lastname, u1.firstname, u2.netID, u2.lastname, u2.firstname
+                FROM users u1, users u2
+                WHERE u1.netID = ? AND u2.netID = ?
+              `,
+              [userData['netID'], RC.value]
+            );
+          }
+        case 'RC':
+          for (const RA of userData['RA']) {
+            await db.run(
+              `
+                INSERT INTO hasRC (raNetID, raLastName, raFirstName, rcNetID, rcLastName, rcFirstName)
+                SELECT u1.netID, u1.lastname, u1.firstname, u2.netID, u2.lastname, u2.firstname
+                FROM users u1, users u2
+                WHERE u1.netID = ? AND u2.netID = ?
+              `,
+              [RA.value, userData['netID']]
+            );
+          }
+        default:
+          
+      }
+
       res.status(200).json({});
     } catch (error) {
       res.status(500).json({ error: 'Database query failed', details: error });
