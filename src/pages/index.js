@@ -92,34 +92,31 @@ const HomePage = () => {
               }
       }
       
-        if (selectedTask === 'Task 3') {
-          try {
-            const buildingName = taskInput;
-      
-            // Prisma query to fetch activities for the given building name
-            const activities = await prisma.activity.findMany({
-              where: { buildingName },
-              select: {
-                name: true,
-                time: true,
-                date: true,
-                room_number: true,
-              }
-            });
-      
-            if (activities.length > 0) {
-              generatedOutput = activities
-                .map(activity => `${activity.name} takes place at ${activity.time} ${activity.date} in room ${activity.room_number}`)
-                .join('\n');
-            } else {
-              generatedOutput = 'No activity found for this building.';
-            }
-          } catch (error) {
-            console.error('Error fetching activities:', error);
-            generatedOutput = 'Failed to fetch activities.';
+      if (selectedTask === 'Task 3') {
+        try {
+          const building_name = taskInput;
+          
+          const response = await fetch(`/api/getActivities?building_name=${encodeURIComponent(building_name)}`);
+          
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
           }
+          
+          const activities = await response.json();
+          
+          if (activities.length > 0) {
+            generatedOutput = activities
+              .map(activity => `${activity.name} takes place at ${activity.time} on ${activity.date} in room ${activity.room_number}`)
+              .join('\n');
+          } else {
+            generatedOutput = 'No activity found for this building.';
+          }
+        } catch (error) {
+          console.error('Error fetching activities:', error);
+          generatedOutput = 'Failed to fetch activities.';
         }
-        setOutput(generatedOutput);
+      }
+      setOutput(generatedOutput);
 
       if (selectedTask === 'Task 4') {
         try {
