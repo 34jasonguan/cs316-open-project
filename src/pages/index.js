@@ -1,15 +1,44 @@
 // pages/index.js
-
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import styles from './style'
+
+import { Button } from "@/components/ui/button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import {
+  ChevronDown,
+  LayoutDashboard,
+  Calendar,
+  GraduationCap,
+  ClipboardList,
+  FileText,
+  DollarSign,
+  Users,
+  User,
+  Menu,
+  MoreVertical,
+  Settings,
+} from "lucide-react"
 
 const taskDescriptions = {
   'Task 1': 'Given a RC id, find all of his/her RAs (e.g. pa543)',
   'Task 2': 'Given a RA id, find all of his/her residents (e.g. kj240)',
   'Task 3': 'Given a dorm location, find all activity taking at that place (e.g. Belltower)',
   'Task 4': 'Given a RA id, find his/her availability',
-  // 'Task 5': 'Given a resident name, find his/her report history'
 };
 
 const HomePage = () => {
@@ -17,6 +46,7 @@ const HomePage = () => {
     const [taskInput, setTaskInput] = useState('');
     const [output, setOutput] = useState('');
     const [userID, setUserID] = useState('');
+    const [openSubbar, setOpenSubbar] = useState('');
 
     useEffect(() => {
       const storedUserID = localStorage.getItem('userID');
@@ -24,6 +54,10 @@ const HomePage = () => {
         setUserID(storedUserID);
       }
     }, []);
+
+    const toggleSubbar = (name) => {
+      setOpenSubbar(prev => (prev === name ? '' : name));
+    };
 
     const handleTaskChange = (event) => {
         setSelectedTask(event.target.value);
@@ -35,110 +69,22 @@ const HomePage = () => {
     };
 
     const handleGenerateOutput = async () => {
-      let generatedOutput = ':)';
-
-      if (selectedTask === 'Task 1') {
-        try {
-          const rcNetID = taskInput;
-
-          const response = await fetch(`/api/getRAs?rcNetID=${rcNetID}`);
-          
-          if (response.ok) {
-            const RAs = await response.json();
-            
-            if (RAs.length > 0) {
-              generatedOutput = RAs
-                .map(RA => `${RA.raFirstName} ${RA.raLastName} (${RA.raNetID})`)
-                .join('\n');
-            } else {
-              generatedOutput = 'No RA found for this RC.';
-            }
-          } else {
-            const errorData = await response.json();
-            generatedOutput = errorData.message || 'An error occurred';
-          }
-        } catch (error) {
-          console.error('Error fetching RA:', error);
-          generatedOutput = 'Failed to fetch RA.';
-        }
-      }
-
-      if (selectedTask === 'Task 2') {
         try {
           const raNetID = taskInput;
           const response = await fetch(`/api/getResidents?raNetID=${raNetID}`);
           
           if (response.ok) {
             const residents = await response.json();
-
-            if (residents.length > 0) {
-              generatedOutput = residents
-                .map(resident => `${resident.studentFirstName} ${resident.studentLastName} (${resident.studentNetID})`)
-                .join('\n');
-            } else {
-              generatedOutput = 'No resident found for this RA.';
-            }
+            setOutput(residents);
           } else {
             const errorData = await response.json();
-            generatedOutput = errorData.message || 'An error occurred';
+            setOutput([{ studentFirstName: 'Error', studentLastName: errorData.message || 'An error occurred' }]);
           }
         } catch (error) {
           console.error('Error fetching residents:', error);
-          generatedOutput = 'Failed to fetch resident.';
+          setOutput([{ studentFirstName: 'Error', studentLastName: 'Failed to fetch residents' }]);
         }
-      }
-
-      if (selectedTask === 'Task 3') {
-        try {
-          const buildingName = taskInput;
-          const response = await fetch(`/api/getActivities?buildingName=${buildingName}`);
-          
-          if (response.ok) {
-            const activities = await response.json();
-
-            if (activities.length > 0) {
-              generatedOutput = activities
-                .map(activity => `${activity.name} takes place at ${activity.time} ${activity.date} in room ${activity.room_number} `)
-                .join('\n');
-            } else {
-              generatedOutput = 'No acitivty found for this building.';
-            }
-          } else {
-            const errorData = await response.json();
-            generatedOutput = errorData.message || 'An error occurred';
-          }
-        } catch (error) {
-          console.error('Error fetching activites:', error);
-          generatedOutput = 'Failed to fetch activity.';
-        }
-      }
-
-      if (selectedTask === 'Task 4') {
-        try {
-          const netID = taskInput;
-          const response = await fetch(`/api/getAvailability?netID=${netID}`);
-          
-          if (response.ok) {
-            const availability = await response.json();
-
-            if (availability.length > 0) {
-              generatedOutput = availability
-                .map(date => `${date.available_date} `)
-                .join('\n');
-            } else {
-              generatedOutput = 'No available date.';
-            }
-          } else {
-            const errorData = await response.json();
-            generatedOutput = errorData.message || 'An error occurred';
-          }
-        } catch (error) {
-          console.error('Error fetching availability:', error);
-          generatedOutput = 'Failed to fetch availability.';
-        }
-      }
-      setOutput(generatedOutput);
-    };
+      };
 
     const handleLogout = () => {
         setUserID('');
@@ -146,107 +92,179 @@ const HomePage = () => {
     };
 
     return (
-      <div className="min-h-screen flex bg-gray-100">
+      <div className="flex h-screen bg-gray-100">
         {/* Sidebar */}
-        <aside className="w-64 p-6 bg-white shadow-lg flex-shrink-0">
-          <h2 className="text-xl font-semibold mb-4">Menu</h2>
-          {userID ? (
-            <>
-              <Link href="/calendar" className="flex items-center mb-2 text-gray-700 hover:text-blue-600">
-                <svg className="h-8 w-8 text-black-500 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </svg>
-                Availability
-              </Link>
-              <Link href="/report" className="flex items-center mb-2 text-gray-700 hover:text-blue-600">
-                <svg className="h-8 w-8 text-black-500 mr-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                </svg>
-              Report
-              </Link>
-              <Link href="/proposal" className="flex items-center mb-2 text-gray-700 hover:text-blue-600">
-              <svg className="h-8 w-8 text-black-500 mr-2" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                <path stroke="none" d="M0 0h24v24H0z" />
-                <path d="M3 12h1M12 3v1M20 12h1M5.6 5.6l.7 .7M18.4 5.6l-.7 .7" />
-                <path d="M9 16a5 5 0 1 1 6 0a3.5 3.5 0 0 0 -1 3a2 2 0 0 1 -4 0a3.5 3.5 0 0 0 -1 -3" />
-                <line x1="9.7" y1="17" x2="14.3" y2="17" />
-              </svg>
-              Activity
-              </Link>
-            </>
-          ) : (
-            <p className="text-gray-500">Login required for additional features</p>
-          )}
-        </aside>
-  
-        {/* Main Content Area */}
-        <div className="flex-grow flex flex-col">
-          <header className="w-full flex justify-end p-4 bg-white text-white shadow-md">
-            {userID ? (
-              <div className="flex items-center space-x-4">
-                <span>
-                <a class="text-black">Hello, {userID}</a></span>
-                <button onClick={handleLogout} className="text-red-400 hover:underline">
-                  Logout
-                </button>
+        <div className="hidden w-64 flex-col bg-[#00247D] text-white md:flex">
+          <div className="p-4 border-b border-white/10">
+            <h1 className="text-xl font-bold">Team RAvolution</h1>
+          </div>
+          <nav className="flex-1 p-4 space-y-2">
+            <a href="#" className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10">
+              <LayoutDashboard className="h-5 w-5" />
+              <span>Dashboard</span>
+            </a>
+            <a href="#" className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10">
+              <Calendar className="h-5 w-5" />
+              <span>Schedule</span>
+            </a>
+            <div className="space-y-2">
+              <div
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer"
+                onClick={() => toggleSubbar('reportInfo')}
+              >
+                <GraduationCap className="h-5 w-5" />
+                <span>Report</span>
+                <ChevronDown className={`h-4 w-4 ml-auto transition-transform ${openSubbar === 'reportInfo' ? 'rotate-180' : ''}`} />
               </div>
-            ) : (
-              <div className="flex space-x-4">
-                <Link href="/login" className="hover:underline text-black">Login</Link>
-                <Link href="/register" className="hover:underline text-black">Register</Link>
-              </div>
-            )}
-          </header>
-  
-          <main className="flex flex-col items-center w-full max-w-4xl p-6 bg-white shadow-md rounded-lg mx-auto mt-8">
-            <h1 className="text-2xl font-bold mb-6 text-gray-800">Development Page for CS 316 Open Project</h1>
-  
-            <label htmlFor="task-select" className="block text-gray-700 mb-2 font-semibold">Choose a Task:</label>
-            <select
-              id="task-select"
-              value={selectedTask}
-              onChange={handleTaskChange}
-              className="w-full p-2 mb-6 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {Object.keys(taskDescriptions).map((task, index) => (
-                <option key={index} value={task}>{task}</option>
-              ))}
-            </select>
-  
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-700">Task Description</h3>
-                <p className="mb-4">{taskDescriptions[selectedTask]}</p>
-                <button
-                  onClick={handleGenerateOutput}
-                  className="px-4 py-2 bg-stone-800 text-white rounded-lg hover:bg-blue-700"
-                >
-                  Generate Output
-                </button>
-              </div>
-  
-              <div>
-                <h3 className="text-lg font-semibold text-gray-700">Task Input</h3>
-                <textarea
-                  rows="5"
-                  placeholder="Enter task-related input here"
-                  value={taskInput}
-                  onChange={handleInputChange}
-                  className="w-full p-2 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                ></textarea>
-              </div>
+              {openSubbar === 'reportInfo' && (
+                <div className="ml-8 space-y-1">
+                  <a href="#" className="block px-3 py-2 rounded-lg hover:bg-white/10">Submit Report</a>
+                  <a href="#" className="block px-3 py-2 rounded-lg hover:bg-white/10">Report History</a>
+                </div>
+              )}
             </div>
-  
-            <div className="mt-6 w-full">
-              <h3 className="text-lg font-semibold text-gray-700">Output</h3>
-              <pre className="w-full p-4 bg-gray-100 rounded-lg border border-gray-300 overflow-x-auto whitespace-pre-wrap">{output}</pre>
+            <div className="space-y-2">
+              <div
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer"
+                onClick={() => toggleSubbar('activityInfo')}
+              >
+                <GraduationCap className="h-5 w-5" />
+                <span>Activity</span>
+                <ChevronDown className={`h-4 w-4 ml-auto transition-transform ${openSubbar === 'activityInfo' ? 'rotate-180' : ''}`} />
+              </div>
+              {openSubbar === 'activityInfo' && (
+                <div className="ml-8 space-y-1">
+                  <a href="#" className="block px-3 py-2 rounded-lg hover:bg-white/10">Submit Report</a>
+                  <a href="#" className="block px-3 py-2 rounded-lg hover:bg-white/10">Activity History</a>
+                </div>
+              )}
+            </div>
+            
+          </nav>
+        </div>
+
+    {/* Main Content */}
+    <div className="flex-1 flex flex-col">
+        <header className="w-full flex items-center border-b p-4 bg-white shadow-md">
+        <h1 className="text-xl font-semibold">Resident Search</h1>
+        <div className="ml-auto flex items-center space-x-4">
+        {userID ? (
+        <div className="flex items-center space-x-4">
+            <span>Hello, {userID}</span>
+            <Button onClick={handleLogout} variant="ghost" className="text-red-400">Logout</Button>
+        </div>
+        ) : (
+        <div className="flex space-x-4">
+            <Link href="/login" className="hover:underline">Login</Link>
+            <Link href="/register" className="hover:underline">Register</Link>
+        </div>
+        )}
+        </div>
+        </header>
+
+        <main className="p-6 space-y-6">
+          <div className="flex flex-wrap items-center space-y-4 md:space-y-0 md:space-x-4">
+              <div className="w-full md:w-32">
+                <Select defaultValue="">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Dorm" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Trinity">Trinity</SelectItem>
+                    <SelectItem value="Bell Tower">Bell Tower</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="w-full md:w-32">
+                <Select defaultValue="">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Freshman">Freshman</SelectItem>
+                    <SelectItem value="Sophomore">Sophomore</SelectItem>
+                    <SelectItem value="Junior">Junior</SelectItem>
+                    <SelectItem value="Senior">Senior</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="w-full md:w-32">
+                <Select defaultValue="">
+                  <SelectTrigger>
+                    <SelectValue placeholder="???" />
+                  </SelectTrigger>
+                  <SelectContent>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="w-full md:w-96">
+                <Input 
+                    placeholder="Search by Their RA NetID (e.g. kj240)" 
+                    type="search" 
+                    onChange={handleInputChange}
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button onClick={handleGenerateOutput}>Search</Button>
+              </div>             
+            </div>
+
+            {/* Residents Table */}
+            <div className="rounded-md border overflow-y-auto max-h-96">
+            <Table>
+                <TableHeader>
+                <TableRow>
+                    <TableHead className="w-[50px] text-sm font-semibold text-gray-600 uppercase"></TableHead>
+                    <TableHead className="text-sm font-semibold text-gray-600 uppercase">First Name</TableHead>
+                    <TableHead className="text-sm font-semibold text-gray-600 uppercase">Last Name</TableHead>
+                    <TableHead className="text-sm font-semibold text-gray-600 uppercase">Netid</TableHead>
+                    <TableHead className="text-sm font-semibold text-gray-600 uppercase">Contact</TableHead>
+                    <TableHead className="text-sm font-semibold text-gray-600 uppercase">Email</TableHead>
+                </TableRow>
+                </TableHeader>
+                <TableBody>
+                {output.length > 0 ? (
+                    output.map((resident, index) => (
+                    <TableRow key={index}>
+                        <TableCell>
+                            <div className="flex items-center justify-center">
+                                <svg
+                                width="40"
+                                height="40"
+                                viewBox="0 0 24 24"
+                                fill="#00247D"
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="rounded-full"
+                                >
+                                <path d="M12 2C10.3431 2 9 3.34315 9 5C9 6.65685 10.3431 8 12 8C13.6569 8 15 6.65685 15 5C15 3.34315 13.6569 2 12 2ZM12 10C9.23858 10 7 12.2386 7 15V20H17V15C17 12.2386 14.7614 10 12 10Z" />
+                                </svg>
+                            </div>
+                        </TableCell>
+                        <TableCell>{resident.firstname || "N/A"}</TableCell>
+                        <TableCell>{resident.lastname || "N/A"}</TableCell>
+                        <TableCell>{resident.netID || "N/A"}</TableCell>
+                        <TableCell>{resident.phone || "N/A"}</TableCell>
+                        <TableCell>{resident.email || "N/A"}</TableCell>
+                        <TableCell>
+                            <Button variant="ghost" size="icon">
+                                <MoreVertical className="h-4 w-4" />
+                            </Button>
+                        </TableCell>
+                    </TableRow>
+                    ))
+                ) : (
+                    <TableRow>
+                    <TableCell colSpan="6" className="text-center text-gray-500">No residents found</TableCell>
+                    </TableRow>
+                )}
+                </TableBody>
+            </Table>
             </div>
           </main>
         </div>
       </div>
     );
   };
-  
-  export default HomePage;
+
+export default HomePage;
