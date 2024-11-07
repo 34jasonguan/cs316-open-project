@@ -18,7 +18,7 @@ export default async function handler(req, res) {
       const db = await openDB();
 
       const residents = await db.all(
-        'SELECT studentNetID, studentLastName, studentFirstName FROM hasRA WHERE raNetID = ?',
+        'SELECT u.netid, u.firstname, u.lastname, u.email, u.phone FROM users u, hasRA h WHERE raNetID = ? AND u.netid = h.studentNetID',
         [raNetID]
       );
 

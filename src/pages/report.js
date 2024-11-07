@@ -9,7 +9,10 @@ const SafetyReportForm = () => {
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [safetyIssueType, setSafetyIssueType] = useState(''); 
   const [otherIssue, setOtherIssue] = useState('');
+  const [attachment, setAttachment] = useState(null);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const router = useRouter();
+  const maxDescriptionLength = 200;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -18,10 +21,19 @@ const SafetyReportForm = () => {
       urgency,
       description,
       isAnonymous, 
-      safetyIssueType: safetyIssueType === 'Other' ? otherIssue : safetyIssueType 
+      safetyIssueType: safetyIssueType === 'Other' ? otherIssue : safetyIssueType,
+      attachmentName: attachment ? attachment.name : null
     };
     console.log(reportData);
+    setIsSubmitted(true); 
+    setTimeout(() => {
+      setIsSubmitted(false);
     router.push('/');
+    }, 2000); 
+  };
+
+  const handleFileChange = (e) => {
+    setAttachment(e.target.files[0]);
   };
 
   const renderTemplateFields = () => {
@@ -119,6 +131,7 @@ const SafetyReportForm = () => {
         <br />
         {renderTemplateFields()}
         <br />
+
         <label style={styles.label}>
           Urgency Level:
           <select value={urgency} onChange={(e) => setUrgency(e.target.value)} style={styles.select}>
@@ -129,18 +142,36 @@ const SafetyReportForm = () => {
           </select>
         </label>
         <br />
+
         <label style={styles.label}>
           Description:
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Describe the issue here"
+            maxLength={maxDescriptionLength}
             style={styles.textArea}
           />
         </label>
+        <p style={{ fontSize: '12px', color: '#555' }}>
+          {description.length}/{maxDescriptionLength} characters
+        </p>
         <br />
+
+        <label style={styles.label}>
+          Attachment (optional):
+          <input type="file" onChange={handleFileChange} style={styles.fileInput} />
+        </label>
+        <br />
+
         <button type="submit" style={styles.button}>Submit Report</button>
       </form>
+
+      {isSubmitted && (
+        <div style={{ ...styles.modal, textAlign: 'center' }}>
+          <p>Your report has been submitted successfully!</p>
+        </div>
+      )}
     </div>
   );
 };
