@@ -23,6 +23,7 @@ import {
   ChevronDown,
   LayoutDashboard,
   Calendar,
+  Search,
   GraduationCap,
   ClipboardList,
   FileText,

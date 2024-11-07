@@ -79,18 +79,18 @@ export default function RegisterForm() {
         <div>
             <h1 style = {styles.heading}>Create an Account</h1>
             <form onSubmit={handleRegister}>
-                <div class="container">
-                    <label htmlFor="userid"><b>NetID</b></label>
+                <div type="container">
+                    <label><b>NetID</b></label>
                     <input type="text" placeholder="Enter NetID" name="userid" id="userid" value={idInput} onChange={(e) => setIDInput(e.target.value)} required/>
-                    <label htmlFor="fname"><b>First name</b></label>
+                    <label><b>First name</b></label>
                     <input type="text" placeholder="Enter first name" name="fname" id="firstname" value={firstnameInput} onChange={(e) => setFirstnameInput(e.target.value)} required/>
-                    <label htmlFor="lname"><b>Last name</b></label>
+                    <label><b>Last name</b></label>
                     <input type="text" placeholder="Enter last name" name="lname" id="lastname" value={lastnameInput} onChange={(e) => setLastnameInput(e.target.value)} required/>
-                    <label htmlFor="phone"><b>Phone number</b></label>
+                    <label><b>Phone number</b></label>
                     <input type="text" placeholder="Enter phone number" name="phone" id="phone" value={phoneInput} onChange={(e) => setPhoneInput(e.target.value)} required/>
-                    <label htmlFor="email"><b>Email address</b></label>
+                    <label><b>Email address</b></label>
                     <input type="text" placeholder="Enter email address" name="email" id="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} required/>
-                    <label htmlFor="class"><b>Role Type:</b>
+                    <label><b>Role Type:</b>
                         <select
                             value={classInput}
                             onChange={(e) => setClassInput(e.target.value)}
@@ -155,9 +155,9 @@ export default function RegisterForm() {
                             />
                         </label>
                     )}
-                    <label htmlFor="pwd"><b>Password</b></label>
-                    <input type="text" placeholder="Enter password" name="pwd" id="password" value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)} required/>
-                    <button class="login" type="submit">Create!</button>
+                    <label><b>Password</b></label>
+                    <input type="password" placeholder="Enter password" name="pwd" id="password" value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)} required/>
+                    <button type="login">Create!</button>
                 </div>
 
             </form>

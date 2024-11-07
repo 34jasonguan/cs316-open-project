@@ -46,12 +46,12 @@ export default function LoginForm() {
         <div>
             <h1 style = {styles.heading}>Login Page</h1>
             <form onSubmit={handleLogin}>
-                <div class="container">
-                    <label for="uname"><b>NetID</b></label>
+                <div type="container">
+                    <label><b>NetID</b></label>
                     <input type="text" placeholder="Enter NetID" name="userid" id="userid" value={userIDInput} onChange={(e) => setUserIDInput(e.target.value)} required/>
-                    <label for="psw"><b>Password</b></label>
+                    <label><b>Password</b></label>
                     <input type="password" placeholder="Enter Password" name="psw" id="password" value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)} required/>
-                    <button class="login" type="submit">Login</button>
+                    <button type="login">Login</button>
                     <label>
                     <input type="checkbox" name="remember"/> Remember me
                     </label>
