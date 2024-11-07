@@ -1,101 +1,104 @@
-// pages/index.js
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  ChevronDown,
-  LayoutDashboard,
-  Calendar,
-  GraduationCap,
-  Search,
-  ClipboardList,
-  FileText,
-  DollarSign,
-  Users,
-  User,
-  Menu,
-  MoreVertical,
   Settings,
+  MapPin,
+  Calendar,
+  Clock,
+  ExternalLink,
+  AlertCircle,
+  User,
+  LayoutDashboard,
+  GraduationCap,
+  ChevronDown,
+  Menu,
+  Search
 } from "lucide-react"
+import Link from "next/link"
 
-const taskDescriptions = {
-  'Task 1': 'Given a RC id, find all of his/her RAs (e.g. pa543)',
-  'Task 2': 'Given a RA id, find all of his/her residents (e.g. kj240)',
-  'Task 3': 'Given a dorm location, find all activity taking at that place (e.g. Belltower)',
-  'Task 4': 'Given a RA id, find his/her availability',
-};
+export default function Dashboard() {
+  const [selectedTab, setSelectedTab] = useState("general")
+  const [openSubMenu, setOpenSubMenu] = useState("")
 
-const HomePage = () => {
-    const [selectedTask, setSelectedTask] = useState('Task 1');
-    const [taskInput, setTaskInput] = useState('');
-    const [output, setOutput] = useState('');
-    const [userID, setUserID] = useState('');
-    const [openSubbar, setOpenSubbar] = useState('');
+  const [taskInput, setTaskInput] = useState('');
+  const [output, setOutput] = useState('');
+  const [userID, setUserID] = useState('');
+  const [openSubbar, setOpenSubbar] = useState('');
+  const [hasStaffAccess, setHasStaffAccess] = useState(false);
 
-    useEffect(() => {
-      const storedUserID = localStorage.getItem('userID');
-      if (storedUserID) {
-        setUserID(storedUserID);
-      }
-    }, []);
+  const toggleSubbar = (name) => {
+        setOpenSubbar(prev => (prev === name ? '' : name));
+  };
 
-    const toggleSubbar = (name) => {
-      setOpenSubbar(prev => (prev === name ? '' : name));
-    };
+  const tasks = [
+    {
+      name: "Submit Weekly Report",
+      status: "Due Today",
+      priority: "high",
+      dueDate: "Mar 15, 2024",
+    },
+    {
+      name: "Floor Meeting Notes",
+      status: "In Progress",
+      priority: "medium",
+      dueDate: "Mar 16, 2024",
+    },
+    {
+      name: "Update Resident Directory",
+      status: "Pending",
+      priority: "low",
+      dueDate: "Mar 18, 2024",
+    },
+  ]
 
-    const handleTaskChange = (event) => {
-        setSelectedTask(event.target.value);
-        setOutput('');
-    };
+  const upcomingEvents = [
+    {
+      name: "Floor Community Meeting",
+      location: "Trinity Common Room",
+      time: "Mon 7:00 pm - 8:00 pm",
+      dates: "Mar 15, 2024",
+      type: "Required",
+    },
+    {
+      name: "RA Training Session",
+      location: "Student Center 201",
+      time: "Wed 3:00 pm - 5:00 pm",
+      dates: "Mar 17, 2024",
+      type: "Required",
+    },
+    {
+      name: "Wellness Workshop",
+      location: "Bell Tower Lounge",
+      time: "Fri 4:00 pm - 5:30 pm",
+      dates: "Mar 19, 2024",
+      type: "Optional",
+    },
+  ]
 
-    const handleInputChange = (event) => {
-        setTaskInput(event.target.value);
-    };
+  const duties = [
+    {
+      name: "Evening Rounds",
+      date: "Mar 15, 2024",
+      time: "8:00 pm - 12:00 am",
+      location: "Trinity Hall",
+      partner: "John Smith",
+    },
+    {
+      name: "Weekend On-Call",
+      date: "Mar 16-17, 2024",
+      time: "All Day",
+      location: "Bell Tower",
+      partner: "Emma Johnson",
+    },
+  ]
 
-    const handleGenerateOutput = async () => {
-        try {
-          const raNetID = taskInput;
-          const response = await fetch(`/api/getResidents?raNetID=${raNetID}`);
-          
-          if (response.ok) {
-            const residents = await response.json();
-            setOutput(residents);
-          } else {
-            const errorData = await response.json();
-            setOutput([{ studentFirstName: 'Error', studentLastName: errorData.message || 'An error occurred' }]);
-          }
-        } catch (error) {
-          console.error('Error fetching residents:', error);
-          setOutput([{ studentFirstName: 'Error', studentLastName: 'Failed to fetch residents' }]);
-        }
-      };
+  return (
+    <div className="flex h-screen bg-gray-100">
 
-    const handleLogout = () => {
-        setUserID('');
-        localStorage.removeItem('userID');
-    };
-
-    return (
-      <div className="flex h-screen bg-gray-100">
-        {/* Sidebar */}
-        <div className="hidden w-64 flex-col bg-[#00247D] text-white md:flex">
+      {/* Sidebar */}
+      <div className="hidden w-64 flex-col bg-[#00247D] text-white md:flex">
           <div className="p-4 border-b border-white/10">
             <h1 className="text-xl font-bold">Team RAvolution</h1>
           </div>
@@ -108,7 +111,7 @@ const HomePage = () => {
               <Search className="h-5 w-5" />
               <span>Search User</span>
             </a>
-            <a href="#" className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10">
+            <a href="/schedule" className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10">
               <Calendar className="h-5 w-5" />
               <span>Schedule</span>
             </a>
@@ -148,128 +151,164 @@ const HomePage = () => {
           </nav>
         </div>
 
-    {/* Main Content */}
-    <div className="flex-1 flex flex-col">
-        <header className="w-full flex items-center border-b p-4 bg-white shadow-md">
-        <h1 className="text-xl font-semibold">Resident Search</h1>
-        <div className="ml-auto flex items-center space-x-4">
-        {userID ? (
-        <div className="flex items-center space-x-4">
-            <span>Hello, {userID}</span>
-            <Button onClick={handleLogout} variant="ghost" className="text-red-400">Logout</Button>
-        </div>
-        ) : (
-        <div className="flex space-x-4">
-            <Link href="/login" className="hover:underline">Login</Link>
-            <Link href="/register" className="hover:underline">Register</Link>
-        </div>
-        )}
-        </div>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <header className="flex items-center justify-between border-b bg-white p-4">
+          <div className="flex items-center">
+            <Button variant="ghost" size="icon" className="md:hidden mr-2">
+              <Menu className="h-6 w-6" />
+            </Button>
+            <h1 className="text-xl font-semibold">Dashboard</h1>
+          </div>
+          <Button variant="ghost" size="icon">
+            <Settings className="h-5 w-5" />
+          </Button>
         </header>
 
-        <main className="p-6 space-y-6">
-          <div className="flex flex-wrap items-center space-y-4 md:space-y-0 md:space-x-4">
-              <div className="w-full md:w-32">
-                <Select defaultValue="">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Dorm" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Trinity">Trinity</SelectItem>
-                    <SelectItem value="Bell Tower">Bell Tower</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="w-full md:w-32">
-                <Select defaultValue="">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Year" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Freshman">Freshman</SelectItem>
-                    <SelectItem value="Sophomore">Sophomore</SelectItem>
-                    <SelectItem value="Junior">Junior</SelectItem>
-                    <SelectItem value="Senior">Senior</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="w-full md:w-32">
-                <Select defaultValue="">
-                  <SelectTrigger>
-                    <SelectValue placeholder="???" />
-                  </SelectTrigger>
-                  <SelectContent>
-                  </SelectContent>
-                </Select>
-              </div>
+        <main className="flex-1 overflow-auto p-6">
+          <div className="mb-6">
+            <h2 className="text-3xl font-light text-gray-800">Hello Shuhuai!</h2>
+          </div>
 
-              <div className="w-full md:w-96">
-                <Input 
-                    placeholder="Search by Their RA NetID (e.g. kj240)" 
-                    type="search" 
-                    onChange={handleInputChange}
-                />
-              </div>
-              <div className="flex items-center space-x-2">
-                <Button onClick={handleGenerateOutput}>Search</Button>
-              </div>             
+          <Tabs defaultValue="general" className="space-y-6">
+            <div className="flex items-center justify-between">
             </div>
 
-            {/* Residents Table */}
-            <div className="rounded-md border overflow-y-auto max-h-96">
-            <Table>
-                <TableHeader>
-                <TableRow>
-                    <TableHead className="w-[50px] text-sm font-semibold text-gray-600 uppercase"></TableHead>
-                    <TableHead className="text-sm font-semibold text-gray-600 uppercase">First Name</TableHead>
-                    <TableHead className="text-sm font-semibold text-gray-600 uppercase">Last Name</TableHead>
-                    <TableHead className="text-sm font-semibold text-gray-600 uppercase">Netid</TableHead>
-                    <TableHead className="text-sm font-semibold text-gray-600 uppercase">Contact</TableHead>
-                    <TableHead className="text-sm font-semibold text-gray-600 uppercase">Email</TableHead>
-                </TableRow>
-                </TableHeader>
-                <TableBody>
-                {output.length > 0 ? (
-                    output.map((resident, index) => (
-                    <TableRow key={index}>
-                        <TableCell>
-                            <div className="flex items-center justify-center">
-                                <svg
-                                width="40"
-                                height="40"
-                                viewBox="0 0 24 24"
-                                fill="#00247D"
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="rounded-full"
-                                >
-                                <path d="M12 2C10.3431 2 9 3.34315 9 5C9 6.65685 10.3431 8 12 8C13.6569 8 15 6.65685 15 5C15 3.34315 13.6569 2 12 2ZM12 10C9.23858 10 7 12.2386 7 15V20H17V15C17 12.2386 14.7614 10 12 10Z" />
-                                </svg>
+            <TabsContent value="general" className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between">
+                    <CardTitle>Tasks</CardTitle>
+                    <Button variant="ghost" size="icon">
+                      <ExternalLink className="h-4 w-4" />
+                    </Button>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {tasks.map((task) => (
+                        <div
+                          key={task.name}
+                          className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0"
+                        >
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <p className="font-medium">{task.name}</p>
+                              {task.priority === 'high' && (
+                                <AlertCircle className="h-4 w-4 text-red-500" />
+                              )}
                             </div>
-                        </TableCell>
-                        <TableCell>{resident.firstname || "N/A"}</TableCell>
-                        <TableCell>{resident.lastname || "N/A"}</TableCell>
-                        <TableCell>{resident.netID || "N/A"}</TableCell>
-                        <TableCell>{resident.phone || "N/A"}</TableCell>
-                        <TableCell>{resident.email || "N/A"}</TableCell>
-                        <TableCell>
-                            <Button variant="ghost" size="icon">
-                                <MoreVertical className="h-4 w-4" />
-                            </Button>
-                        </TableCell>
-                    </TableRow>
-                    ))
-                ) : (
-                    <TableRow>
-                    <TableCell colSpan="6" className="text-center text-gray-500">No residents found</TableCell>
-                    </TableRow>
-                )}
-                </TableBody>
-            </Table>
-            </div>
-          </main>
-        </div>
-      </div>
-    );
-  };
+                            <p className="text-sm text-muted-foreground">{task.dueDate}</p>
+                          </div>
+                          <span className={`text-sm ${
+                            task.status === 'Due Today' ? 'text-red-500' : 
+                            task.status === 'In Progress' ? 'text-yellow-500' : 
+                            'text-muted-foreground'
+                          }`}>
+                            {task.status}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
 
-export default HomePage;
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between">
+                    <CardTitle>Upcoming Events</CardTitle>
+                    <Button variant="ghost" size="icon">
+                      <ExternalLink className="h-4 w-4" />
+                    </Button>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {upcomingEvents.map((event) => (
+                        <div key={event.name} className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <p className="font-medium">{event.name}</p>
+                            <span className={`text-xs px-2 py-1 rounded-full ${
+                              event.type === 'Required' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'
+                            }`}>
+                              {event.type}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-4 w-4" />
+                              {event.time}
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <MapPin className="h-4 w-4" />
+                              {event.location}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                            <Calendar className="h-4 w-4" />
+                            {event.dates}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle>Duties</CardTitle>
+                  <Button variant="ghost" size="icon">
+                    <ExternalLink className="h-4 w-4" />
+                  </Button>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {duties.map((duty) => (
+                      <div key={duty.name} className="space-y-2 rounded-lg border p-4">
+                        <div className="flex items-center justify-between">
+                          <p className="font-medium">{duty.name}</p>
+                        </div>
+                        <div className="space-y-1 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-4 w-4" />
+                            {duty.date}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-4 w-4" />
+                            {duty.time}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <MapPin className="h-4 w-4" />
+                            {duty.location}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <User className="h-4 w-4" />
+                            Partner: {duty.partner}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="academics">
+              <Card>
+                <CardContent className="p-6">
+                  <p className="text-muted-foreground">Academic content goes here...</p>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="financials">
+              <Card>
+                <CardContent className="p-6">
+                  <p className="text-muted-foreground">Financial content goes here...</p>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </main>
+      </div>
+    </div>
+  )
+}
