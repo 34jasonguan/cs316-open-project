@@ -47,3 +47,26 @@ model users {
   phone     String? @db.VarChar(15)
   class     String? @db.VarChar(10)
 }
+
+model availability {
+  netid          String    @id @db.VarChar(255)
+  available_date DateTime? @db.Date
+}
+
+model password {
+  netid    String  @id @db.VarChar(10)
+  password String? @db.VarChar(25)
+}
+
+model report {
+  id           Int       @id
+  type         String?
+  urgency      String?
+  description  String?
+  submitted_by String?   @db.VarChar(255)
+  is_anonymous Boolean?
+  location     String?
+  issue_type   String?
+  equipment    String?
+  timestamp    DateTime? @db.Timestamp(6)
+}

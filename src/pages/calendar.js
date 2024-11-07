@@ -13,7 +13,7 @@ const HomePage = () => {
       setUserID(storedUserID);
     }
   }, []);
-  const netID = userID;
+  const netid = userID;
   const router = useRouter();
 
   const handleDateClick = (date) => {
@@ -35,7 +35,7 @@ const HomePage = () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ netID, dates: formattedDates }),
+      body: JSON.stringify({ netid, dates: formattedDates }),
     });
 
     const result = await response.json();
@@ -46,6 +46,29 @@ const HomePage = () => {
     }
     router.push('/');
   };
+
+  /* const handleSubmit = async () => {
+    console.log("Selected Dates:", selectedDates);
+    const formattedDates = selectedDates.map((date) =>
+      date.toISOString().split('T')[0]
+    );
+
+    const response = await fetch('/api/addAvailability', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ netID, dates: formattedDates }),
+    });
+
+    const result = await response.json();
+    if (response.ok) {
+      alert(result.message);
+    } else {
+      alert('Failed to submit dates: ' + result.error);
+    }
+    router.push('/');
+  }; */
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
