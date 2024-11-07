@@ -24,7 +24,6 @@ import {
   LayoutDashboard,
   Calendar,
   GraduationCap,
-  Search,
   ClipboardList,
   FileText,
   DollarSign,
@@ -48,11 +47,14 @@ const HomePage = () => {
     const [output, setOutput] = useState('');
     const [userID, setUserID] = useState('');
     const [openSubbar, setOpenSubbar] = useState('');
+    const [hasStaffAccess, setHasStaffAccess] = useState(false);
 
     useEffect(() => {
       const storedUserID = localStorage.getItem('userID');
+      const storedHasStaffAcess = (localStorage.getItem('hasStaffAccess') === 'true');
       if (storedUserID) {
         setUserID(storedUserID);
+        setHasStaffAccess(storedHasStaffAcess);
       }
     }, []);
 
@@ -71,8 +73,7 @@ const HomePage = () => {
 
     const handleGenerateOutput = async () => {
         try {
-          const raNetID = taskInput;
-          const response = await fetch(`/api/getResidents?raNetID=${raNetID}`);
+          const response = await fetch(`/api/getUsersByClassNetID?inputValue=${taskInput}`);
           
           if (response.ok) {
             const residents = await response.json();
@@ -151,7 +152,7 @@ const HomePage = () => {
     {/* Main Content */}
     <div className="flex-1 flex flex-col">
         <header className="w-full flex items-center border-b p-4 bg-white shadow-md">
-        <h1 className="text-xl font-semibold">Resident Search</h1>
+        <h1 className="text-xl font-semibold">User Search</h1>
         <div className="ml-auto flex items-center space-x-4">
         {userID ? (
         <div className="flex items-center space-x-4">
@@ -169,43 +170,9 @@ const HomePage = () => {
 
         <main className="p-6 space-y-6">
           <div className="flex flex-wrap items-center space-y-4 md:space-y-0 md:space-x-4">
-              <div className="w-full md:w-32">
-                <Select defaultValue="">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Dorm" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Trinity">Trinity</SelectItem>
-                    <SelectItem value="Bell Tower">Bell Tower</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="w-full md:w-32">
-                <Select defaultValue="">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Year" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Freshman">Freshman</SelectItem>
-                    <SelectItem value="Sophomore">Sophomore</SelectItem>
-                    <SelectItem value="Junior">Junior</SelectItem>
-                    <SelectItem value="Senior">Senior</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="w-full md:w-32">
-                <Select defaultValue="">
-                  <SelectTrigger>
-                    <SelectValue placeholder="???" />
-                  </SelectTrigger>
-                  <SelectContent>
-                  </SelectContent>
-                </Select>
-              </div>
-
               <div className="w-full md:w-96">
                 <Input 
-                    placeholder="Search by Their RA NetID (e.g. kj240)" 
+                    placeholder="Search a person in the residential system by NetID" 
                     type="search" 
                     onChange={handleInputChange}
                 />
@@ -224,6 +191,7 @@ const HomePage = () => {
                     <TableHead className="text-sm font-semibold text-gray-600 uppercase">First Name</TableHead>
                     <TableHead className="text-sm font-semibold text-gray-600 uppercase">Last Name</TableHead>
                     <TableHead className="text-sm font-semibold text-gray-600 uppercase">Netid</TableHead>
+                    <TableHead className="text-sm font-semibold text-gray-600 uppercase">Position</TableHead>
                     <TableHead className="text-sm font-semibold text-gray-600 uppercase">Contact</TableHead>
                     <TableHead className="text-sm font-semibold text-gray-600 uppercase">Email</TableHead>
                 </TableRow>
@@ -249,8 +217,9 @@ const HomePage = () => {
                         <TableCell>{resident.firstname || "N/A"}</TableCell>
                         <TableCell>{resident.lastname || "N/A"}</TableCell>
                         <TableCell>{resident.netID || "N/A"}</TableCell>
-                        <TableCell>{resident.phone || "N/A"}</TableCell>
-                        <TableCell>{resident.email || "N/A"}</TableCell>
+                        <TableCell>{resident.class || "N/A"}</TableCell>
+                        <TableCell>{(hasStaffAccess) ? (resident.phone || "N/A") : ("-")}</TableCell>
+                        <TableCell>{(hasStaffAccess) ? (resident.email || "N/A") : ("-")}</TableCell>
                         <TableCell>
                             <Button variant="ghost" size="icon">
                                 <MoreVertical className="h-4 w-4" />

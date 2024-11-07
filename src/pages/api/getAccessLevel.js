@@ -1,6 +1,7 @@
-// pages/api/getStudentByNetID.js
+// pages/api/getAccessLevel.js
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
+import { use } from 'react';
 
 async function openDB() {
   return open({
@@ -11,19 +12,18 @@ async function openDB() {
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    const { searchedClass, inputValue } = req.query; 
+    const { netID } = req.query;
     try {
       const db = await openDB();
-      
-      const students = (searchedClass) ? (await db.all(
-        'SELECT netID, lastname, firstname FROM users WHERE class = ? AND netID LIKE ?',
-        [searchedClass, '%' + inputValue + '%']
-      )) : (await db.all(
-        'SELECT * FROM users WHERE netID LIKE ?',
-        ['%' + inputValue + '%']
-      ));
 
-      res.status(200).json(students);
+      const userClass = await db.get(
+        'SELECT class FROM users WHERE netID = ? LIMIT 1',
+        [netID]
+      );
+      
+      if (userClass) {
+        res.status(200).json(userClass);  // Return residents as JSON
+      }
     } catch (error) {
       res.status(500).json({ error: 'Database query failed', details: error });
     }
