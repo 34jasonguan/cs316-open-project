@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -29,6 +29,13 @@ export default function Dashboard() {
   const [userID, setUserID] = useState('');
   const [openSubbar, setOpenSubbar] = useState('');
   const [hasStaffAccess, setHasStaffAccess] = useState(false);
+
+  useEffect(() => {
+    const storedUserID = localStorage.getItem('userID');
+    if (storedUserID) {
+      setUserID(storedUserID);
+    }
+  }, []);
 
   const toggleSubbar = (name) => {
         setOpenSubbar(prev => (prev === name ? '' : name));
@@ -96,6 +103,11 @@ export default function Dashboard() {
     },
   ]
 
+  const handleLogout = () => {
+    setUserID('');
+    localStorage.removeItem('userID');
+  };
+
   return (
     <div className="flex h-screen bg-gray-100">
 
@@ -162,15 +174,25 @@ export default function Dashboard() {
             </Button>
             <h1 className="text-xl font-semibold">Dashboard</h1>
           </div>
-          <Button variant="ghost" size="icon">
-            <Settings className="h-5 w-5" />
-          </Button>
+          <div className="ml-auto flex items-center space-x-4">
+            {userID ? (
+              <div>
+                <Button variant="ghost" size="icon">
+                  <Settings className="h-5 w-5" />
+                </Button>
+                <Button onClick={handleLogout} variant="ghost" className="text-red-400">Logout</Button>
+              </div>
+            ) : (
+              <div className="flex space-x-4">
+                <Link href="/login" className="hover:underline">Login</Link>
+                <Link href="/register" className="hover:underline">Register</Link>
+              </div>
+            )}
+          </div>
         </header>
 
         <main className="flex-1 overflow-auto p-6">
-          <div className="mb-6">
-            <h2 className="text-3xl font-light text-gray-800">Hello Shuhuai!</h2>
-          </div>
+          {userID && (<div className="mb-6"><h2 className="text-3xl font-light text-gray-800">Hello {userID}!</h2></div>)}
 
           <Tabs defaultValue="general" className="space-y-6">
             <div className="flex items-center justify-between">
