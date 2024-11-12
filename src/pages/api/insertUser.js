@@ -11,82 +11,163 @@ async function openDB() {
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
-    const userData = JSON.parse(req.body);
+    const {
+      netID, firstname, lastname, phone, email,
+      Class, year, student, RA, RC, password
+    } = req.body;
     try {
       const db = await openDB();
 
-      const users1 = await db.get(
-        'SELECT netID FROM users WHERE netID = ? LIMIT 1',
-        [userData['netID']]
-      );
+      const users1 = await prisma.users.findUnique({
+        where: {
+          netid: netID,
+        },
+        select: {
+          netid: true,
+        },
+      });
 
-      const users2 = await db.get(
-        'SELECT netID FROM password WHERE netID = ? LIMIT 1',
-        [userData['netID']]
-      );
+      const users2 = await prisma.password.findUnique({
+        where: {
+          netid: netID,
+        },
+        select: {
+          netid: true,
+        },
+      });
       
 
       if (users1 || users2) {
         res.status(404).json({ message: 'This netID has already been registered!' });
       }
 
-      await db.run(
-        'INSERT INTO password (netID, password) VALUES (?, ?)',
-        [userData['netID'], userData['password']]
-      );
+      const newUser = await prisma.users.create({
+        data: {
+          netID, lastname, firstname, year, email, phone, Class,
+        },
+      });
 
-      await db.run(
-        'INSERT INTO users (netID, lastname, firstname, year, email, phone, class) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [userData['netID'], userData['lastname'], userData['firstname'], userData['year'], userData['email'], userData['phone'], userData['class']]
-      );
+      const newUserPassword = await prisma.password.create({
+        data: {
+          netID, password,
+        },
+      });
 
-      switch (userData['class']) {
+      switch (Class) {
         case 'student':
           for (const RA of userData['RA']) {
-            await db.run(
-              `
-                INSERT INTO hasRA (studentNetID, studentLastName, studentFirstName, raNetID, raLastName, raFirstName)
-                SELECT u1.netID, u1.lastname, u1.firstname, u2.netID, u2.lastname, u2.firstname
-                FROM users u1, users u2
-                WHERE u1.netID = ? AND u2.netID = ?
-              `,
-              [userData['netID'], RA.value]
-            );
+            const student = await prisma.users.findUnique({
+              where: {
+                netid: netID,
+              },
+              select: {
+                netid: true, lastname: true, firstname: true
+              },
+            });
+            const ra = await prisma.users.findUnique({
+              where: {
+                netid: RA.value,
+              },
+              select: {
+                netid: true, lastname: true, firstname: true
+              },
+            });
+            const newRelation1 = await prisma.hasRA.create({
+              data: {
+                studentNetID: student['netID'],
+                studentLastName: student['lastname'],
+                studentFirstName: student['firstname'],
+                raNetID: ra['netID'],
+                raLastName: ra['lastname'],
+                raFirstName: ra['firstname'],
+              },
+            });
           }
         case 'RA':
-          for (const student of userData['student']) {
-            await db.run(
-              `
-                INSERT INTO hasRA (studentNetID, studentLastName, studentFirstName, raNetID, raLastName, raFirstName)
-                SELECT u1.netID, u1.lastname, u1.firstname, u2.netID, u2.lastname, u2.firstname
-                FROM users u1, users u2
-                WHERE u1.netID = ? AND u2.netID = ?
-              `,
-              [student.value, userData['netID']]
-            );
+          for (const Student of userData['student']) {
+            const student = await prisma.users.findUnique({
+              where: {
+                netid: Student.value,
+              },
+              select: {
+                netid: true, lastname: true, firstname: true
+              },
+            });
+            const ra = await prisma.users.findUnique({
+              where: {
+                netid: netID,
+              },
+              select: {
+                netid: true, lastname: true, firstname: true
+              },
+            });
+            const newRelation2 = await prisma.hasRA.create({
+              data: {
+                studentNetID: student['netID'],
+                studentLastName: student['lastname'],
+                studentFirstName: student['firstname'],
+                raNetID: ra['netID'],
+                raLastName: ra['lastname'],
+                raFirstName: ra['firstname'],
+              },
+            });
           }
           for (const RC of userData['RC']) {
-            await db.run(
-              `
-                INSERT INTO hasRC (raNetID, raLastName, raFirstName, rcNetID, rcLastName, rcFirstName)
-                SELECT u1.netID, u1.lastname, u1.firstname, u2.netID, u2.lastname, u2.firstname
-                FROM users u1, users u2
-                WHERE u1.netID = ? AND u2.netID = ?
-              `,
-              [userData['netID'], RC.value]
-            );
+            const rc = await prisma.users.findUnique({
+              where: {
+                netid: RC.value,
+              },
+              select: {
+                netid: true, lastname: true, firstname: true
+              },
+            });
+            const ra = await prisma.users.findUnique({
+              where: {
+                netid: netID,
+              },
+              select: {
+                netid: true, lastname: true, firstname: true
+              },
+            });
+            const newRelation3 = await prisma.hasRC.create({
+              data: {
+                rcNetID: rc['netID'],
+                rcLastName: rc['lastname'],
+                rcFirstName: rc['firstname'],
+                raNetID: ra['netID'],
+                raLastName: ra['lastname'],
+                raFirstName: ra['firstname'],
+              },
+            });
           }
         case 'RC':
           for (const RA of userData['RA']) {
-            await db.run(
-              `
-                INSERT INTO hasRC (raNetID, raLastName, raFirstName, rcNetID, rcLastName, rcFirstName)
-                SELECT u1.netID, u1.lastname, u1.firstname, u2.netID, u2.lastname, u2.firstname
-                FROM users u1, users u2
-                WHERE u1.netID = ? AND u2.netID = ?
-              `,
-              [RA.value, userData['netID']]
-            );
+            const rc = await prisma.users.findUnique({
+              where: {
+                netid: netID,
+              },
+              select: {
+                netid: true, lastname: true, firstname: true
+              },
+            });
+            const ra = await prisma.users.findUnique({
+              where: {
+                netid: RA.value,
+              },
+              select: {
+                netid: true, lastname: true, firstname: true
+              },
+            });
+            const newRelation4 = await prisma.hasRC.create({
+              data: {
+                rcNetID: rc['netID'],
+                rcLastName: rc['lastname'],
+                rcFirstName: rc['firstname'],
+                raNetID: ra['netID'],
+                raLastName: ra['lastname'],
+                raFirstName: ra['firstname'],
+              },
+            });
           }
         default:
           
