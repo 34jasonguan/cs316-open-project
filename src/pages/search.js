@@ -46,17 +46,18 @@ const taskDescriptions = {
 
 const HomePage = () => {
     const [taskInput, setTaskInput] = useState('');
-    const [output, setOutput] = useState('');
+    const [output, setOutput] = useState([]);
+    const [filterOption, setFilterOption] = useState('netid');  //new filter
     const [userID, setUserID] = useState('');
     const [openSubbar, setOpenSubbar] = useState('');
     const [hasStaffAccess, setHasStaffAccess] = useState(false);
 
     useEffect(() => {
       const storedUserID = localStorage.getItem('userID');
-      const storedHasStaffAcess = (localStorage.getItem('hasStaffAccess') === 'true');
+      const storedHasStaffAccess = (localStorage.getItem('hasStaffAccess') === 'true');
       if (storedUserID) {
         setUserID(storedUserID);
-        setHasStaffAccess(storedHasStaffAcess);
+        setHasStaffAccess(storedHasStaffAccess);
       }
     }, []);
 
@@ -64,29 +65,62 @@ const HomePage = () => {
       setOpenSubbar(prev => (prev === name ? '' : name));
     };
 
-    const handleTaskChange = (event) => {
-        setSelectedTask(event.target.value);
-        setOutput('');
-    };
-
     const handleInputChange = (event) => {
         setTaskInput(event.target.value);
     };
 
+    const handleFilterChange = (event) => {
+        setFilterOption(event.target.value);
+    };
+
     const handleGenerateOutput = async () => {
-        try {
-          const response = await fetch(`/api/getUsersByClassNetID?inputValue=${taskInput}`);
-          
-          if (response.ok) {
-            const residents = await response.json();
-            setOutput(residents);
-          } else {
-            const errorData = await response.json();
-            setOutput([{ studentFirstName: 'Error', studentLastName: errorData.message || 'An error occurred' }]);
+        if (filterOption == 'netid') {
+          try {
+            const response = await fetch(`/api/getUsersByClassNetID?filter=${filterOption}&inputValue=${taskInput}`);
+            
+            if (response.ok) {
+              const residents = await response.json();
+              setOutput(residents);
+            } else {
+              const errorData = await response.json();
+              setOutput([{ studentFirstName: 'Error', studentLastName: errorData.message || 'An error occurred' }]);
+            }
+          } catch (error) {
+            console.error('Error fetching residents:', error);
+            setOutput([{ studentFirstName: 'Error', studentLastName: 'Failed to fetch residents' }]);
           }
-        } catch (error) {
-          console.error('Error fetching residents:', error);
-          setOutput([{ studentFirstName: 'Error', studentLastName: 'Failed to fetch residents' }]);
+        }
+        if (filterOption == 'firstname') {
+          try {
+            const response = await fetch(`/api/getUsersByFirstName?filter=${filterOption}&inputValue=${taskInput}`);
+            
+            if (response.ok) {
+              const residents = await response.json();
+              setOutput(residents);
+            } else {
+              const errorData = await response.json();
+              setOutput([{ studentFirstName: 'Error', studentLastName: errorData.message || 'An error occurred' }]);
+            }
+          } catch (error) {
+            console.error('Error fetching residents:', error);
+            setOutput([{ studentFirstName: 'Error', studentLastName: 'Failed to fetch residents' }]);
+          }
+        }
+        if (filterOption == 'lastname') {
+          try {
+            const response = await fetch(`/api/getUsersByLastName?filter=${filterOption}&inputValue=${taskInput}`);
+            
+            if (response.ok) {
+              const residents = await response.json();
+              setOutput(residents);
+            } else {
+              const errorData = await response.json();
+              setOutput([{ studentFirstName: 'Error', studentLastName: errorData.message || 'An error occurred' }]);
+            }
+          } catch (error) {
+            console.error('Error fetching residents:', error);
+            setOutput([{ studentFirstName: 'Error', studentLastName: 'Failed to fetch residents' }]);
+          }
         }
       };
 
@@ -97,7 +131,6 @@ const HomePage = () => {
 
     return (
       <div className="flex h-screen bg-gray-100">
-        {/* Sidebar */}
         <div className="hidden w-64 flex-col bg-[#00247D] text-white md:flex">
           <div className="p-4 border-b border-white/10">
             <h1 className="text-xl font-bold">Team RAvolution</h1>
@@ -151,34 +184,48 @@ const HomePage = () => {
           </nav>
         </div>
 
-    {/* Main Content */}
-    <div className="flex-1 flex flex-col">
-        <header className="w-full flex items-center border-b p-4 bg-white shadow-md">
-        <h1 className="text-xl font-semibold">User Search</h1>
-        <div className="ml-auto flex items-center space-x-4">
-        {userID ? (
-        <div className="flex items-center space-x-4">
-            <span>Hello, {userID}!</span>
-            <Button onClick={handleLogout} variant="ghost" className="text-red-400">Logout</Button>
-        </div>
-        ) : (
-        <div className="flex space-x-4">
-            <Link href="/login" className="hover:underline">Login</Link>
-            <Link href="/register" className="hover:underline">Register</Link>
-        </div>
-        )}
-        </div>
-        </header>
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col">
+          <header className="w-full flex items-center border-b p-4 bg-white shadow-md">
+            <h1 className="text-xl font-semibold">User Search</h1>
+            <div className="ml-auto flex items-center space-x-4">
+              {userID ? (
+                <div className="flex items-center space-x-4">
+                  <span>Hello, {userID}!</span>
+                  <Button onClick={handleLogout} variant="ghost" className="text-red-400">Logout</Button>
+                </div>
+              ) : (
+                <div className="flex space-x-4">
+                  <Link href="/login" className="hover:underline">Login</Link>
+                  <Link href="/register" className="hover:underline">Register</Link>
+                </div>
+              )}
+            </div>
+          </header>
 
-        <main className="p-6 space-y-6">
-          <div className="flex flex-wrap items-center space-y-4 md:space-y-0 md:space-x-4">
+          <main className="p-6 space-y-6">
+            <div className="flex flex-wrap items-center space-y-4 md:space-y-0 md:space-x-4">
               <div className="w-full md:w-96">
                 <Input 
-                    placeholder="Search a person in the residential system by NetID" 
-                    type="search" 
-                    onChange={handleInputChange}
+                  placeholder="Search a person in the residential system" 
+                  type="search" 
+                  onChange={handleInputChange}
                 />
               </div>
+
+              {/* Dropdown Menu for Filter Selection */}
+              <div className="relative inline-block text-left">
+                <select
+                  className="block appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                  value={filterOption}
+                  onChange={handleFilterChange}
+                >
+                  <option value="netid">By NetID</option>
+                  <option value="firstname">By First Name</option>
+                  <option value="lastname">By Last Name</option>
+                </select>
+              </div>
+
               <div className="flex items-center space-x-2">
                 <Button onClick={handleGenerateOutput}>Search</Button>
               </div>             
@@ -218,7 +265,7 @@ const HomePage = () => {
                         </TableCell>
                         <TableCell>{resident.firstname || "N/A"}</TableCell>
                         <TableCell>{resident.lastname || "N/A"}</TableCell>
-                        <TableCell>{resident.netID || "N/A"}</TableCell>
+                        <TableCell>{resident.netid || "N/A"}</TableCell>
                         <TableCell>{resident.class || "N/A"}</TableCell>
                         <TableCell>{(hasStaffAccess) ? (resident.phone || "N/A") : ("-")}</TableCell>
                         <TableCell>{(hasStaffAccess) ? (resident.email || "N/A") : ("-")}</TableCell>

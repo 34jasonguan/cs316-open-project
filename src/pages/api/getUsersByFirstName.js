@@ -1,4 +1,4 @@
-// pages/api/getStudentByNetID.js
+// pages/api/getStudentByFirstName.js
 import prisma from '../../../lib/prisma';
 
 export default async function handler(req, res) {
@@ -8,7 +8,7 @@ export default async function handler(req, res) {
       const students = await prisma.users.findMany({
         where: {
           class: searchedClass || undefined,
-          netid: {
+          firstname: {
             contains: inputValue,
           },
         },
