@@ -9,7 +9,8 @@ import {
   ChevronDown,
   Menu,
   Settings,
-  Search
+  Search, 
+  Dices
 } from "lucide-react";
 import { useRouter } from 'next/router';
 
@@ -111,6 +112,22 @@ const ReportHistory = () => {
               </div>
             )}
           </div>
+          <div className="space-y-2">
+          <div
+            className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer"
+            onClick={() => toggleSubbar('activityInfo')}
+          >
+            <Dices className="h-5 w-5" />
+            <span>Activity</span>
+            <ChevronDown className={`h-4 w-4 ml-auto transition-transform ${openSubbar === 'activityInfo' ? 'rotate-180' : ''}`} />
+          </div>
+          {openSubbar === 'activityInfo' && (
+            <div className="ml-8 space-y-1">
+              <a href="/proposal" className="block px-3 py-2 rounded-lg hover:bg-white/10">Proposal Form</a>
+              <a href="#" className="block px-3 py-2 rounded-lg hover:bg-white/10">Activity History</a>
+            </div>
+          )}
+        </div>
         </nav>
       </div>
 

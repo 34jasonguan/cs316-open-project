@@ -1,13 +1,5 @@
-// pages/api/checkNewUser.js
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
-
-async function openDB() {
-  return open({
-    filename: './ra.sqlite', 
-    driver: sqlite3.Database,
-  });
-}
+// pages/api/insertUser.js
+import prisma from '../../../lib/prisma'; 
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
@@ -15,9 +7,12 @@ export default async function handler(req, res) {
       netID, firstname, lastname, phone, email,
       Class, year, students, RAs, RCs, password
     } = req.body;
-    try {
-      const db = await openDB();
 
+    if (!netID) {
+      return res.status(400).json({ message: 'netID is required' });
+    }
+
+    try {
       const users1 = await prisma.users.findUnique({
         where: {
           netid: netID,
@@ -43,16 +38,25 @@ export default async function handler(req, res) {
 
       const newUser = await prisma.users.create({
         data: {
-          netID, lastname, firstname, year, email, phone, Class,
+          netid: netID, 
+          lastname, 
+          firstname, 
+          year, 
+          email, 
+          phone, 
+          class: Class,
         },
       });
 
       const newUserPassword = await prisma.password.create({
         data: {
-          netID, password,
+          netid: netID, 
+          password,
         },
       });
-
+      
+      // beginning of switch  
+      let global; 
       switch (Class) {
         case 'student':
           for (const RA of RAs) {
@@ -64,6 +68,10 @@ export default async function handler(req, res) {
                 netid: true, lastname: true, firstname: true
               },
             });
+            console.log(RA)
+            if (!RA.value) {
+              return res.status(400).json({ message: 'netID is required' });
+            }
             const ra = await prisma.users.findUnique({
               where: {
                 netid: RA.value,
@@ -72,17 +80,21 @@ export default async function handler(req, res) {
                 netid: true, lastname: true, firstname: true
               },
             });
-            const newRelation1 = await prisma.hasRA.create({
+            global = await prisma.hasra.create({
               data: {
-                studentNetID: student['netID'],
-                studentLastName: student['lastname'],
-                studentFirstName: student['firstname'],
-                raNetID: ra['netID'],
-                raLastName: ra['lastname'],
-                raFirstName: ra['firstname'],
+                studentnetid: student['netid'],
+                studentlastname: student['lastname'],
+                studentfirstname: student['firstname'],
+                ranetid: ra['netid'],
+                ralastname: ra['lastname'],
+                rafirstname: ra['firstname'],
               },
             });
           }
+        break; 
+
+        /*
+
         case 'RA':
           for (const Student of students) {
             const student = await prisma.users.findUnique({
@@ -101,14 +113,14 @@ export default async function handler(req, res) {
                 netid: true, lastname: true, firstname: true
               },
             });
-            const newRelation2 = await prisma.hasRA.create({
+            const newRelation2 = await prisma.hasra.create({
               data: {
-                studentNetID: student['netID'],
-                studentLastName: student['lastname'],
-                studentFirstName: student['firstname'],
-                raNetID: ra['netID'],
-                raLastName: ra['lastname'],
-                raFirstName: ra['firstname'],
+                studentnetid: student['netID'],
+                studentlastname: student['lastname'],
+                studentfirstname: student['firstname'],
+                ranetid: ra['netID'],
+                ralastname: ra['lastname'],
+                rafirstname: ra['firstname'],
               },
             });
           }
@@ -129,17 +141,19 @@ export default async function handler(req, res) {
                 netid: true, lastname: true, firstname: true
               },
             });
-            const newRelation3 = await prisma.hasRC.create({
+            const newRelation3 = await prisma.hasrc.create({
               data: {
-                rcNetID: rc['netID'],
-                rcLastName: rc['lastname'],
-                rcFirstName: rc['firstname'],
-                raNetID: ra['netID'],
-                raLastName: ra['lastname'],
-                raFirstName: ra['firstname'],
+                rcnetid: rc['netID'],
+                rclastname: rc['lastname'],
+                rcfirstname: rc['firstname'],
+                ranetid: ra['netID'],
+                ralastname: ra['lastname'],
+                rafirstname: ra['firstname'],
               },
             });
           }
+        break; 
+
         case 'RC':
           for (const RA of RAs) {
             const rc = await prisma.users.findUnique({
@@ -158,26 +172,33 @@ export default async function handler(req, res) {
                 netid: true, lastname: true, firstname: true
               },
             });
-            const newRelation4 = await prisma.hasRC.create({
+            const newRelation4 = await prisma.hasrc.create({
               data: {
-                rcNetID: rc['netID'],
-                rcLastName: rc['lastname'],
-                rcFirstName: rc['firstname'],
-                raNetID: ra['netID'],
-                raLastName: ra['lastname'],
-                raFirstName: ra['firstname'],
+                rcnetid: rc['netID'],
+                rclastname: rc['lastname'],
+                rcfirstname: rc['firstname'],
+                ranetid: ra['netID'],
+                ralastname: ra['lastname'],
+                rafirstname: ra['firstname'],
               },
             });
           }
-        default:
-          
-      }
+        break; 
 
-      res.status(200).json({});
+        */
+        default:
+
+      // end of switch
+
+          
+      } 
+
+      res.status(200).json({ message: 'Account registered successfully', users: newUser, password: newUserPassword, hasra: global });
     } catch (error) {
-      res.status(500).json({ error: 'Database query failed', details: error });
+      console.error(error);
+      res.status(500).json({ error: 'Failed to register', details: error  });
     }
   } else {
-    res.status(405).json({ message: 'Only POST requests are allowed' });
+    res.status(405).json({ message: 'Method not allowed' });
   }
 }

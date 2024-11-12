@@ -29,7 +29,7 @@ export default function RegisterForm() {
             'lastname': lastnameInput,
             'phone': phoneInput,
             'email': emailInput, 
-            'class': classInput,
+            'Class': classInput,
             'year': yearInput,
             'students': stuInput,
             'RAs': raInput,
@@ -39,6 +39,9 @@ export default function RegisterForm() {
         
         const response = await fetch(`/api/insertUser`, {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+              },
             body: JSON.stringify(userInsertedData)
         });
 
@@ -57,7 +60,9 @@ export default function RegisterForm() {
                 
                 if (response.ok) {
                     const selectedUsers = await response.json();
-                    options = (selectedUsers.length > 0) ? selectedUsers.map(user => {return {value: user.netID, label: user.firstname + ' ' + user.lastname};}) : [];
+                    console.log(selectedUsers); 
+                    options = (selectedUsers.length > 0) ? selectedUsers.map(user => {return {value: user.netid, label: user.firstname + ' ' + user.lastname};}) : [];
+                    console.log(options); 
                 } else {
                 const errorData = await response.json();
                 // generatedOutput = errorData.message || 'An error occurred';
