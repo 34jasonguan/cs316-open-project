@@ -16,24 +16,43 @@ import {
 
 export default function ActivityProposalForm() {
   const [programName, setProgramName] = useState('');
-  const [location, setLocation] = useState('');
+  const [building, setBuilding] = useState('');
+  const [room, setRoom] = useState('');
+  const [date, setDate] = useState('');
   const [time, setTime] = useState('');
-  const [targetAudience, setTargetAudience] = useState('');
   const [description, setDescription] = useState('');
   const [openSubbar, setOpenSubbar] = useState('');
   const router = useRouter();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const proposalData = {
       programName,
-      location,
+      building,
+      room,
+      date,
       time,
-      targetAudience,
-      description,
     };
-    console.log(proposalData);
-    router.push('/');
+  
+    try {
+      const response = await fetch('/api/insertActivity', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(proposalData),
+      });
+  
+      if (response.ok) {
+        alert('Your Proposal Has Been Submitted');
+        console.log('Activity submitted successfully');
+        router.push('/');
+      } else {
+        console.error('Failed to submit activity');
+      }
+    } catch (error) {
+      console.error('Error submitting activity:', error);
+    }
   };
 
   const toggleSubbar = (name) => {
@@ -132,12 +151,34 @@ export default function ActivityProposalForm() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-700">Location:</label>
+                  <label className="block text-gray-700">Building:</label>
                   <input
                     type="text"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    placeholder="Enter location of the program"
+                    value={building}
+                    onChange={(e) => setBuilding(e.target.value)}
+                    placeholder="Enter building (e.g. Bassett, GA)"
+                    className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-700">Room:</label>
+                  <input
+                    type="text"
+                    value={room}
+                    onChange={(e) => setRoom(e.target.value)}
+                    placeholder="Enter room number (e.g. 101, 230)"
+                    className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-700">Date:</label>
+                  <input
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    placeholder="Select date of the program"
                     className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
                   />
                 </div>
@@ -145,21 +186,10 @@ export default function ActivityProposalForm() {
                 <div>
                   <label className="block text-gray-700">Time:</label>
                   <input
-                    type="text"
+                    type="time"
                     value={time}
                     onChange={(e) => setTime(e.target.value)}
                     placeholder="Enter time of the program"
-                    className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-gray-700">Target Audience:</label>
-                  <input
-                    type="text"
-                    value={targetAudience}
-                    onChange={(e) => setTargetAudience(e.target.value)}
-                    placeholder="Enter target audience (e.g., first-year students)"
                     className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
                   />
                 </div>
@@ -185,105 +215,3 @@ export default function ActivityProposalForm() {
     </div>
   );
 }
-
-
-/*import React, { useState } from 'react';
-import { useRouter } from 'next/router';
-import styles from './style'; // Assuming the same style file is used
-
-const ActivityProposalForm = () => {
-  const [programName, setProgramName] = useState('');
-  const [location, setLocation] = useState('');
-  const [time, setTime] = useState('');
-  const [targetAudience, setTargetAudience] = useState('');
-  const [description, setDescription] = useState('');
-  const [isRecurring, setIsRecurring] = useState(false);
-  const router = useRouter();
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const proposalData = {
-      programName,
-      location,
-      time,
-      targetAudience,
-      description,
-      isRecurring,
-    };
-    console.log(proposalData);
-    router.push('/');
-  };
-
-  return (
-    <div style={styles.container}>
-      <form onSubmit={handleSubmit} style={styles.content}>
-        <h2 style={styles.heading}>Submit an Activity/Program Proposal</h2>
-
-        <label style={styles.label}>
-          Program Name:
-          <input
-            type="text"
-            value={programName}
-            onChange={(e) => setProgramName(e.target.value)}
-            placeholder="Enter program name"
-            style={styles.textArea}
-          />
-        </label>
-        <br />
-
-        <label style={styles.label}>
-          Location:
-          <input
-            type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            placeholder="Enter location of the program"
-            style={styles.textArea}
-          />
-        </label>
-        <br />
-
-        <label style={styles.label}>
-          Time:
-          <input
-            type="text"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            placeholder="Enter time of the program"
-            style={styles.textArea}
-          />
-        </label>
-        <br />
-
-        <label style={styles.label}>
-          Target Audience:
-          <input
-            type="text"
-            value={targetAudience}
-            onChange={(e) => setTargetAudience(e.target.value)}
-            placeholder="Enter target audience (e.g., first-year students)"
-            style={styles.textArea}
-          />
-        </label>
-        <br />
-
-        <label style={styles.label}>
-          Description:
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Describe the program here"
-            style={styles.textArea}
-          />
-        </label>
-        <br />
-
-
-        <button type="submit" style={styles.button}>Submit Proposal</button>
-      </form>
-    </div>
-  );
-};
-
-export default ActivityProposalForm;
-*/
