@@ -242,7 +242,7 @@ const HomePage = () => {
                     <TableHead className="text-sm font-semibold text-gray-600 uppercase">Netid</TableHead>
                     <TableHead className="text-sm font-semibold text-gray-600 uppercase">Position</TableHead>
                     <TableHead className="text-sm font-semibold text-gray-600 uppercase">Contact</TableHead>
-                    <TableHead className="text-sm font-semibold text-gray-600 uppercase">Email</TableHead>
+                    <TableHead className="text-sm font-semibold text-gray-600 uppercase">Dorm</TableHead>
                 </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -267,8 +267,8 @@ const HomePage = () => {
                         <TableCell>{resident.lastname || "N/A"}</TableCell>
                         <TableCell>{resident.netid || "N/A"}</TableCell>
                         <TableCell>{resident.class || "N/A"}</TableCell>
-                        <TableCell>{(hasStaffAccess) ? (resident.phone || "N/A") : ("-")}</TableCell>
                         <TableCell>{(hasStaffAccess) ? (resident.email || "N/A") : ("-")}</TableCell>
+                        <TableCell>{(hasStaffAccess) ? (resident.dorm || "N/A") : ("-")}</TableCell>
                         <TableCell>
                             <Button variant="ghost" size="icon">
                                 <MoreVertical className="h-4 w-4" />
