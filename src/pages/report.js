@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   LayoutDashboard,
   Calendar as CalendarIcon,
-  GraduationCap,
-  Dices, 
+  MessageSquareWarning, 
   ChevronDown,
   Menu,
   Settings,
   Search
 } from "lucide-react";
-import styles from './style';
 
 const SafetyReportForm = () => {
   const [reportType, setReportType] = useState('');
@@ -52,20 +51,25 @@ const SafetyReportForm = () => {
     switch (reportType) {
       case 'noise':
         return (
-          <label style={styles.label}>
-            Location:
-            <input type="text" placeholder="Enter location of noise" style={styles.textArea} />
-          </label>
+          <div>
+            <label className="block text-gray-700">Location:</label>
+            <input
+              type="text"
+              placeholder="Enter location of noise"
+              className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+            />
+          </div>
         );
       case 'safety':
         return (
           <>
-            <label style={styles.label}>
-              Safety Issue Type:
+            <div>
+              <label className="block text-gray-700">Safety Issue Type:</label>
               <select
                 value={safetyIssueType}
                 onChange={(e) => setSafetyIssueType(e.target.value)}
-                style={styles.select}>
+                className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+              >
                 <option value="">Select an issue</option>
                 <option value="slip">Slip/Fall</option>
                 <option value="fire">Fire Hazard</option>
@@ -73,36 +77,47 @@ const SafetyReportForm = () => {
                 <option value="smoke">Smoke Detected</option>
                 <option value="Other">Other (please specify)</option>
               </select>
-            </label>
+            </div>
             {safetyIssueType === 'Other' && (
-              <label style={styles.label}>
-                Please specify:
+              <div>
+                <label className="block text-gray-700">Please specify:</label>
                 <input
                   type="text"
                   value={otherIssue}
                   onChange={(e) => setOtherIssue(e.target.value)}
                   placeholder="Describe the issue"
-                  style={styles.textArea}
+                  className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
                 />
-              </label>
+              </div>
             )}
-            <label style={styles.label}>
-              Location:
-              <input type="text" placeholder="Enter location" style={styles.textArea} />
-            </label>
+            <div>
+              <label className="block text-gray-700">Location:</label>
+              <input
+                type="text"
+                placeholder="Enter location"
+                className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+              />
+            </div>
           </>
         );
       case 'maintenance':
         return (
           <>
-            <label style={styles.label}>
-              Equipment/Facility:
-              <input type="text" placeholder="Enter equipment needing repair" style={styles.textArea} />
-            </label>
-            <label style={styles.label}>
-              Location:
-              <textarea placeholder="Enter Location" style={styles.textArea} />
-            </label>
+            <div>
+              <label className="block text-gray-700">Equipment/Facility:</label>
+              <input
+                type="text"
+                placeholder="Enter equipment needing repair"
+                className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700">Location:</label>
+              <textarea
+                placeholder="Enter Location"
+                className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+              />
+            </div>
           </>
         );
       default:
@@ -135,21 +150,29 @@ const SafetyReportForm = () => {
             <span>Schedule</span>
           </a>
           <div className="space-y-2">
-              <div
-                className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer"
-                onClick={() => toggleSubbar('activityInfo')}
-              >
-                <Dices className="h-5 w-5" />
-                <span>Activity</span>
-                <ChevronDown className={`h-4 w-4 ml-auto transition-transform ${openSubbar === 'activityInfo' ? 'rotate-180' : ''}`} />
-              </div>
-              {openSubbar === 'activityInfo' && (
-                <div className="ml-8 space-y-1">
-                  <a href="/proposal" className="block px-3 py-2 rounded-lg hover:bg-white/10">Proposal Form</a>
-                  <a href="#" className="block px-3 py-2 rounded-lg hover:bg-white/10">Activity History</a>
-                </div>
-              )}
+            <div
+              className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer"
+              onClick={() => toggleSubbar('reportInfo')}
+            >
+              <MessageSquareWarning className="h-5 w-5" />
+              <span>Report</span>
+              <ChevronDown
+                className={`h-4 w-4 ml-auto transition-transform ${
+                  openSubbar === 'reportInfo' ? 'rotate-180' : ''
+                }`}
+              />
             </div>
+            {openSubbar === 'reportInfo' && (
+              <div className="ml-8 space-y-1">
+                <a href="/report" className="block px-3 py-2 rounded-lg hover:bg-white/10">
+                  Submit Report
+                </a>
+                <a href="/report_history" className="block px-3 py-2 rounded-lg hover:bg-white/10">
+                  Report History
+                </a>
+              </div>
+            )}
+          </div>
         </nav>
       </div>
 
@@ -168,66 +191,91 @@ const SafetyReportForm = () => {
         </header>
 
         <main className="flex-1 overflow-auto p-6">
-          <form onSubmit={handleSubmit} style={styles.content}>
-            <h2 style={styles.heading}>Submit a Safety Report</h2>
-            
-            <label style={styles.label}>
-              Submit Anonymously:
-              <input 
-                type="checkbox" 
-                checked={isAnonymous} 
-                onChange={(e) => setIsAnonymous(e.target.checked)} 
-                style={{ marginLeft: '10px' }} 
-              />
-            </label>
+          <div className="mb-6">
+            <h2 className="text-3xl font-light text-gray-800">Submit a Safety Report</h2>
+          </div>
 
-            <label style={styles.label}>
-              Report Type:
-              <select value={reportType} onChange={(e) => setReportType(e.target.value)} style={styles.select}>
-                <option value="">Select a type</option>
-                <option value="noise">Noise Complaint</option>
-                <option value="safety">Safety Issue</option>
-                <option value="maintenance">Maintenance Request</option>
-              </select>
-            </label>
+          <Card className="max-w-lg mx-auto">
+            <CardHeader>
+              <CardTitle>Safety Report Form</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="flex items-center">
+                  <label className="block text-gray-700 mr-2">Submit Anonymously:</label>
+                  <input
+                    type="checkbox"
+                    checked={isAnonymous}
+                    onChange={(e) => setIsAnonymous(e.target.checked)}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                </div>
 
-            {renderTemplateFields()}
+                <div>
+                  <label className="block text-gray-700">Report Type:</label>
+                  <select
+                    value={reportType}
+                    onChange={(e) => setReportType(e.target.value)}
+                    className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+                  >
+                    <option value="">Select a type</option>
+                    <option value="noise">Noise Complaint</option>
+                    <option value="safety">Safety Issue</option>
+                    <option value="maintenance">Maintenance Request</option>
+                  </select>
+                </div>
 
-            <label style={styles.label}>
-              Urgency Level:
-              <select value={urgency} onChange={(e) => setUrgency(e.target.value)} style={styles.select}>
-                <option value="">Select urgency</option>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
-            </label>
+                {renderTemplateFields()}
 
-            <label style={styles.label}>
-              Description:
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Describe the issue here"
-                maxLength={maxDescriptionLength}
-                style={styles.textArea}
-              />
-            </label>
-            <p style={{ fontSize: '12px', color: '#555' }}>
-              {description.length}/{maxDescriptionLength} characters
-            </p>
+                <div>
+                  <label className="block text-gray-700">Urgency Level:</label>
+                  <select
+                    value={urgency}
+                    onChange={(e) => setUrgency(e.target.value)}
+                    className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+                  >
+                    <option value="">Select urgency</option>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                  </select>
+                </div>
 
-            <label style={styles.label}>
-              Attachment (optional):
-              <input type="file" onChange={handleFileChange} style={styles.fileInput} />
-            </label>
+                <div>
+                  <label className="block text-gray-700">Description:</label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Describe the issue here"
+                    maxLength={200}
+                    className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+                  />
+                  <p className="text-sm text-gray-500">
+                    {description.length}/200 characters
+                  </p>
+                </div>
 
-            <button type="submit" style={styles.button}>Submit Report</button>
-          </form>
+                <div>
+                  <label className="block text-gray-700">Attachment (optional):</label>
+                  <input
+                    type="file"
+                    onChange={handleFileChange}
+                    className="w-full mt-1"
+                  />
+                </div>
+
+                <Button type="submit" className="w-full mt-4">
+                  Submit Report
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
 
           {isSubmitted && (
-            <div style={{ ...styles.modal, textAlign: 'center' }}>
-              <p>Your report has been submitted successfully!</p>
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+              <div className="bg-white p-6 rounded-md text-center">
+                <p>Your report has been submitted successfully!</p>
+              </div>
             </div>
           )}
         </main>
@@ -237,185 +285,3 @@ const SafetyReportForm = () => {
 };
 
 export default SafetyReportForm;
-
-
-/* import React, { useState } from 'react';
-import { useRouter } from 'next/router';
-import styles from './style';
-
-const SafetyReportForm = () => {
-  const [reportType, setReportType] = useState('');
-  const [urgency, setUrgency] = useState('');
-  const [description, setDescription] = useState('');
-  const [isAnonymous, setIsAnonymous] = useState(false);
-  const [safetyIssueType, setSafetyIssueType] = useState(''); 
-  const [otherIssue, setOtherIssue] = useState('');
-  const [attachment, setAttachment] = useState(null);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const router = useRouter();
-  const maxDescriptionLength = 200;
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const reportData = {
-      reportType,
-      urgency,
-      description,
-      isAnonymous, 
-      safetyIssueType: safetyIssueType === 'Other' ? otherIssue : safetyIssueType,
-      attachmentName: attachment ? attachment.name : null
-    };
-    console.log(reportData);
-    setIsSubmitted(true); 
-    setTimeout(() => {
-      setIsSubmitted(false);
-    router.push('/');
-    }, 2000); 
-  };
-
-  const handleFileChange = (e) => {
-    setAttachment(e.target.files[0]);
-  };
-
-  const renderTemplateFields = () => {
-    switch (reportType) {
-      case 'noise':
-        return (
-          <>
-            <label style={styles.label}>
-              Location:
-              <input type="text" placeholder="Enter location of noise" style={styles.textArea} />
-            </label>
-          </>
-        );
-      case 'safety':
-        return (
-          <>
-            <label style={styles.label}>
-              Safety Issue Type:
-              <select
-                value={safetyIssueType}
-                onChange={(e) => setSafetyIssueType(e.target.value)}
-                style={styles.select}>
-                <option value="">Select an issue</option>
-                <option value="slip">Slip/Fall</option>
-                <option value="fire">Fire Hazard</option>
-                <option value="suspicious">Suspicious Activity</option>
-                <option value="smoke">Smoke Detected</option>
-                <option value="Other">Other (please specify)</option>
-              </select>
-            </label>
-            <br />
-            {safetyIssueType === 'Other' && (
-              <label style={styles.label}>
-                Please specify:
-                <input
-                  type="text"
-                  value={otherIssue}
-                  onChange={(e) => setOtherIssue(e.target.value)}
-                  placeholder="Describe the issue"
-                  style={styles.textArea}
-                />
-              </label>
-            )}
-            <br />
-            <label style={styles.label}>
-              Location:
-              <input type="text" placeholder="Enter location" style={styles.textArea} />
-            </label>
-          </>
-        );
-      case 'maintenance':
-        return (
-          <>
-            <label style={styles.label}>
-              Equipment/Facility:
-              <input type="text" placeholder="Enter equipment needing repair" style={styles.textArea} />
-            </label>
-            <br />
-            <label style={styles.label}>
-              Location:
-              <textarea placeholder="Enter Location" style={styles.textArea} />
-            </label>
-          </>
-        );
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <div style={styles.container}>
-      <form onSubmit={handleSubmit} style={styles.content}>
-        <h2 style={styles.heading}>Submit a Safety Report</h2>
-        
-        <label style={styles.label}>
-          Submit Anonymously:
-          <input 
-            type="checkbox" 
-            checked={isAnonymous} 
-            onChange={(e) => setIsAnonymous(e.target.checked)} 
-            style={{ marginLeft: '10px' }} 
-          />
-        </label>
-        <br />
-
-        <label style={styles.label}>
-          Report Type:
-          <select value={reportType} onChange={(e) => setReportType(e.target.value)} style={styles.select}>
-            <option value="">Select a type</option>
-            <option value="noise">Noise Complaint</option>
-            <option value="safety">Safety Issue</option>
-            <option value="maintenance">Maintenance Request</option>
-          </select>
-        </label>
-        <br />
-        {renderTemplateFields()}
-        <br />
-
-        <label style={styles.label}>
-          Urgency Level:
-          <select value={urgency} onChange={(e) => setUrgency(e.target.value)} style={styles.select}>
-            <option value="">Select urgency</option>
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </select>
-        </label>
-        <br />
-
-        <label style={styles.label}>
-          Description:
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Describe the issue here"
-            maxLength={maxDescriptionLength}
-            style={styles.textArea}
-          />
-        </label>
-        <p style={{ fontSize: '12px', color: '#555' }}>
-          {description.length}/{maxDescriptionLength} characters
-        </p>
-        <br />
-
-        <label style={styles.label}>
-          Attachment (optional):
-          <input type="file" onChange={handleFileChange} style={styles.fileInput} />
-        </label>
-        <br />
-
-        <button type="submit" style={styles.button}>Submit Report</button>
-      </form>
-
-      {isSubmitted && (
-        <div style={{ ...styles.modal, textAlign: 'center' }}>
-          <p>Your report has been submitted successfully!</p>
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default SafetyReportForm;
-*/
