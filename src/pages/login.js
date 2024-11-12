@@ -2,16 +2,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import styles from './style'
 
-// Define the Username and Password map
-const UsernamePwdMap = {
-    "admin": "admin",
-    "kj240": "kj240",
-    "rt341": "rt341",
-    "mm442": "mm442",
-    "pa543": "pa543",
-    "hl644": "hl644"
-};
-
 export default function LoginForm() {
     const [userIDInput, setUserIDInput] = useState('');
     const [passwordInput, setPasswordInput] = useState('');
@@ -28,7 +18,8 @@ export default function LoginForm() {
             const returnedJSON1 = await response1.json();
             const returnedJSON2 = await response2.json();
             const passwordTrue = returnedJSON1['password'];
-            const hasStaffAccess = (returnedJSON2['class'] && returnedJSON2['class'] in ['RA', 'RC']) || false;
+            const hasStaffAccess = (['RA', 'RC'].includes(returnedJSON2['class'])) || false;
+            //const hasStaffAccess = (returnedJSON2['class'] && returnedJSON2['class'] in ['RA', 'RC']) || false; -- this always evals to false
 
             // Check if the userID exists and the password is correct
             if (passwordTrue && passwordInput && passwordTrue == passwordInput) {
