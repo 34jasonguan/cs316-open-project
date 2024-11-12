@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     const {
       netID, firstname, lastname, phone, email,
-      Class, year, student, RA, RC, password
+      Class, year, students, RAs, RCs, password
     } = req.body;
     try {
       const db = await openDB();
@@ -55,7 +55,7 @@ export default async function handler(req, res) {
 
       switch (Class) {
         case 'student':
-          for (const RA of userData['RA']) {
+          for (const RA of RAs) {
             const student = await prisma.users.findUnique({
               where: {
                 netid: netID,
@@ -84,7 +84,7 @@ export default async function handler(req, res) {
             });
           }
         case 'RA':
-          for (const Student of userData['student']) {
+          for (const Student of students) {
             const student = await prisma.users.findUnique({
               where: {
                 netid: Student.value,
@@ -112,7 +112,7 @@ export default async function handler(req, res) {
               },
             });
           }
-          for (const RC of userData['RC']) {
+          for (const RC of RCs) {
             const rc = await prisma.users.findUnique({
               where: {
                 netid: RC.value,
@@ -141,7 +141,7 @@ export default async function handler(req, res) {
             });
           }
         case 'RC':
-          for (const RA of userData['RA']) {
+          for (const RA of RAs) {
             const rc = await prisma.users.findUnique({
               where: {
                 netid: netID,

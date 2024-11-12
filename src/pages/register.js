@@ -31,9 +31,9 @@ export default function RegisterForm() {
             'email': emailInput, 
             'class': classInput,
             'year': yearInput,
-            'student': stuInput,
-            'RA': raInput,
-            'RC': rcInput,
+            'students': stuInput,
+            'RAs': raInput,
+            'RCs': rcInput,
             'password': passwordInput
         };
         
