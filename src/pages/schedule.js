@@ -30,7 +30,12 @@ export default function Schedule() {
     setOpenSubbar(prev => (prev === name ? '' : name));
   };
 
+  const handleSubmit = async () => {
+    // TODO
+  };
+
   const tasks = [
+    "RA On-Call Hours", 
     "Floor Rounds",
     "Resident Check-in",
     "Community Event",
@@ -150,7 +155,9 @@ export default function Schedule() {
           </div>
 
           <div className="mt-6">
-            <Button className="w-full">
+            <Button 
+              onClick={handleSubmit}
+              className="w-full">
               Save Availability
             </Button>
           </div>
