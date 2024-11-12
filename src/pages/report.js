@@ -18,6 +18,8 @@ const SafetyReportForm = () => {
   const [urgency, setUrgency] = useState('');
   const [description, setDescription] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
+  const [location, setLocation] = useState(''); 
+  const [equipment, setEquipment] = useState(''); 
   const [safetyIssueType, setSafetyIssueType] = useState(''); 
   const [otherIssue, setOtherIssue] = useState('');
   const [attachment, setAttachment] = useState(null);
@@ -26,23 +28,43 @@ const SafetyReportForm = () => {
   const router = useRouter();
   const maxDescriptionLength = 200;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+  
     const reportData = {
-      reportType,
+      type: reportType,
       urgency,
       description,
-      isAnonymous, 
-      safetyIssueType: safetyIssueType === 'Other' ? otherIssue : safetyIssueType,
-      attachmentName: attachment ? attachment.name : null
+      isAnonymous,
+      submitted_by: isAnonymous ? null : 'admin', 
+      location, 
+      issueType: safetyIssueType === 'Other' ? otherIssue : safetyIssueType,
+      equipment: reportType === 'Maintenance Request' ? equipment : null,
     };
-    console.log(reportData);
-    setIsSubmitted(true); 
-    setTimeout(() => {
-      setIsSubmitted(false);
-      router.push('/');
-    }, 2000); 
-  };
+  
+    try {
+      const response = await fetch('/api/insertReport', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(reportData),
+      });
+  
+      if (response.ok) {
+        console.log('Report submitted successfully');
+        setIsSubmitted(true); 
+        setTimeout(() => {
+          setIsSubmitted(false);
+          router.push('/');
+        }, 2000);
+      } else {
+        console.error('Failed to submit report');
+      }
+    } catch (error) {
+      console.error('Error submitting report:', error);
+    }
+  };  
 
   const handleFileChange = (e) => {
     setAttachment(e.target.files[0]);
@@ -50,7 +72,7 @@ const SafetyReportForm = () => {
 
   const renderTemplateFields = () => {
     switch (reportType) {
-      case 'noise':
+      case 'Noise Complaint':
         return (
           <div>
             <label className="block text-gray-700">Location:</label>
@@ -58,10 +80,12 @@ const SafetyReportForm = () => {
               type="text"
               placeholder="Enter location of noise"
               className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
             />
           </div>
         );
-      case 'safety':
+      case 'Safety Issue':
         return (
           <>
             <div>
@@ -97,11 +121,13 @@ const SafetyReportForm = () => {
                 type="text"
                 placeholder="Enter location"
                 className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+                value={location} 
+                onChange={(e) => setLocation(e.target.value)} 
               />
             </div>
           </>
         );
-      case 'maintenance':
+      case 'Maintenance Request':
         return (
           <>
             <div>
@@ -110,6 +136,8 @@ const SafetyReportForm = () => {
                 type="text"
                 placeholder="Enter equipment needing repair"
                 className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+                value={equipment}
+                onChange={(e) => setEquipment(e.target.value)} 
               />
             </div>
             <div>
@@ -117,6 +145,8 @@ const SafetyReportForm = () => {
               <textarea
                 placeholder="Enter Location"
                 className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+                value={location} 
+                onChange={(e) => setLocation(e.target.value)} 
               />
             </div>
           </>
@@ -236,9 +266,9 @@ const SafetyReportForm = () => {
                     className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
                   >
                     <option value="">Select a type</option>
-                    <option value="noise">Noise Complaint</option>
-                    <option value="safety">Safety Issue</option>
-                    <option value="maintenance">Maintenance Request</option>
+                    <option value="Noise Complaint">Noise Complaint</option>
+                    <option value="Safety Issue">Safety Issue</option>
+                    <option value="Maintenance Request">Maintenance Request</option>
                   </select>
                 </div>
 
