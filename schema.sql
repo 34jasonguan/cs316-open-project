@@ -4,7 +4,7 @@ CREATE TABLE users (
                   firstname VARCHAR(100),
                   year VARCHAR(10),
                   email VARCHAR(100),
-                  phone INTEGER,
+                  phone VARCHAR(20),
                   class VARCHAR(10),
                   dorm VARCHAR(30), 
                   PRIMARY KEY (netID)
@@ -238,30 +238,30 @@ VALUES (123, 'Pumpkin Carving', '2024-10-23', '17:00:00', '134', 'GA'),
        (789, 'Costume Party', '2024-10-28', '20:00:00', '107', 'Pegram');
 
 CREATE TABLE report (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,  
+    id SERIAL PRIMARY KEY,  
     type TEXT NOT NULL CHECK (type IN ('Noise Complaint', 'Safety Issues', 'Maintenance Request')),  
     urgency TEXT NOT NULL CHECK (urgency IN ('Low', 'Medium', 'High')),  
     description TEXT,  
     submitted_by VARCHAR(255), 
-    is_anonymous BOOLEAN NOT NULL DEFAULT 0, 
+    is_anonymous BOOLEAN NOT NULL DEFAULT FALSE, 
     location TEXT,  
     issue_type TEXT,  
     equipment TEXT, 
-    timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    timestamp TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 INSERT INTO report (type, urgency, description, submitted_by, is_anonymous, location, issue_type, equipment, timestamp) 
 VALUES 
-    ('Safety Issues', 'High', 'Fire hazard near Belltower', 'ir918', 0, 'Belltower', 'Fire Hazard', NULL, '2024-10-21 14:30:00'),
-    ('Maintenance Request', 'Low', 'Air conditioning needs repair in room 102', 'mk120', 0, 'East House, Room 102', NULL, 'Air Conditioning', '2024-10-21 09:00:00'),
-    ('Maintenance Request', 'Medium', 'Water leakage in restroom', 'zb625', 0, 'Trinity, Room 203', NULL, 'Water Pipe', '2024-10-21 11:15:00'),
-    ('Safety Issues', 'High', 'Slip risk due to wet floor', 'at211', 0, 'Belltower, Hallway', 'Slip/Fall', NULL, '2024-10-21 13:45:00'),
-    ('Safety Issues', 'High', 'Suspicious person sighted', NULL, 1, 'Parking Lot near Trinity', 'Suspicious Activity', NULL, '2024-10-21 15:20:00'), 
-    ('Safety Issues', 'High', 'Fire alarm malfunctioning', 'sm110', 0, 'East House, Building C', 'Fire Alarm', NULL, '2024-10-21 17:00:00'),
-    ('Safety Issues', 'High', 'Smoke detected in hallway', 'rb432', 0, 'Trinity, Hallway 3', 'Smoke Detected', NULL, '2024-10-21 18:30:00'),
-    ('Maintenance Request', 'High', 'Elevator malfunction', 'kv735', 0, 'Belltower, Elevator', NULL, 'Elevator', '2024-10-21 08:45:00'),
-    ('Noise Complaint', 'Low', 'Loud music from East House, Room 204', NULL, 1, 'East House, Room 204', NULL, NULL, '2024-10-20 22:30:00'),  
-    ('Noise Complaint', 'Medium', 'Construction noise during quiet hours', 'bs514', 0, 'Trinity, North Wing', NULL, NULL, '2024-10-22 14:00:00');
+    ('Safety Issues', 'High', 'Fire hazard near Belltower', 'ir918', FALSE, 'Belltower', 'Fire Hazard', NULL, '2024-10-21 14:30:00'),
+    ('Maintenance Request', 'Low', 'Air conditioning needs repair in room 102', 'mk120', FALSE, 'East House, Room 102', NULL, 'Air Conditioning', '2024-10-21 09:00:00'),
+    ('Maintenance Request', 'Medium', 'Water leakage in restroom', 'zb625', FALSE, 'Trinity, Room 203', NULL, 'Water Pipe', '2024-10-21 11:15:00'),
+    ('Safety Issues', 'High', 'Slip risk due to wet floor', 'at211', FALSE, 'Belltower, Hallway', 'Slip/Fall', NULL, '2024-10-21 13:45:00'),
+    ('Safety Issues', 'High', 'Suspicious person sighted', NULL, TRUE, 'Parking Lot near Trinity', 'Suspicious Activity', NULL, '2024-10-21 15:20:00'), 
+    ('Safety Issues', 'High', 'Fire alarm malfunctioning', 'sm110', FALSE, 'East House, Building C', 'Fire Alarm', NULL, '2024-10-21 17:00:00'),
+    ('Safety Issues', 'High', 'Smoke detected in hallway', 'rb432', FALSE, 'Trinity, Hallway 3', 'Smoke Detected', NULL, '2024-10-21 18:30:00'),
+    ('Maintenance Request', 'High', 'Elevator malfunction', 'kv735', FALSE, 'Belltower, Elevator', NULL, 'Elevator', '2024-10-21 08:45:00'),
+    ('Noise Complaint', 'Low', 'Loud music from East House, Room 204', NULL, TRUE, 'East House, Room 204', NULL, NULL, '2024-10-20 22:30:00'),  
+    ('Noise Complaint', 'Medium', 'Construction noise during quiet hours', 'bs514', FALSE, 'Trinity, North Wing', NULL, NULL, '2024-10-22 14:00:00');
 
 CREATE TABLE password (
     netID VARCHAR(10),
@@ -270,9 +270,24 @@ CREATE TABLE password (
 );
 
 CREATE TABLE availability (
-    netID VARCHAR(255), 
-    available_date DATE,
-    PRIMARY KEY (netID, available_date)
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  task_id INTEGER NOT NULL,
+  date DATE NOT NULL,
+  start_time TIME NOT NULL,
+  end_time TIME NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(netid),
+  FOREIGN KEY (task_id) REFERENCES tasks(id)
+);
+
+CREATE TABLE tasks (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 

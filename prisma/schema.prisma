@@ -17,30 +17,34 @@ model activities {
 }
 
 model availability {
-  netid          String    @id @db.VarChar(255)
-  available_date DateTime? @db.Date
+  netid          String   @db.VarChar(255)
+  available_date DateTime @db.Date
+
+  @@id([netid, available_date])
 }
 
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model hasra {
-  studentnetid     String  @db.VarChar(10)
+  studentnetid     String? @db.VarChar(10)
   studentlastname  String? @db.VarChar(100)
   studentfirstname String? @db.VarChar(100)
-  ranetid          String  @db.VarChar(10)
+  ranetid          String? @db.VarChar(10)
   ralastname       String? @db.VarChar(100)
   rafirstname      String? @db.VarChar(100)
 
-  @@id([studentnetid, ranetid])
+  @@ignore
 }
 
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model hasrc {
-  ranetid     String  @db.VarChar(10)
+  ranetid     String? @db.VarChar(10)
   ralastname  String? @db.VarChar(100)
   rafirstname String? @db.VarChar(100)
-  rcnetid     String  @db.VarChar(10)
+  rcnetid     String? @db.VarChar(10)
   rclastname  String? @db.VarChar(100)
   rcfirstname String? @db.VarChar(100)
 
-  @@id([ranetid, rcnetid])
+  @@ignore
 }
 
 model password {
@@ -49,16 +53,16 @@ model password {
 }
 
 model report {
-  id           Int       @id
-  type         String?
-  urgency      String?
+  id           Int      @id @default(autoincrement())
+  type         String
+  urgency      String
   description  String?
-  submitted_by String?   @db.VarChar(255)
-  is_anonymous Boolean?
+  submitted_by String?  @db.VarChar(255)
+  is_anonymous Boolean  @default(false)
   location     String?
   issue_type   String?
   equipment    String?
-  timestamp    DateTime? @db.Timestamp(6)
+  timestamp    DateTime @default(now()) @db.Timestamptz(6)
 }
 
 model users {
@@ -67,7 +71,26 @@ model users {
   firstname String? @db.VarChar(100)
   year      String? @db.VarChar(10)
   email     String? @db.VarChar(100)
-  phone     String? @db.VarChar(15)
+  phone     String? @db.VarChar(20)
   class     String? @db.VarChar(10)
   dorm      String? @db.VarChar(30)
+}
+
+model tasks {
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar(255)
+  description String?
+  availability availability[]
+}
+
+model availability {
+  id        Int      @id @default(autoincrement())
+  netid     String   @db.VarChar(255)
+  taskId    Int
+  task      tasks    @relation(fields: [taskId], references: [id])
+  date      DateTime @db.Date
+  startTime DateTime @db.Time(6)
+  endTime   DateTime @db.Time(6)
+
+  @@index([netid, taskId])
 }

@@ -1,5 +1,3 @@
-'use client'
-
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,54 +7,42 @@ import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Settings, LayoutDashboard, Calendar as CalendarIcon, MessageSquareWarning, Dices, ChevronDown, Menu, Search } from 'lucide-react'
 
-// Mock data for tasks and their available slots
-const tasksData = [
-  {
-    id: 1,
-    name: "RA On-Call Hours",
-    slots: [
-      { date: "2023-11-15", time: "19:00-07:00" },
-      { date: "2023-11-16", time: "19:00-07:00" },
-      { date: "2023-11-17", time: "19:00-07:00" },
-    ]
-  },
-  {
-    id: 2,
-    name: "Floor Rounds",
-    slots: [
-      { date: "2023-11-15", time: "21:00-22:00" },
-      { date: "2023-11-16", time: "21:00-22:00" },
-      { date: "2023-11-17", time: "21:00-22:00" },
-    ]
-  },
-  {
-    id: 3,
-    name: "Resident Check-in",
-    slots: [
-      { date: "2023-11-18", time: "14:00-16:00" },
-      { date: "2023-11-19", time: "14:00-16:00" },
-    ]
-  },
-]
-
-// Mock data for current availability
-const mockCurrentAvailability = {
-  "RA On-Call Hours": [
-    { date: "2023-11-15", time: "19:00-07:00" },
-  ],
-  "Floor Rounds": [
-    { date: "2023-11-16", time: "21:00-22:00" },
-    { date: "2023-11-17", time: "21:00-22:00" },
-  ],
-  "Resident Check-in": [],
-}
+// Assuming you have a function to get the current user's netID
+import { getCurrentUserNetID } from '/lib/auth'
 
 export default function Schedule() {
   const [selectedTask, setSelectedTask] = useState("")
   const [availableSlots, setAvailableSlots] = useState([])
   const [selectedSlots, setSelectedSlots] = useState([])
   const [openSubbar, setOpenSubbar] = useState('')
-  const [currentAvailability, setCurrentAvailability] = useState(mockCurrentAvailability)
+  const [currentAvailability, setCurrentAvailability] = useState([])
+  const [tasks, setTasks] = useState([])
+
+  useEffect(() => {
+    fetchTasks()
+    fetchCurrentAvailability()
+  }, [])
+
+  const fetchTasks = async () => {
+    try {
+      const response = await fetch('/api/tasks')
+      const data = await response.json()
+      setTasks(data)
+    } catch (error) {
+      console.error('Failed to fetch tasks:', error)
+    }
+  }
+
+  const fetchCurrentAvailability = async () => {
+    try {
+      const netid = await getCurrentUserNetID()
+      const response = await fetch(`/api/availability/${netid}`)
+      const data = await response.json()
+      setCurrentAvailability(data)
+    } catch (error) {
+      console.error('Failed to fetch current availability:', error)
+    }
+  }
 
   const toggleSubbar = (name) => {
     setOpenSubbar(prev => (prev === name ? '' : name))
@@ -64,39 +50,45 @@ export default function Schedule() {
 
   useEffect(() => {
     if (selectedTask) {
-      const task = tasksData.find(t => t.name === selectedTask)
+      const task = tasks.find(t => t.id === parseInt(selectedTask))
       setAvailableSlots(task ? task.slots : [])
       setSelectedSlots([])
     } else {
       setAvailableSlots([])
       setSelectedSlots([])
     }
-  }, [selectedTask])
+  }, [selectedTask, tasks])
 
   const handleSlotToggle = (slot) => {
     setSelectedSlots(prev => 
-      prev.some(s => s.date === slot.date && s.time === slot.time)
-        ? prev.filter(s => s.date !== slot.date || s.time !== slot.time)
+      prev.some(s => s.date === slot.date && s.startTime === slot.startTime)
+        ? prev.filter(s => s.date !== slot.date || s.startTime !== slot.startTime)
         : [...prev, slot]
     )
   }
 
   const handleSubmit = async () => {
-    // In a real application, you would send this data to your backend
-    console.log({
-      task: selectedTask,
-      selectedSlots: selectedSlots,
-    })
-    
-    // Update the current availability (this is a mock update)
-    setCurrentAvailability(prev => ({
-      ...prev,
-      [selectedTask]: selectedSlots
-    }))
-
-    // Reset the form
-    setSelectedTask("")
-    setSelectedSlots([])
+    try {
+      const netid = await getCurrentUserNetID()
+      for (const slot of selectedSlots) {
+        await fetch('/api/availability/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            netid,
+            taskId: parseInt(selectedTask),
+            date: slot.date,
+            startTime: slot.startTime,
+            endTime: slot.endTime
+          })
+        })
+      }
+      fetchCurrentAvailability()
+      setSelectedTask("")
+      setSelectedSlots([])
+    } catch (error) {
+      console.error('Failed to submit availability:', error)
+    }
   }
 
   return (
@@ -189,8 +181,8 @@ export default function Schedule() {
                       <SelectValue placeholder="Choose a task" />
                     </SelectTrigger>
                     <SelectContent>
-                      {tasksData.map((task) => (
-                        <SelectItem key={task.id} value={task.name}>
+                      {tasks.map((task) => (
+                        <SelectItem key={task.id} value={task.id.toString()}>
                           {task.name}
                         </SelectItem>
                       ))}
@@ -210,11 +202,11 @@ export default function Schedule() {
                         <div key={index} className="flex items-center space-x-2">
                           <Checkbox
                             id={`slot-${index}`}
-                            checked={selectedSlots.some(s => s.date === slot.date && s.time === slot.time)}
+                            checked={selectedSlots.some(s => s.date === slot.date && s.startTime === slot.startTime)}
                             onCheckedChange={() => handleSlotToggle(slot)}
                           />
                           <Label htmlFor={`slot-${index}`}>
-                            {slot.date} - {slot.time}
+                            {new Date(slot.date).toLocaleDateString()} - {new Date(slot.startTime).toLocaleTimeString()} to {new Date(slot.endTime).toLocaleTimeString()}
                           </Label>
                         </div>
                       ))}
@@ -232,24 +224,20 @@ export default function Schedule() {
               </Button>
             </TabsContent>
             <TabsContent value="view" className="space-y-4">
-              {Object.entries(currentAvailability).map(([task, slots]) => (
-                <Card key={task}>
-                  <CardHeader>
-                    <CardTitle>{task}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {slots.length > 0 ? (
-                      <ul className="list-disc pl-5">
-                        {slots.map((slot, index) => (
-                          <li key={index}>{slot.date} - {slot.time}</li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p>No availability submitted</p>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
+              {currentAvailability.length > 0 ? (
+                currentAvailability.map((availability) => (
+                  <Card key={availability.id}>
+                    <CardHeader>
+                      <CardTitle>{availability.task.name}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p>{new Date(availability.date).toLocaleDateString()} - {new Date(availability.startTime).toLocaleTimeString()} to {new Date(availability.endTime).toLocaleTimeString()}</p>
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                <p>No availability submitted</p>
+              )}
             </TabsContent>
           </Tabs>
         </main>

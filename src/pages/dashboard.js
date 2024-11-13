@@ -86,6 +86,23 @@ export default function Dashboard() {
     },
   ]
 
+  const duties = [
+    {
+      name: "Evening Rounds",
+      date: "Mar 15, 2024",
+      time: "8:00 pm - 12:00 am",
+      location: "Trinity Hall",
+      partner: "John Smith",
+    },
+    {
+      name: "Weekend On-Call",
+      date: "Mar 16-17, 2024",
+      time: "All Day",
+      location: "Bell Tower",
+      partner: "Emma Johnson",
+    },
+  ]
+
   const handleLogout = () => {
     setUserID('');
     localStorage.removeItem('userID');
@@ -186,6 +203,9 @@ export default function Dashboard() {
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle>Tasks</CardTitle>
+                    <Button variant="ghost" size="icon">
+                      <ExternalLink className="h-4 w-4" />
+                    </Button>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
@@ -219,6 +239,9 @@ export default function Dashboard() {
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle>Upcoming Events</CardTitle>
+                    <Button variant="ghost" size="icon">
+                      <ExternalLink className="h-4 w-4" />
+                    </Button>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
@@ -252,7 +275,6 @@ export default function Dashboard() {
                   </CardContent>
                 </Card>
               </div>
-            
             </TabsContent>
           </Tabs>
         </main>
