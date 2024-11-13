@@ -1,5 +1,3 @@
-'use client'
-
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -82,19 +80,16 @@ export default function Schedule() {
   }
 
   const handleSubmit = async () => {
-    // In a real application, you would send this data to your backend
     console.log({
       task: selectedTask,
       selectedSlots: selectedSlots,
     })
     
-    // Update the current availability (this is a mock update)
     setCurrentAvailability(prev => ({
       ...prev,
       [selectedTask]: selectedSlots
     }))
 
-    // Reset the form
     setSelectedTask("")
     setSelectedSlots([])
   }
