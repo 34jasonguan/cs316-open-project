@@ -1,7 +1,6 @@
-// pages/api/getResidents.js
+// pages/api/getStudentByNetID.js
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
-
 
 async function openDB() {
   return open({
@@ -12,21 +11,19 @@ async function openDB() {
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    const { raNetID } = req.query; 
-
+    const { searchedClass, inputValue } = req.query; 
     try {
       const db = await openDB();
+      
+      const students = (searchedClass) ? (await db.all(
+        'SELECT netID, lastname, firstname FROM users WHERE class = ? AND netID LIKE ?',
+        [searchedClass, '%' + inputValue + '%']
+      )) : (await db.all(
+        'SELECT * FROM users WHERE netID LIKE ?',
+        ['%' + inputValue + '%']
+      ));
 
-      const residents = await db.all(
-        'SELECT u.netid, u.firstname, u.lastname, u.email, u.phone FROM users u, hasRA h WHERE raNetID = ? AND u.netid = h.studentNetID',
-        [raNetID]
-      );
-
-      if (residents.length > 0) {
-        res.status(200).json(residents); 
-      } else {
-        res.status(404).json({ message: 'No residents found for this RA' });
-      }
+      res.status(200).json(students);
     } catch (error) {
       res.status(500).json({ error: 'Database query failed', details: error });
     }

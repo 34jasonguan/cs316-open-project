@@ -5,10 +5,10 @@ const Context = createContext();
 
 // Create a provider component
 export const Provider = ({ children }) => {
-    const [username, setUsername] = useState('');
+    const [userID, setUserID] = useState('');
 
     return (
-        <Context.Provider value={{ username, setUsername }}>
+        <Context.Provider value={{ userID, setUserID }}>
             {children}
         </Context.Provider>
     );

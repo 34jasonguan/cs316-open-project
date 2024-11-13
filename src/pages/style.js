@@ -17,7 +17,7 @@ const styles = {
       display: 'flex',
       alignItems: 'center',
     },
-    username: {
+    userID: {
       fontSize: '16px',
       fontWeight: 'bold',
       color: '#333',
@@ -27,6 +27,19 @@ const styles = {
       padding: '20px'
     },
     loginLink: {
+      fontSize: '16px',
+      fontWeight: 'bold',
+      textDecoration: 'none',
+      color: '#0070f3',
+      position: 'absolute',
+      top: '0',
+      right: '100px',
+      padding: '20px'
+    },
+    logout: {
+      color: 'blue',
+    },
+    registerLink: {
       fontSize: '16px',
       fontWeight: 'bold',
       textDecoration: 'none',
@@ -151,7 +164,31 @@ const styles = {
       padding: '10px',
       borderRadius: '8px',
     },
-
+    fileInput: {
+      marginTop: '10px',
+      display: 'block',
+      marginLeft: '50px',
+      marginRight: '50px',
+    },
+    modal: {
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        backgroundColor: 'white',
+        padding: '20px',
+        borderRadius: '8px',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+        textAlign: 'center',
+        zIndex: 1000,
+    },
+    charCounter: {
+        fontSize: '12px',
+        color: '#555',
+        textAlign: 'right',
+        marginRight: '50px',
+        marginBottom: '10px',
+    },
     // for icons in the menu
     iconTextLink: {
         display: 'flex',

@@ -1,201 +1,316 @@
-// pages/index.js
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Settings,
+  MapPin,
+  Calendar,
+  Clock,
+  ExternalLink,
+  AlertCircle,
+  User,
+  LayoutDashboard,
+  MessageSquareWarning,
+  Dices,
+  GraduationCap,
+  ChevronDown,
+  Menu,
+  Search
+} from "lucide-react"
+import Link from "next/link"
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { useUser } from './Context';
-import styles from './style'
+export default function Dashboard() {
+  const [selectedTab, setSelectedTab] = useState("general")
+  const [openSubMenu, setOpenSubMenu] = useState("")
 
-const Staff = {
-    "u1": true,
-    "u2": false,
-    "u3": true,
-};
+  const [taskInput, setTaskInput] = useState('');
+  const [output, setOutput] = useState('');
+  const [userID, setUserID] = useState('');
+  const [openSubbar, setOpenSubbar] = useState('');
+  const [hasStaffAccess, setHasStaffAccess] = useState(false);
 
-const netIDToFirstNameMap = {
-  "admin": "admin",
-  "kj240": "Kim",
-  "rt341": "Ryan",
-  "mm442": "Mia",
-  "pa543": "Peter",
-  "hl644": "Hana"
-};
-
-const taskDescriptions = {
-  'Task 1': 'Given a RC id, find all of his/her RAs (e.g. pa543)',
-  'Task 2': 'Given a RA id, find all of his/her residents (e.g. kj240)',
-  'Task 3': 'Given a dorm location, find all activity taking at that place (e.g. Belltower)',
-  'Task 4': 'Given a RA id, find his/her availability',
-  'Task 5': 'Given a resident name, find his/her report history',
-  'Task 6': 'Given a resident username, check whether the inputed password matches the one in record'
-};
-
-const HomePage = () => {
-    const [selectedTask, setSelectedTask] = useState('Task 1');
-    const [taskInput, setTaskInput] = useState('');
-    const [output, setOutput] = useState('');
-
-    const { username } = useUser(); 
-
-    const handleTaskChange = (event) => {
-        setSelectedTask(event.target.value);
-        setOutput('');
-    };
-
-    const handleInputChange = (event) => {
-        setTaskInput(event.target.value);
-    };
-
-    const handleGenerateOutput = async () => {
-      let generatedOutput = ':)';
-
-      if (selectedTask === 'Task 1') {
-        try {
-          const rcNetID = taskInput;
-
-          const response = await fetch(`/api/getRAs?rcNetID=${rcNetID}`);
-          
-          if (response.ok) {
-            const RAs = await response.json();
-            
-            if (RAs.length > 0) {
-              generatedOutput = RAs
-                .map(RA => `${RA.raFirstName} ${RA.raLastName} (${RA.raNetID})`)
-                .join('\n');
-            } else {
-              generatedOutput = 'No RA found for this RC.';
-            }
-          } else {
-            const errorData = await response.json();
-            generatedOutput = errorData.message || 'An error occurred';
-          }
-        } catch (error) {
-          console.error('Error fetching RA:', error);
-          generatedOutput = 'Failed to fetch RA.';
-        }
-      }
-
-      if (selectedTask === 'Task 2') {
-        try {
-          const raNetID = taskInput;
-          const response = await fetch(`/api/getResidents?raNetID=${raNetID}`);
-          
-          if (response.ok) {
-            const residents = await response.json();
-
-            if (residents.length > 0) {
-              generatedOutput = residents
-                .map(resident => `${resident.studentFirstName} ${resident.studentLastName} (${resident.studentNetID})`)
-                .join('\n');
-            } else {
-              generatedOutput = 'No resident found for this RA.';
-            }
-          } else {
-            const errorData = await response.json();
-            generatedOutput = errorData.message || 'An error occurred';
-          }
-        } catch (error) {
-          console.error('Error fetching residents:', error);
-          generatedOutput = 'Failed to fetch resident.';
-        }
-      }
-
-      if (selectedTask === 'Task 3') {
-        try {
-          const buildingName = taskInput;
-          const response = await fetch(`/api/getActivities?buildingName=${buildingName}`);
-          
-          if (response.ok) {
-            const activities = await response.json();
-
-            if (activities.length > 0) {
-              generatedOutput = activities
-                .map(activity => `${activity.name} takes place at ${activity.time} ${activity.date} in room ${activity.room_number} `)
-                .join('\n');
-            } else {
-              generatedOutput = 'No acitivty found for this building.';
-            }
-          } else {
-            const errorData = await response.json();
-            generatedOutput = errorData.message || 'An error occurred';
-          }
-        } catch (error) {
-          console.error('Error fetching activites:', error);
-          generatedOutput = 'Failed to fetch activity.';
-        }
-      }
-      setOutput(generatedOutput);
-    };
-
-    const handleLogout = () => {
-        setUsername('');
-    };
-
-    return (
-      <div style={styles.pageContainer}>
-        <header style={styles.header}>
-          <div style={styles.headerRight}>
-            {username === '' ? (
-              <Link href="/login" style={styles.loginLink}>Login</Link>
-            ) : (
-              <span style={styles.username}>Hello, {netIDToFirstNameMap[username]}</span>
-            )}
-          </div>
-        </header>
-  
-        <aside style={styles.sidebar}>
-          <h2 style={styles.sidebarHeading}>Menu</h2>
-          {username ? (
-            <>
-              <a href="/availability" className="iconTextLink" style={styles.iconTextLink}>
-                <img src="/icons/availability.png" alt="Availability Icon" style={styles.icon} />
-                <span style={styles.text}>Availability</span>
-              </a>
-              <a href="/report" className="iconTextLink" style={styles.iconTextLink}>
-                <img src="/icons/report.png" alt="Report Icon" style={styles.icon} />
-                <span style={styles.text}>Report</span>
-              </a>
-            </>
-          ) : (
-            <p style={styles.text}>Login in required for additional features</p>
-          )}
-        </aside>
-  
-        <main style={styles.contentArea}>
-          <h1 style={styles.heading}>Development Page for CS 316 Open Project</h1>
-  
-          <label htmlFor="task-select" style={styles.label}>Choose a Task:</label>
-          <select id="task-select" value={selectedTask} onChange={handleTaskChange} style={styles.select}>
-            {Object.keys(taskDescriptions).map((task, index) => (
-              <option key={index} value={task}>{task}</option>
-            ))}
-          </select>
-  
-          <div style={styles.mainArea}>
-            <div style={styles.taskDescription}>
-              <h3 style={styles.subheading}>Task Description</h3>
-              <p>{taskDescriptions[selectedTask]}</p>
-              <button style={styles.button} onClick={handleGenerateOutput}>Generate Output</button>
-            </div>
-            <div style={styles.taskInput}>
-              <h3 style={styles.subheading}>Task Input</h3>
-              <textarea
-                rows="5"
-                cols="1000"
-                placeholder="Enter task-related input here"
-                value={taskInput}
-                onChange={handleInputChange}
-                style={styles.textArea}
-              ></textarea>
-            </div>
-          </div>
-  
-          <div style={styles.outputArea}>
-            <h3 style={styles.subheading}>Output</h3>
-            <pre style={styles.output}>{output}</pre>
-          </div>
-        </main>
-      </div>
-    );
+  const toggleSubbar = (name) => {
+        setOpenSubbar(prev => (prev === name ? '' : name));
   };
 
-export default HomePage;
+  const tasks = [
+    {
+      name: "Submit Weekly Report",
+      status: "Due Today",
+      priority: "high",
+      dueDate: "Mar 15, 2024",
+    },
+    {
+      name: "Floor Meeting Notes",
+      status: "In Progress",
+      priority: "medium",
+      dueDate: "Mar 16, 2024",
+    },
+    {
+      name: "Update Resident Directory",
+      status: "Pending",
+      priority: "low",
+      dueDate: "Mar 18, 2024",
+    },
+  ]
+
+  const upcomingEvents = [
+    {
+      name: "Floor Community Meeting",
+      location: "Trinity Common Room",
+      time: "Mon 7:00 pm - 8:00 pm",
+      dates: "Mar 15, 2024",
+      type: "Required",
+    },
+    {
+      name: "RA Training Session",
+      location: "Student Center 201",
+      time: "Wed 3:00 pm - 5:00 pm",
+      dates: "Mar 17, 2024",
+      type: "Required",
+    },
+    {
+      name: "Wellness Workshop",
+      location: "Bell Tower Lounge",
+      time: "Fri 4:00 pm - 5:30 pm",
+      dates: "Mar 19, 2024",
+      type: "Optional",
+    },
+  ]
+
+  const duties = [
+    {
+      name: "Evening Rounds",
+      date: "Mar 15, 2024",
+      time: "8:00 pm - 12:00 am",
+      location: "Trinity Hall",
+      partner: "John Smith",
+    },
+    {
+      name: "Weekend On-Call",
+      date: "Mar 16-17, 2024",
+      time: "All Day",
+      location: "Bell Tower",
+      partner: "Emma Johnson",
+    },
+  ]
+
+  return (
+    <div className="flex h-screen bg-gray-100">
+
+      {/* Sidebar */}
+      <div className="hidden w-64 flex-col bg-[#00247D] text-white md:flex">
+          <div className="p-4 border-b border-white/10">
+            <h1 className="text-xl font-bold">Team RAvolution</h1>
+          </div>
+          <nav className="flex-1 p-4 space-y-2">
+            <a href="#" className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10">
+              <LayoutDashboard className="h-5 w-5" />
+              <span>Dashboard</span>
+            </a>
+            <a href="/search" className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10">
+              <Search className="h-5 w-5" />
+              <span>Search User</span>
+            </a>
+            <a href="/schedule" className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10">
+              <Calendar className="h-5 w-5" />
+              <span>Schedule</span>
+            </a>
+            <div className="space-y-2">
+              <div
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer"
+                onClick={() => toggleSubbar('reportInfo')}
+              >
+                <MessageSquareWarning className="h-5 w-5" />
+                <span>Report</span>
+                <ChevronDown className={`h-4 w-4 ml-auto transition-transform ${openSubbar === 'reportInfo' ? 'rotate-180' : ''}`} />
+              </div>
+              {openSubbar === 'reportInfo' && (
+                <div className="ml-8 space-y-1">
+                  <a href="\report" className="block px-3 py-2 rounded-lg hover:bg-white/10">Submit Report</a>
+                  <a href="\report_history" className="block px-3 py-2 rounded-lg hover:bg-white/10">Report History</a>
+                </div>
+              )}
+            </div>
+            <div className="space-y-2">
+              <div
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer"
+                onClick={() => toggleSubbar('activityInfo')}
+              >
+                <Dices className="h-5 w-5" />
+                <span>Activity</span>
+                <ChevronDown className={`h-4 w-4 ml-auto transition-transform ${openSubbar === 'activityInfo' ? 'rotate-180' : ''}`} />
+              </div>
+              {openSubbar === 'activityInfo' && (
+                <div className="ml-8 space-y-1">
+                  <a href="/proposal" className="block px-3 py-2 rounded-lg hover:bg-white/10">Proposal Form</a>
+                  <a href="#" className="block px-3 py-2 rounded-lg hover:bg-white/10">Activity History</a>
+                </div>
+              )}
+            </div>
+            
+          </nav>
+        </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <header className="flex items-center justify-between border-b bg-white p-4">
+          <div className="flex items-center">
+            <Button variant="ghost" size="icon" className="md:hidden mr-2">
+              <Menu className="h-6 w-6" />
+            </Button>
+            <h1 className="text-xl font-semibold">Dashboard</h1>
+          </div>
+          <Button variant="ghost" size="icon">
+            <Settings className="h-5 w-5" />
+          </Button>
+        </header>
+
+        <main className="flex-1 overflow-auto p-6">
+          <div className="mb-6">
+            <h2 className="text-3xl font-light text-gray-800">Hello Shuhuai!</h2>
+          </div>
+
+          <Tabs defaultValue="general" className="space-y-6">
+            <div className="flex items-center justify-between">
+            </div>
+
+            <TabsContent value="general" className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between">
+                    <CardTitle>Tasks</CardTitle>
+                    <Button variant="ghost" size="icon">
+                      <ExternalLink className="h-4 w-4" />
+                    </Button>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {tasks.map((task) => (
+                        <div
+                          key={task.name}
+                          className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0"
+                        >
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <p className="font-medium">{task.name}</p>
+                              {task.priority === 'high' && (
+                                <AlertCircle className="h-4 w-4 text-red-500" />
+                              )}
+                            </div>
+                            <p className="text-sm text-muted-foreground">{task.dueDate}</p>
+                          </div>
+                          <span className={`text-sm ${
+                            task.status === 'Due Today' ? 'text-red-500' : 
+                            task.status === 'In Progress' ? 'text-yellow-500' : 
+                            'text-muted-foreground'
+                          }`}>
+                            {task.status}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between">
+                    <CardTitle>Upcoming Events</CardTitle>
+                    <Button variant="ghost" size="icon">
+                      <ExternalLink className="h-4 w-4" />
+                    </Button>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {upcomingEvents.map((event) => (
+                        <div key={event.name} className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <p className="font-medium">{event.name}</p>
+                            <span className={`text-xs px-2 py-1 rounded-full ${
+                              event.type === 'Required' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'
+                            }`}>
+                              {event.type}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-4 w-4" />
+                              {event.time}
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <MapPin className="h-4 w-4" />
+                              {event.location}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                            <Calendar className="h-4 w-4" />
+                            {event.dates}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle>Duties</CardTitle>
+                  <Button variant="ghost" size="icon">
+                    <ExternalLink className="h-4 w-4" />
+                  </Button>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {duties.map((duty) => (
+                      <div key={duty.name} className="space-y-2 rounded-lg border p-4">
+                        <div className="flex items-center justify-between">
+                          <p className="font-medium">{duty.name}</p>
+                        </div>
+                        <div className="space-y-1 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-4 w-4" />
+                            {duty.date}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-4 w-4" />
+                            {duty.time}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <MapPin className="h-4 w-4" />
+                            {duty.location}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <User className="h-4 w-4" />
+                            Partner: {duty.partner}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="academics">
+              <Card>
+                <CardContent className="p-6">
+                  <p className="text-muted-foreground">Academic content goes here...</p>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="financials">
+              <Card>
+                <CardContent className="p-6">
+                  <p className="text-muted-foreground">Financial content goes here...</p>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </main>
+      </div>
+    </div>
+  )
+}

@@ -1,7 +1,7 @@
-// pages/api/getResidents.js
+// pages/api/getAccessLevel.js
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
-
+import { use } from 'react';
 
 async function openDB() {
   return open({
@@ -12,20 +12,17 @@ async function openDB() {
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    const { raNetID } = req.query; 
-
+    const { netID } = req.query;
     try {
       const db = await openDB();
 
-      const residents = await db.all(
-        'SELECT u.netid, u.firstname, u.lastname, u.email, u.phone FROM users u, hasRA h WHERE raNetID = ? AND u.netid = h.studentNetID',
-        [raNetID]
+      const userClass = await db.get(
+        'SELECT class FROM users WHERE netID = ? LIMIT 1',
+        [netID]
       );
-
-      if (residents.length > 0) {
-        res.status(200).json(residents); 
-      } else {
-        res.status(404).json({ message: 'No residents found for this RA' });
+      
+      if (userClass) {
+        res.status(200).json(userClass);  // Return residents as JSON
       }
     } catch (error) {
       res.status(500).json({ error: 'Database query failed', details: error });
