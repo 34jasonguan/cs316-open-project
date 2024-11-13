@@ -1,3 +1,5 @@
+// pages/report_history.js
+
 import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,8 +11,8 @@ import {
   ChevronDown,
   Menu,
   Settings,
-  Search, 
-  Dices
+  Search,
+  Dices,
 } from "lucide-react";
 import { useRouter } from 'next/router';
 
@@ -18,54 +20,57 @@ const ReportHistory = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchUserId, setSearchUserId] = useState('');
-  const [userId, setUserId] = useState(''); // Start with empty userId
+  const [searchReportId, setSearchReportId] = useState('');
+  const [searchType, setSearchType] = useState('');
+  const [searchUrgency, setSearchUrgency] = useState('');
+  const [inputValue, setInputValue] = useState('');
   const [openSubbar, setOpenSubbar] = useState('');
   const router = useRouter();
 
-  // Mock report data for testing
-  const mockReports = {
-    admin: [
-      { id: 1, type: 'Safety Issue', urgency: 'High', description: 'Fire hazard near Belltower', timestamp: '2024-10-21 14:30:00', status: 'Resolved' },
-      { id: 2, type: 'Noise Complaint', urgency: 'Low', description: 'Loud music from East House, Room 204', timestamp: '2024-10-20 22:30:00', status: 'Pending' },
-    ],
-    user123: [
-      { id: 3, type: 'Maintenance Request', urgency: 'Medium', description: 'Water leakage in restroom', timestamp: '2024-10-22 11:15:00', status: 'In Progress' },
-      { id: 4, type: 'Noise Complaint', urgency: 'Medium', description: 'Construction noise during quiet hours', timestamp: '2024-10-22 14:00:00', status: 'Pending' },
-    ],
-    user456: [
-      { id: 5, type: 'Safety Issue', urgency: 'High', description: 'Broken window in West Hall', timestamp: '2024-10-23 09:45:00', status: 'Resolved' },
-    ],
-  };
-
-  useEffect(() => {
-    if (userId) {
-      fetchReports(userId);
-    } else {
-      // If no userId, clear reports
-      setReports([]);
-    }
-  }, [userId]);
-
-  const fetchReports = (userId) => {
+  const fetchReports = async () => {
     setLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      setReports(mockReports[userId] || []);
+    try {
+      const params = new URLSearchParams();
+
+      if (searchUserId.trim()) {
+        params.append('userId', searchUserId.trim());
+      }
+      if (searchReportId.trim()) {
+        params.append('reportId', searchReportId.trim());
+      }
+      if (searchType) {
+        params.append('type', searchType);
+      }
+      if (searchUrgency) {
+        params.append('urgency', searchUrgency);
+      }
+      if (inputValue.trim()) {
+        params.append('inputValue', inputValue.trim());
+      }
+
+      const response = await fetch(`/api/getReports?${params.toString()}`);
+      if (response.ok) {
+        const data = await response.json();
+        setReports(data);
+      } else {
+        console.error('Failed to fetch reports');
+        setReports([]);
+      }
+    } catch (error) {
+      console.error('Error fetching reports:', error);
+      setReports([]);
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
   const toggleSubbar = (name) => {
     setOpenSubbar((prev) => (prev === name ? '' : name));
   };
 
-  const handleSearchChange = (e) => {
-    setSearchUserId(e.target.value);
-  };
-
   const handleSearch = () => {
-    setUserId(searchUserId.trim());
+    fetchReports();
   };
 
   return (
@@ -113,26 +118,35 @@ const ReportHistory = () => {
             )}
           </div>
           <div className="space-y-2">
-          <div
-            className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer"
-            onClick={() => toggleSubbar('activityInfo')}
-          >
-            <Dices className="h-5 w-5" />
-            <span>Activity</span>
-            <ChevronDown className={`h-4 w-4 ml-auto transition-transform ${openSubbar === 'activityInfo' ? 'rotate-180' : ''}`} />
-          </div>
-          {openSubbar === 'activityInfo' && (
-            <div className="ml-8 space-y-1">
-              <a href="/proposal" className="block px-3 py-2 rounded-lg hover:bg-white/10">Proposal Form</a>
-              <a href="#" className="block px-3 py-2 rounded-lg hover:bg-white/10">Activity History</a>
+            <div
+              className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer"
+              onClick={() => toggleSubbar('activityInfo')}
+            >
+              <Dices className="h-5 w-5" />
+              <span>Activity</span>
+              <ChevronDown
+                className={`h-4 w-4 ml-auto transition-transform ${
+                  openSubbar === 'activityInfo' ? 'rotate-180' : ''
+                }`}
+              />
             </div>
-          )}
-        </div>
+            {openSubbar === 'activityInfo' && (
+              <div className="ml-8 space-y-1">
+                <a href="/proposal" className="block px-3 py-2 rounded-lg hover:bg-white/10">
+                  Proposal Form
+                </a>
+                <a href="#" className="block px-3 py-2 rounded-lg hover:bg-white/10">
+                  Activity History
+                </a>
+              </div>
+            )}
+          </div>
         </nav>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
         <header className="flex items-center justify-between border-b bg-white p-4">
           <div className="flex items-center">
             <Button variant="ghost" size="icon" className="md:hidden mr-2">
@@ -151,25 +165,62 @@ const ReportHistory = () => {
           </div>
 
           {/* Search Bar */}
-          <div className="flex items-center space-x-4 mb-6">
-            <Input
-              placeholder="Enter User ID to search reports"
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <Input
+              placeholder="User ID"
               value={searchUserId}
-              onChange={handleSearchChange}
-              className="w-full md:w-1/3"
+              onChange={(e) => setSearchUserId(e.target.value)}
             />
-            <Button onClick={handleSearch}>
-              <Search className="mr-2 h-4 w-4" />
-              Search
-            </Button>
+            <Input
+              placeholder="Report ID"
+              value={searchReportId}
+              onChange={(e) => setSearchReportId(e.target.value)}
+            />
+            <Input
+              placeholder="Keyword (Description or Location)"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+            />
+            <div>
+              <label className="text-grey-700">Type:</label>
+              <select
+                value={searchType}
+                onChange={(e) => setSearchType(e.target.value)}
+                className="w-full mt-1 px-3 py-2 border border-black text-black rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+              >
+                <option value="">All Types</option>
+                <option value="Noise Complaint">Noise Complaint</option>
+                <option value="Safety Issue">Safety Issue</option>
+                <option value="Maintenance Request">Maintenance Request</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-grey-700">Urgency:</label>
+              <select
+                value={searchUrgency}
+                onChange={(e) => setSearchUrgency(e.target.value)}
+                className="w-full mt-1 px-3 py-2 border border-black text-black rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+              >
+                <option value="">All Urgencies</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+
+            
+              <Button onClick={handleSearch} className="w-full md:w-auto mt-4">
+                <Search className="mr-2 h-4 w-4" />
+                Search
+              </Button>
+            
+
           </div>
 
           {loading ? (
             <p className="text-gray-600">Loading report history...</p>
-          ) : reports.length === 0 && userId ? (
-            <p className="text-gray-600">No reports found for user "{userId}"</p>
-          ) : reports.length === 0 && !userId ? (
-            <p className="text-gray-600">Please enter a User ID to search for reports.</p>
+          ) : reports.length === 0 ? (
+            <p className="text-gray-600">No reports found for the provided criteria.</p>
           ) : (
             <div className="grid grid-cols-1 gap-4">
               {reports.map((report) => (
@@ -181,8 +232,9 @@ const ReportHistory = () => {
                     <p><strong>Type:</strong> {report.type}</p>
                     <p><strong>Urgency:</strong> {report.urgency}</p>
                     <p><strong>Description:</strong> {report.description}</p>
+                    <p><strong>Location:</strong> {report.location}</p>
+                    <p><strong>Submitted by:</strong> {report.is_anonymous ? 'Anonymous' : report.submitted_by}</p>
                     <p><strong>Submitted on:</strong> {new Date(report.timestamp).toLocaleString()}</p>
-                    <p><strong>Status:</strong> {report.status || 'Pending'}</p>
                   </CardContent>
                 </Card>
               ))}
