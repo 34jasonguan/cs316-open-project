@@ -196,7 +196,7 @@ const HomePage = () => {
                 </div>
               ) : (
                 <div className="flex space-x-4">
-                  <Link href="/login" className="hover:underline">Login</Link>
+                  <Link href="/" className="hover:underline">Login</Link>
                   <Link href="/register" className="hover:underline">Register</Link>
                 </div>
               )}

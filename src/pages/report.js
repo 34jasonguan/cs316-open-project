@@ -30,7 +30,6 @@ const SafetyReportForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
     const reportData = {
       type: reportType,
       urgency,
@@ -56,7 +55,7 @@ const SafetyReportForm = () => {
         setIsSubmitted(true); 
         setTimeout(() => {
           setIsSubmitted(false);
-          router.push('/');
+          router.push('/dashboard');
         }, 2000);
       } else {
         console.error('Failed to submit report');
@@ -319,10 +318,12 @@ const SafetyReportForm = () => {
           </Card>
 
           {isSubmitted && (
+            
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
               <div className="bg-white p-6 rounded-md text-center">
                 <p>Your report has been submitted successfully!</p>
               </div>
+              router.push('/dashboard');
             </div>
           )}
         </main>
