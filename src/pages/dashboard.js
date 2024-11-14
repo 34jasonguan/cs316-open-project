@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
@@ -29,6 +30,7 @@ export default function Dashboard() {
   const [userID, setUserID] = useState('');
   const [openSubbar, setOpenSubbar] = useState('');
   const [hasStaffAccess, setHasStaffAccess] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const storedUserID = localStorage.getItem('userID');
@@ -86,26 +88,10 @@ export default function Dashboard() {
     },
   ]
 
-  const duties = [
-    {
-      name: "Evening Rounds",
-      date: "Mar 15, 2024",
-      time: "8:00 pm - 12:00 am",
-      location: "Trinity Hall",
-      partner: "John Smith",
-    },
-    {
-      name: "Weekend On-Call",
-      date: "Mar 16-17, 2024",
-      time: "All Day",
-      location: "Bell Tower",
-      partner: "Emma Johnson",
-    },
-  ]
-
   const handleLogout = () => {
     setUserID('');
     localStorage.removeItem('userID');
+    router.push('/');
   };
 
   return (
@@ -184,7 +170,7 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="flex space-x-4">
-                <Link href="/login" className="hover:underline">Login</Link>
+                <Link href="/" className="hover:underline">Login</Link>
                 <Link href="/register" className="hover:underline">Register</Link>
               </div>
             )}
@@ -203,9 +189,6 @@ export default function Dashboard() {
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle>Tasks</CardTitle>
-                    <Button variant="ghost" size="icon">
-                      <ExternalLink className="h-4 w-4" />
-                    </Button>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
@@ -239,9 +222,6 @@ export default function Dashboard() {
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle>Upcoming Events</CardTitle>
-                    <Button variant="ghost" size="icon">
-                      <ExternalLink className="h-4 w-4" />
-                    </Button>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
@@ -275,6 +255,7 @@ export default function Dashboard() {
                   </CardContent>
                 </Card>
               </div>
+            
             </TabsContent>
           </Tabs>
         </main>

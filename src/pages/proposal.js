@@ -46,7 +46,7 @@ export default function ActivityProposalForm() {
       if (response.ok) {
         alert('Your Proposal Has Been Submitted');
         console.log('Activity submitted successfully');
-        router.push('/');
+        router.push('/dashboard');
       } else {
         console.error('Failed to submit activity');
       }
@@ -67,7 +67,7 @@ export default function ActivityProposalForm() {
           <h1 className="text-xl font-bold">Team RAvolution</h1>
         </div>
         <nav className="flex-1 p-4 space-y-2">
-          <a href="/" className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10">
+          <a href="/dashboard" className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10">
             <LayoutDashboard className="h-5 w-5" />
             <span>Dashboard</span>
           </a>

@@ -53,11 +53,12 @@ export default function RegisterPage() {
             password: '',
             role: undefined,
             year: undefined,
+            student: [],
+            ra: [],
+            rc: [],
         },
     })
     const watchRole = form.watch("role");
-
-    console.log(form.getValues('role'));
 
     // Handle create account form submission
     const handleRegister = async (values) => {
@@ -71,7 +72,7 @@ export default function RegisterPage() {
         const yearInput = values.year;
         const passwordInput = values.password;
 
-        setIsLoading(true)
+        // setIsLoading(true)
 
         const userInsertedData = {
             'netID': idInput,
@@ -95,7 +96,7 @@ export default function RegisterPage() {
             body: JSON.stringify(userInsertedData)
         });
 
-        setIsLoading(false)
+        // setIsLoading(false)
 
         if (response.ok) {
             window.alert('Account created successfully!');
@@ -103,7 +104,7 @@ export default function RegisterPage() {
                 title: 'Registration Successful',
                 description: 'Your account has been created.',
               })
-            router.push('/login');
+            router.push('/');
         }
     };
 
@@ -116,9 +117,7 @@ export default function RegisterPage() {
                 
                 if (response.ok) {
                     const selectedUsers = await response.json();
-                    console.log(selectedUsers); 
                     options = (selectedUsers.length > 0) ? selectedUsers.map(user => {return {value: user.netid, label: user.firstname + ' ' + user.lastname};}) : [];
-                    console.log(options); 
                 } else {
                 const errorData = await response.json();
                 // generatedOutput = errorData.message || 'An error occurred';
@@ -148,7 +147,7 @@ export default function RegisterPage() {
           <form onSubmit={form.handleSubmit(handleRegister)} className="space-y-6">
             <FormField
               control={form.control}
-              name="userId"
+              name="id"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>User ID</FormLabel>
@@ -187,7 +186,7 @@ export default function RegisterPage() {
             />
             <FormField
               control={form.control}
-              name="phoneNumber"
+              name="phone"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Phone Number</FormLabel>
@@ -292,7 +291,7 @@ export default function RegisterPage() {
             {(['student', 'RC'].includes(watchRole)) && (
             <FormField
               control={form.control}
-              name="student"
+              name="ra"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>RA:</FormLabel>
@@ -301,8 +300,8 @@ export default function RegisterPage() {
                                 cacheOptions
                                 defaultOptions
                                 loadOptions={(inputValue) => promiseOptions(inputValue, 'RA')}
-                                value={stuInput}
-                                onChange={(e) => setStuInput(e)}
+                                value={raInput}
+                                onChange={(e) => setRAInput(e)}
                             />
                   <FormMessage />
                 </FormItem>
@@ -320,8 +319,8 @@ export default function RegisterPage() {
                                 cacheOptions
                                 defaultOptions
                                 loadOptions={(inputValue) => promiseOptions(inputValue, 'RC')}
-                                value={stuInput}
-                                onChange={(e) => setStuInput(e)}
+                                value={rcInput}
+                                onChange={(e) => setRCInput(e)}
                             />
                   <FormMessage />
                 </FormItem>

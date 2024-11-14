@@ -269,6 +269,7 @@ CREATE TABLE password (
     PRIMARY KEY (netID)
 );
 
+
 CREATE TABLE availability (
   id SERIAL PRIMARY KEY,
   user_id INTEGER NOT NULL,

@@ -37,14 +37,10 @@ const tasksData = [
   },
 ]
 
-// Mock data for current availability
 const mockCurrentAvailability = {
   "RA On-Call Hours": [
-    { date: "2023-11-15", time: "19:00-07:00" },
   ],
   "Floor Rounds": [
-    { date: "2023-11-16", time: "21:00-22:00" },
-    { date: "2023-11-17", time: "21:00-22:00" },
   ],
   "Resident Check-in": [],
 }
@@ -102,7 +98,7 @@ export default function Schedule() {
           <h1 className="text-xl font-bold">Team RAvolution</h1>
         </div>
         <nav className="flex-1 p-4 space-y-2">
-          <a href="/" className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10">
+          <a href="/dashboard" className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10">
             <LayoutDashboard className="h-5 w-5" />
             <span>Dashboard</span>
           </a>
