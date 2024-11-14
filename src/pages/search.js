@@ -176,7 +176,7 @@ const HomePage = () => {
               {openSubbar === 'activityInfo' && (
                 <div className="ml-8 space-y-1">
                   <a href="/proposal" className="block px-3 py-2 rounded-lg hover:bg-white/10">Proposal Form</a>
-                  <a href="#" className="block px-3 py-2 rounded-lg hover:bg-white/10">Activity History</a>
+                  <a href="/activity_history" className="block px-3 py-2 rounded-lg hover:bg-white/10">Activity History</a>
                 </div>
               )}
             </div>
