@@ -22,6 +22,7 @@ import {
     SelectValue,
   } from '@/components/ui/select'
 import { toast } from '@/hooks/use-toast'
+import Link from 'next/link'
 import AsyncSelect from 'react-select/async';
 
 const formSchema = z.object({
@@ -33,6 +34,7 @@ const formSchema = z.object({
     role: z.enum(['student', 'RA', 'RC'], { required_error: 'Please select a role' }),
     year: z.enum(['freshman', 'sophomore', 'junior', 'senior'], { required_error: 'Please select a year' }),
     password: z.string().min(8, { message: 'Password must be at least 8 characters long' }),
+    passwordConfirm: z.string().min(8, { message: 'Password must be at least 8 characters long' }),
   });
 
 export default function RegisterPage() {
@@ -51,6 +53,7 @@ export default function RegisterPage() {
             phone: '',
             email: '',
             password: '',
+            passwordConfirm: '',
             role: undefined,
             year: undefined,
             student: [],
@@ -71,6 +74,9 @@ export default function RegisterPage() {
         const classInput = values.role;
         const yearInput = values.year;
         const passwordInput = values.password;
+        const passwordConfirm = values.passwordConfirm;
+
+        if (passwordInput === passwordConfirm) {
 
         // setIsLoading(true)
 
@@ -106,6 +112,10 @@ export default function RegisterPage() {
               })
             router.push('/');
         }
+
+      } else {
+        window.alert('Re-entered password should be same as the previous one!');
+      }
     };
 
     const promiseOptions = async (inputValue, searchedClass) => {
@@ -137,7 +147,7 @@ export default function RegisterPage() {
 
     return (
         <div>
-        <div className="flex items-center justify-center min-h-screen bg-white">
+        <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="w-full max-w-md space-y-8 p-8 bg-card rounded-xl shadow-lg">
         <div className="space-y-2 text-center">
           <h1 className="text-3xl font-bold">Create an Account</h1>
@@ -218,6 +228,19 @@ export default function RegisterPage() {
                   <FormLabel>Password</FormLabel>
                   <FormControl>
                     <Input type="password" placeholder="Create a password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="passwordConfirm"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="Confirm password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -329,6 +352,11 @@ export default function RegisterPage() {
             <Button type="submit" className="w-full bg-[#00247D]" disabled={isLoading}>
               {isLoading ? 'Registering...' : 'Register'}
             </Button>
+            <div className="mt-4 text-center">
+              <Link href="/" className="text-sm text-blue-600 hover:underline">
+                Already have an account? Login here
+              </Link>
+            </div>
           </form>
         </Form>
       </div>
