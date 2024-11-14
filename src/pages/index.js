@@ -87,8 +87,10 @@ export default function LoginPage() {
           <h1 className="text-3xl font-bold">Login</h1>
           <p className="text-muted-foreground">Enter your credentials to access your account</p>
         </div>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleLogin)}  className="space-y-6">
+        <Form
+        {...form}
+        >
+          <form style = {{border: '1px solid white'}} onSubmit={form.handleSubmit(handleLogin)}  className="space-y-6">
             <FormField
               control={form.control}
               name="userID"

@@ -137,14 +137,14 @@ export default function RegisterPage() {
 
     return (
         <div>
-        <div className="flex items-center justify-center min-h-screen bg-[#DDE1ED]">
+        <div className="flex items-center justify-center min-h-screen bg-white">
         <div className="w-full max-w-md space-y-8 p-8 bg-card rounded-xl shadow-lg">
         <div className="space-y-2 text-center">
           <h1 className="text-3xl font-bold">Create an Account</h1>
           <p className="text-muted-foreground">Enter your details to register</p>
         </div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleRegister)} className="space-y-6">
+          <form style = {{border: '1px solid white'}} onSubmit={form.handleSubmit(handleRegister)} className="space-y-6">
             <FormField
               control={form.control}
               name="id"
