@@ -133,7 +133,7 @@ const HomePage = () => {
       <div className="flex h-screen bg-gray-100">
         <div className="hidden w-64 flex-col bg-[#00247D] text-white md:flex">
           <div className="p-4 border-b border-white/10">
-            <h1 className="text-xl font-bold">Team RAvolution</h1>
+            <h1 className="text-xl font-bold">ResiDevils</h1>
           </div>
           <nav className="flex-1 p-4 space-y-2">
             <a href="/dashboard" className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10">
@@ -267,7 +267,7 @@ const HomePage = () => {
                         <TableCell>{resident.lastname || "N/A"}</TableCell>
                         <TableCell>{resident.netid || "N/A"}</TableCell>
                         <TableCell>{resident.class || "N/A"}</TableCell>
-                        <TableCell>{(hasStaffAccess) ? (resident.email || "N/A") : ("-")}</TableCell>
+                        <TableCell>{resident.email || "N/A"}</TableCell>
                         <TableCell>{(hasStaffAccess) ? (resident.dorm || "N/A") : ("-")}</TableCell>
                         <TableCell>
                             <Button variant="ghost" size="icon">

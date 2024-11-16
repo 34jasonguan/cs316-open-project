@@ -100,7 +100,7 @@ export default function Dashboard() {
       {/* Sidebar */}
       <div className="hidden w-64 flex-col bg-[#00247D] text-white md:flex">
           <div className="p-4 border-b border-white/10">
-            <h1 className="text-xl font-bold">Team RAvolution</h1>
+            <h1 className="text-xl font-bold">ResiDevils</h1>
           </div>
           <nav className="flex-1 p-4 space-y-2">
             <a href="#" className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10">
