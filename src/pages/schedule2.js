@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Settings, LayoutDashboard, Calendar as CalendarIcon, MessageSquareWarning, Dices, ChevronDown, Menu, Search } from 'lucide-react'
+import NavBar from "@/components/Navbar"
 
 // Assuming you have a function to get the current user's netID
 import { getCurrentUserNetID } from '/lib/auth'
@@ -14,7 +15,6 @@ export default function Schedule() {
   const [selectedTask, setSelectedTask] = useState("")
   const [availableSlots, setAvailableSlots] = useState([])
   const [selectedSlots, setSelectedSlots] = useState([])
-  const [openSubbar, setOpenSubbar] = useState('')
   const [currentAvailability, setCurrentAvailability] = useState([])
   const [tasks, setTasks] = useState([])
 
@@ -42,10 +42,6 @@ export default function Schedule() {
     } catch (error) {
       console.error('Failed to fetch current availability:', error)
     }
-  }
-
-  const toggleSubbar = (name) => {
-    setOpenSubbar(prev => (prev === name ? '' : name))
   }
 
   useEffect(() => {
@@ -93,58 +89,9 @@ export default function Schedule() {
 
   return (
     <div className="flex h-screen bg-gray-100">
+      
       {/* Sidebar */}
-      <div className="hidden w-64 flex-col bg-[#00247D] text-white md:flex">
-        <div className="p-4 border-b border-white/10">
-          <h1 className="text-xl font-bold">Team RAvolution</h1>
-        </div>
-        <nav className="flex-1 p-4 space-y-2">
-          <a href="/" className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10">
-            <LayoutDashboard className="h-5 w-5" />
-            <span>Dashboard</span>
-          </a>
-          <a href="/search" className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10">
-            <Search className="h-5 w-5" />
-            <span>Search User</span>
-          </a>
-          <a href="/schedule" className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10">
-            <CalendarIcon className="h-5 w-5" />
-            <span>Schedule</span>
-          </a>
-          <div className="space-y-2">
-            <div
-              className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer"
-              onClick={() => toggleSubbar('reportInfo')}
-            >
-              <MessageSquareWarning className="h-5 w-5" />
-              <span>Report</span>
-              <ChevronDown className={`h-4 w-4 ml-auto transition-transform ${openSubbar === 'reportInfo' ? 'rotate-180' : ''}`} />
-            </div>
-            {openSubbar === 'reportInfo' && (
-              <div className="ml-8 space-y-1">
-                <a href="/report" className="block px-3 py-2 rounded-lg hover:bg-white/10">Submit Report</a>
-                <a href="/report_history" className="block px-3 py-2 rounded-lg hover:bg-white/10">Report History</a>
-              </div>
-            )}
-          </div>
-          <div className="space-y-2">
-            <div
-              className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer"
-              onClick={() => toggleSubbar('activityInfo')}
-            >
-              <Dices className="h-5 w-5" />
-              <span>Activity</span>
-              <ChevronDown className={`h-4 w-4 ml-auto transition-transform ${openSubbar === 'activityInfo' ? 'rotate-180' : ''}`} />
-            </div>
-            {openSubbar === 'activityInfo' && (
-              <div className="ml-8 space-y-1">
-                <a href="/proposal" className="block px-3 py-2 rounded-lg hover:bg-white/10">Proposal Form</a>
-                <a href="#" className="block px-3 py-2 rounded-lg hover:bg-white/10">Activity History</a>
-              </div>
-            )}
-          </div>
-        </nav>
-      </div>
+      <NavBar />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
