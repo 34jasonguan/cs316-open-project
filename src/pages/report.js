@@ -30,16 +30,20 @@ const SafetyReportForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const reportData = {
-      type: reportType,
-      urgency,
-      description,
-      isAnonymous,
-      submitted_by: isAnonymous ? null : 'admin', 
-      location, 
-      issueType: safetyIssueType === 'Other' ? otherIssue : safetyIssueType,
-      equipment: reportType === 'Maintenance Request' ? equipment : null,
-    };
+
+    const formData = new FormData();
+    formData.append("type", reportType);
+    formData.append("urgency", urgency);
+    formData.append("description", description);
+    formData.append("isAnonymous", isAnonymous);
+    formData.append("submitted_by", isAnonymous ? null : "admin");
+    formData.append("location", location);
+    formData.append("issueType", safetyIssueType === "Other" ? otherIssue : safetyIssueType);
+    formData.append("equipment", reportType === "Maintenance Request" ? equipment : null);
+
+    if (attachment) {
+      formData.append("attachment", attachment);
+    }
   
     try {
       const response = await fetch('/api/insertReport', {
@@ -47,7 +51,7 @@ const SafetyReportForm = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(reportData),
+        body: formData,
       });
   
       if (response.ok) {
