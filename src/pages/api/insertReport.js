@@ -1,6 +1,12 @@
 // pages/api/insertReport.js
 
 import prisma from '../../../lib/prisma'; 
+import multer from "multer";
+import { promisify } from "util";
+import fs from "fs";
+
+const upload = multer({ dest: "public/uploads/" });
+const uploadMiddleware = promisify(upload.single("attachment")); 
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -8,6 +14,7 @@ export default async function handler(req, res) {
   }
 
   try {
+    await uploadMiddleware(req, res);
     const {
       type,
       urgency,
@@ -17,6 +24,8 @@ export default async function handler(req, res) {
       issueType,
       equipment,
     } = req.body;
+
+    const attachmentPath = req.file ? `/uploads/${req.file.filename}` : null; 
 
     // increment last ID by 1 to find new ID
     const lastReport = await prisma.report.findFirst({
@@ -30,11 +39,12 @@ export default async function handler(req, res) {
         type,
         urgency,
         description,
-        submitted_by: 'admin',
         is_anonymous: isAnonymous,
+        submitted_by,
         location,
         issue_type: type === 'safety' ? issueType : null,
         equipment: type === 'maintenance' ? equipment : null,
+        attachment: attachmentPath, 
         timestamp: new Date(),
       },
     });
