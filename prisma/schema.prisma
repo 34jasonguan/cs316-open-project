@@ -62,6 +62,7 @@ model report {
   location     String?
   issue_type   String?
   equipment    String?
+  attachment   String?
   timestamp    DateTime @default(now()) @db.Timestamptz(6)
 }
 
