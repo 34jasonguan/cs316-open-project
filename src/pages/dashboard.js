@@ -24,14 +24,41 @@ import NavBar from "@/components/Navbar"
 
 export default function Dashboard() {
   const [userID, setUserID] = useState('');
+  const [dorm, setDorm] = useState('');
+  const [events, setEvents] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
     const storedUserID = localStorage.getItem('userID');
     if (storedUserID) {
       setUserID(storedUserID);
+      fetchUserDorm(storedUserID);
     }
   }, []);
+
+  const fetchUserDorm = async (userID) => {
+    const response = await fetch(`/api/getUserDorm?userID=${userID}`);
+    const data = await response.json();
+    if (response.ok) {
+      setDorm(data.dorm);
+      fetchEvents(data.dorm);
+    }
+  };
+
+  const fetchEvents = async (dorm) => {
+    try {
+      const response = await fetch(`/api/getActivities?buildingName=${dorm}`);
+      const data = await response.json();
+      if (response.ok) {
+        setEvents(data);
+      } else {
+        setEvents([]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch events:", error);
+      setEvents([]);
+    }
+  };
 
   const tasks = [
     {
@@ -86,11 +113,7 @@ export default function Dashboard() {
 
   return (
     <div className="flex h-screen bg-gray-100">
-
-      {/* Sidebar */}
       <NavBar />
-
-      {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="flex items-center justify-between border-b bg-white p-4">
           <div className="flex items-center">
@@ -118,84 +141,77 @@ export default function Dashboard() {
 
         <main className="flex-1 overflow-auto p-6">
           {userID && (<div className="mb-6"><h2 className="text-3xl font-light text-gray-800">Hello {userID}!</h2></div>)}
-
           <Tabs defaultValue="general" className="space-y-6">
-            <div className="flex items-center justify-between">
-            </div>
-
             <TabsContent value="general" className="space-y-6">
               <div className="grid gap-6 md:grid-cols-2">
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between">
-                    <CardTitle>Tasks</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {tasks.map((task) => (
-                        <div
-                          key={task.name}
-                          className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0"
-                        >
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <p className="font-medium">{task.name}</p>
-                              {task.priority === 'high' && (
-                                <AlertCircle className="h-4 w-4 text-red-500" />
-                              )}
-                            </div>
-                            <p className="text-sm text-muted-foreground">{task.dueDate}</p>
-                          </div>
-                          <span className={`text-sm ${
-                            task.status === 'Due Today' ? 'text-red-500' : 
-                            task.status === 'In Progress' ? 'text-yellow-500' : 
-                            'text-muted-foreground'
-                          }`}>
-                            {task.status}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle>Upcoming Events</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {upcomingEvents.map((event) => (
-                        <div key={event.name} className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <p className="font-medium">{event.name}</p>
-                            <span className={`text-xs px-2 py-1 rounded-full ${
-                              event.type === 'Required' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'
-                            }`}>
-                              {event.type}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                            <div className="flex items-center gap-1">
-                              <Clock className="h-4 w-4" />
-                              {event.time}
+                      {events.length > 0 ? (
+                        events.map((event) => (
+                          <div key={event.name} className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <p className="font-medium">{event.name}</p>
                             </div>
-                            <div className="flex items-center gap-1">
-                              <MapPin className="h-4 w-4" />
-                              {event.location}
+                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                              <div className="flex items-center gap-1">
+                                <Clock className="h-4 w-4" />
+                                {event.time}
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <MapPin className="h-4 w-4" />
+                                Room {event.room_number}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                              <Calendar className="h-4 w-4" />
+                              {event.date}
                             </div>
                           </div>
-                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                            <Calendar className="h-4 w-4" />
-                            {event.dates}
-                          </div>
-                        </div>
-                      ))}
+                        ))
+                      ) : (
+                        <p>No events found for your dorm.</p>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
-              </div>
-            
-            </TabsContent>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle>Tasks</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {tasks.map((task) => (
+                      <div
+                        key={task.name}
+                        className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0"
+                      >
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium">{task.name}</p>
+                            {task.priority === 'high' && (
+                              <AlertCircle className="h-4 w-4 text-red-500" />
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground">{task.dueDate}</p>
+                        </div>
+                        <span className={`text-sm ${
+                          task.status === 'Due Today' ? 'text-red-500' : 
+                          task.status === 'In Progress' ? 'text-yellow-500' : 
+                          'text-muted-foreground'
+                        }`}>
+                          {task.status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
           </Tabs>
         </main>
       </div>

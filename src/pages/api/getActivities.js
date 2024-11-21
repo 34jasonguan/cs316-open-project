@@ -1,5 +1,6 @@
 // pages/api/getActivities.js
 import prisma from '../../../lib/prisma';
+import { format } from 'date-fns';
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
@@ -18,7 +19,12 @@ export default async function handler(req, res) {
       });
 
       if (activities.length > 0) {
-        res.status(200).json(activities);
+        const formattedActivities = activities.map(activity => ({
+          ...activity,
+          date: activity.date ? format(new Date(activity.date), 'MMM dd, yyyy') : null,
+          time: activity.time ? format(new Date(activity.time), 'hh:mm a') : null,
+        }));
+        res.status(200).json(formattedActivities);
       } else {
         res.status(404).json({ message: 'No activity found for this building' });
       }
