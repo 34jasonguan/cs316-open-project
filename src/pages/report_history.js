@@ -14,7 +14,7 @@ import {
   Search,
   Dices,
 } from "lucide-react";
-import NavBar from "@/components/Navbar"
+import NavBar from "@/components/Navbar";
 
 const ReportHistory = () => {
   const [reports, setReports] = useState([]);
@@ -25,6 +25,7 @@ const ReportHistory = () => {
   const [searchUrgency, setSearchUrgency] = useState('');
   const [inputValue, setInputValue] = useState('');
 
+  // Fetch reports from the API
   const fetchReports = async () => {
     setLoading(true);
 
@@ -63,13 +64,34 @@ const ReportHistory = () => {
     }
   };
 
+  // Update report status
+  const updateReportStatus = async (reportId, newStatus) => {
+    try {
+      const response = await fetch('/api/updateReportStatus', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ reportId, newStatus }),
+      });
+
+      if (response.ok) {
+        console.log('Report status updated successfully');
+        fetchReports(); // Refresh data after update
+      } else {
+        console.error('Failed to update report status');
+      }
+    } catch (error) {
+      console.error('Error updating report status:', error);
+    }
+  };
+
   const handleSearch = () => {
     fetchReports();
   };
 
   return (
     <div className="flex h-screen bg-gray-100">
-      
       {/* Sidebar */}
       <NavBar />
 
@@ -95,7 +117,7 @@ const ReportHistory = () => {
 
           {/* Search Bar */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <Input
+            <Input
               placeholder="User ID"
               value={searchUserId}
               onChange={(e) => setSearchUserId(e.target.value)}
@@ -137,13 +159,10 @@ const ReportHistory = () => {
               </select>
             </div>
 
-            
-              <Button onClick={handleSearch} className="w-full md:w-auto mt-4">
-                <Search className="mr-2 h-4 w-4" />
-                Search
-              </Button>
-            
-
+            <Button onClick={handleSearch} className="w-full md:w-auto mt-4">
+              <Search className="mr-2 h-4 w-4" />
+              Search
+            </Button>
           </div>
 
           {loading ? (
@@ -164,6 +183,32 @@ const ReportHistory = () => {
                     <p><strong>Location:</strong> {report.location}</p>
                     <p><strong>Submitted by:</strong> {report.is_anonymous ? 'Anonymous' : report.submitted_by}</p>
                     <p><strong>Submitted on:</strong> {new Date(report.timestamp).toLocaleString()}</p>
+                    {report.attachment && (
+                      <p>
+                        <strong>Attachment:</strong>{" "}
+                        <a
+                          href={report.attachment}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 underline"
+                        >
+                          View File
+                        </a>
+                      </p>
+                    )}
+                    <div>
+                      <label className="block text-gray-700">Status:</label>
+                      <select
+                        value={report.status}
+                        onChange={(e) => updateReportStatus(report.id, e.target.value)}
+                        className="w-full mt-1 px-3 py-2 border rounded-md"
+                      >
+                        <option value="Submitted">Submitted</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Solving">Solving</option>
+                        <option value="Solved">Solved</option>
+                      </select>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
