@@ -75,7 +75,8 @@ export default function RegisterPage() {
         const yearInput = values.year;
         const passwordInput = values.password;
         const passwordConfirm = values.passwordConfirm;
-
+        
+        if (!((classInput === 'student' && raInput.length > 1) || (classInput === 'RA' && rcInput.length > 1))) {
         if (passwordInput === passwordConfirm) {
 
         // setIsLoading(true)
@@ -115,6 +116,10 @@ export default function RegisterPage() {
 
       } else {
         window.alert('Re-entered password should be same as the previous one!');
+      }}
+      else {
+        if (classInput === 'student') {window.alert('Too many RAs! Only keep your direct RA.');}
+        if (classInput === 'RA') {window.alert('Too many RCs! Only keep your direct RC.');}
       }
     };
 
@@ -361,63 +366,6 @@ export default function RegisterPage() {
         </Form>
       </div>
     </div>
-            {/* <h1 style = {styles.heading}>Create an Account</h1>
-            <form onSubmit={handleRegister}>
-                <div type="container">
-                    <label><b>NetID</b></label>
-                    <input type="text" placeholder="Enter NetID" name="userid" id="userid" value={idInput} onChange={(e) => setIDInput(e.target.value)} required/>
-                    <label><b>First name</b></label>
-                    <input type="text" placeholder="Enter first name" name="fname" id="firstname" value={firstnameInput} onChange={(e) => setFirstnameInput(e.target.value)} required/>
-                    <label><b>Last name</b></label>
-                    <input type="text" placeholder="Enter last name" name="lname" id="lastname" value={lastnameInput} onChange={(e) => setLastnameInput(e.target.value)} required/>
-                    <label><b>Phone number</b></label>
-                    <input type="text" placeholder="Enter phone number" name="phone" id="phone" value={phoneInput} onChange={(e) => setPhoneInput(e.target.value)} required/>
-                    <label><b>Email address</b></label>
-                    <input type="text" placeholder="Enter email address" name="email" id="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} required/>
-                    <label><b>Role Type:</b>
-                        <select
-                            value={classInput}
-                            onChange={(e) => setClassInput(e.target.value)}
-                            style={styles.select}
-                            required
-                        >
-                            <option value=""></option>
-                            <option value="student">Student</option>
-                            <option value="RA">RA</option>
-                            <option value="RC">RC</option>
-                        </select>
-                    </label>
-                    {(classInput === 'student' || classInput === 'RA') && (
-                        <label htmlFor="year"><b>Year:</b>
-                            <select
-                                value={yearInput}
-                                onChange={(e) => setYearInput(e.target.value)}
-                                style={styles.select}
-                                required
-                            >
-                                <option value=""></option>
-                                <option value="freshman">Freshman</option>
-                                <option value="sophomore">Sophomore</option>
-                                <option value="junior">Junior</option>
-                                <option value="senior">Senior</option>
-                            </select>
-                        </label>
-                    )}
-                    
-                    <label><b>Password</b></label>
-                    <input type="password" placeholder="Enter password" name="pwd" id="password" value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)} required/>
-                    <button type="login">Create!</button>
-                </div>
-
-            </form> */}
         </div>
     );
 }
-
-
-
-// CAVEATS:
-//   1. Database too redundant. (hasRA & hasRC)
-//   2. One student may have multiple RAs, and one RA may have multiple RCs
-//   3. Phone number / Email might be invalid
-//   4. Mallicious inputs to break url passing e.g., '&' to retrieve all resident/RA/RC information
