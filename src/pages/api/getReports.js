@@ -1,13 +1,12 @@
 // pages/api/getReports.js
-
 import prisma from '../../../lib/prisma';
+import { format } from 'date-fns';
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     const { userId, reportId, type, urgency, inputValue } = req.query;
 
     try {
-      // 
       const whereConditions = {};
 
       if (userId) {
@@ -40,10 +39,8 @@ export default async function handler(req, res) {
         ];
       }
 
-      // 
       console.log('Query Conditions:', whereConditions);
 
-      // 
       const reports = await prisma.report.findMany({
         where: whereConditions,
         orderBy: {
@@ -51,15 +48,18 @@ export default async function handler(req, res) {
         },
       });
 
-      // 
       console.log('Reports fetched:', reports.length);
-
-      res.status(200).json(reports);
+      const formattedReports = reports.map(report => ({
+        ...report,
+        timestamp: report.timestamp
+          ? format(new Date(report.timestamp), 'MMM dd, yyyy hh:mm a')
+          : null,
+      }));
+      res.status(200).json(formattedReports);
     } catch (error) {
       console.error('Error fetching reports:', error);
       res.status(500).json({ error: 'Failed to fetch reports', details: error.message });
     } finally {
-      // 
       await prisma.$disconnect();
     }
   } else {
