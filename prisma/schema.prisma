@@ -16,35 +16,22 @@ model activities {
   building_name String?   @db.VarChar(255)
 }
 
-model availability {
-  netid          String   @db.VarChar(255)
-  available_date DateTime @db.Date
-
-  @@id([netid, available_date])
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model hasra {
-  studentnetid     String? @db.VarChar(10)
+  studentnetid     String  @id @db.VarChar(10)
   studentlastname  String? @db.VarChar(100)
   studentfirstname String? @db.VarChar(100)
-  ranetid          String? @db.VarChar(10)
+  ranetid          String  @db.VarChar(10)
   ralastname       String? @db.VarChar(100)
   rafirstname      String? @db.VarChar(100)
-
-  @@ignore
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model hasrc {
-  ranetid     String? @db.VarChar(10)
+  ranetid     String  @id @db.VarChar(10)
   ralastname  String? @db.VarChar(100)
   rafirstname String? @db.VarChar(100)
-  rcnetid     String? @db.VarChar(10)
+  rcnetid     String  @db.VarChar(10)
   rclastname  String? @db.VarChar(100)
   rcfirstname String? @db.VarChar(100)
-
-  @@ignore
 }
 
 model password {
@@ -72,7 +59,7 @@ model users {
   firstname String? @db.VarChar(100)
   year      String? @db.VarChar(10)
   email     String? @db.VarChar(100)
-  phone     String? @db.VarChar(20)
+  phone     String? @db.VarChar(15)
   class     String? @db.VarChar(10)
   dorm      String? @db.VarChar(30)
 }

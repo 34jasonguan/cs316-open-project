@@ -1,4 +1,4 @@
-// pages/index.js
+// pages/search.js
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
@@ -37,6 +37,7 @@ import {
   Settings,
 } from "lucide-react"
 import NavBar from "@/components/Navbar"
+import Profile from "@/components/Profile"
 
 const taskDescriptions = {
   'Task 1': 'Given a RC id, find all of his/her RAs (e.g. pa543)',
@@ -51,6 +52,7 @@ const HomePage = () => {
     const [filterOption, setFilterOption] = useState('netid');  //new filter
     const [userID, setUserID] = useState('');
     const [hasStaffAccess, setHasStaffAccess] = useState(false);
+    const [selectedStudent, setSelectedStudent] = useState(null);
 
     useEffect(() => {
       const storedUserID = localStorage.getItem('userID');
@@ -119,6 +121,14 @@ const HomePage = () => {
           }
         }
       };
+
+      const handleRowClick = async (student) => {
+        setSelectedStudent(student); 
+      };
+
+    const handleCloseProfile = () => {
+        setSelectedStudent(null);
+    };
 
     const handleLogout = () => {
         setUserID('');
@@ -196,7 +206,11 @@ const HomePage = () => {
                 <TableBody>
                 {output.length > 0 ? (
                     output.map((resident, index) => (
-                    <TableRow key={index}>
+                    <TableRow 
+                    key={index}
+                    className="cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleRowClick(resident)}
+                    >
                         <TableCell>
                             <div className="flex items-center justify-center">
                                 <svg
@@ -235,6 +249,9 @@ const HomePage = () => {
             </div>
           </main>
         </div>
+        {selectedStudent && (
+          <Profile student={selectedStudent} onClose={handleCloseProfile} />
+        )}
       </div>
     );
   };
