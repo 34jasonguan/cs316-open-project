@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Profile = ({ student, onClose }) => {
+const Profile = ({ student, profileData, onClose }) => {
   if (!student) return null;
 
   return (
@@ -13,6 +13,7 @@ const Profile = ({ student, onClose }) => {
           ✖
         </button>
 
+        {/* Student Basic Info */}
         <div className="flex items-center space-x-4">
           <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center">
             {/* Placeholder for profile picture */}
@@ -30,6 +31,8 @@ const Profile = ({ student, onClose }) => {
             <p className="text-gray-500">Class: {student.class || 'N/A'}</p>
           </div>
         </div>
+
+        {/* Additional Profile Info */}
         <div className="mt-4">
           <p>
             <span className="font-semibold">Email:</span> {student.email || 'N/A'}
@@ -41,6 +44,56 @@ const Profile = ({ student, onClose }) => {
             <span className="font-semibold">Dorm:</span> {student.dorm || 'N/A'}
           </p>
         </div>
+
+        {profileData?.ra && (
+          <div className="mt-4">
+            <h3 className="text-lg font-semibold">RA Information:</h3>
+            <p>
+              {profileData.ra.rafirstname} {profileData.ra.ralastname} (
+              {profileData.ra.ranetid})
+            </p>
+          </div>
+        )}
+
+        {profileData?.rc && (
+          <div className="mt-4">
+            <h3 className="text-lg font-semibold">RC Information:</h3>
+            <p>
+              {profileData.rc.rcfirstname} {profileData.rc.rclastname} (
+              {profileData.rc.rcnetid})
+            </p>
+          </div>
+        )}
+
+        {profileData?.students?.length > 0 && (
+          <div className="mt-4">
+            <h3 className="text-lg font-semibold">Assigned Students:</h3>
+            <div className="mt-2 max-h-40 overflow-y-auto border border-gray-300 rounded-md p-2 text-black">
+              {profileData.students.map((student) => (
+                <p
+                  key={student.studentnetid}
+                  className="text-gray-700 text-sm border-b border-gray-200 last:border-b-0 py-1"
+                >
+                  {student.studentfirstname} {student.studentlastname} (
+                  {student.studentnetid})
+                </p>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {profileData?.ras?.length > 0 && (
+          <div className="mt-4">
+            <h3 className="text-lg font-semibold">Assigned RAs:</h3>
+            <ul className="list-disc ml-5">
+              {profileData.ras.map((ra) => (
+                <li key={ra.ranetid}>
+                  {ra.rafirstname} {ra.ralastname} ({ra.ranetid})
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );

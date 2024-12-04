@@ -53,6 +53,7 @@ const HomePage = () => {
     const [userID, setUserID] = useState('');
     const [hasStaffAccess, setHasStaffAccess] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState(null);
+    const [profileData, setProfileData] = useState(null);
 
     useEffect(() => {
       const storedUserID = localStorage.getItem('userID');
@@ -124,10 +125,24 @@ const HomePage = () => {
 
       const handleRowClick = async (student) => {
         setSelectedStudent(student); 
+        try {
+          const response = await fetch(`/api/getProfileData?netid=${student.netid}&userClass=${student.class}`);
+          if (response.ok) {
+            const data = await response.json();
+            setProfileData(data);
+          } else {
+            console.error('Error fetching profile data:', response.statusText);
+            setProfileData(null);
+          }
+        } catch (error) {
+          console.error('Error fetching profile data:', error);
+          setProfileData(null);
+        }
       };
 
     const handleCloseProfile = () => {
         setSelectedStudent(null);
+        setProfileData(null); 
     };
 
     const handleLogout = () => {
@@ -250,7 +265,7 @@ const HomePage = () => {
           </main>
         </div>
         {selectedStudent && (
-          <Profile student={selectedStudent} onClose={handleCloseProfile} />
+          <Profile student={selectedStudent} profileData={profileData} onClose={handleCloseProfile} />
         )}
       </div>
     );
