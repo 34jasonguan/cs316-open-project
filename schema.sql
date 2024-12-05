@@ -54,7 +54,7 @@ INSERT INTO users(netid, lastname, firstname, year, email, phone, class) VALUES
               ('rt341', 'Taylor', 'Ryan', 'junior', 'ryan.taylor@duke.edu', '9191234541', 'RA'),
               ('mm442', 'Martinez', 'Mia', 'senior', 'mia.martinez@duke.edu', '9191234542', 'RA'),
               ('pa543', 'Anderson', 'Peter', NULL, 'peter.anderson@duke.edu', '9191234543', 'RC'),
-              ('hl644', 'Lee', 'Hana', NULL, 'hana.lee@duke.edu', '9191234544', 'RC'); 
+              ('hl644', 'Lee', 'Hana', NULL, 'hana.lee@duke.edu', '9191234544', 'RC'),; 
 
 /*UPDATED DATA GENERATION QUERIES WITH DORMS*/
 
@@ -272,8 +272,8 @@ CREATE TABLE password (
 
 CREATE TABLE availability (
   id SERIAL PRIMARY KEY,
-  user_id INTEGER NOT NULL,
-  task_id INTEGER NOT NULL,
+  netid VARCHAR(50) NOT NULL,
+  taskid INTEGER NOT NULL,
   date DATE NOT NULL,
   start_time TIME NOT NULL,
   end_time TIME NOT NULL,

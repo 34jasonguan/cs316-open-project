@@ -1,26 +1,11 @@
 import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
 import { useRouter } from 'next/navigation'
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  Settings,
-  MapPin,
-  Calendar,
-  Clock,
-  ExternalLink,
-  AlertCircle,
-  User,
-  LayoutDashboard,
-  MessageSquareWarning,
-  Dices,
-  GraduationCap,
-  ChevronDown,
-  Menu,
-  Search
-} from "lucide-react"
-import Link from "next/link"
-import NavBar from "@/components/Navbar"
+import { Settings, MapPin, Calendar, Clock, AlertCircle, Menu } from 'lucide-react'
+import NavBar from "@/components/NavBar"
 
 export default function Dashboard() {
   const [userID, setUserID] = useState('');
@@ -33,15 +18,23 @@ export default function Dashboard() {
     if (storedUserID) {
       setUserID(storedUserID);
       fetchUserDorm(storedUserID);
+    } else {
+      router.push('/');
     }
-  }, []);
+  }, [router]);
 
   const fetchUserDorm = async (userID) => {
-    const response = await fetch(`/api/getUserDorm?userID=${userID}`);
-    const data = await response.json();
-    if (response.ok) {
-      setDorm(data.dorm);
-      fetchEvents(data.dorm);
+    try {
+      const response = await fetch(`/api/getUserDorm?userID=${userID}`);
+      const data = await response.json();
+      if (response.ok) {
+        setDorm(data.dorm);
+        fetchEvents(data.dorm);
+      } else {
+        console.error("Failed to fetch user dorm:", data.error);
+      }
+    } catch (error) {
+      console.error("Error fetching user dorm:", error);
     }
   };
 
@@ -52,6 +45,7 @@ export default function Dashboard() {
       if (response.ok) {
         setEvents(data);
       } else {
+        console.error("Failed to fetch events:", data.message);
         setEvents([]);
       }
     } catch (error) {
@@ -78,30 +72,6 @@ export default function Dashboard() {
       status: "Pending",
       priority: "low",
       dueDate: "Mar 18, 2024",
-    },
-  ]
-
-  const upcomingEvents = [
-    {
-      name: "Floor Community Meeting",
-      location: "Trinity Common Room",
-      time: "Mon 7:00 pm - 8:00 pm",
-      dates: "Mar 15, 2024",
-      type: "Required",
-    },
-    {
-      name: "RA Training Session",
-      location: "Student Center 201",
-      time: "Wed 3:00 pm - 5:00 pm",
-      dates: "Mar 17, 2024",
-      type: "Required",
-    },
-    {
-      name: "Wellness Workshop",
-      location: "Bell Tower Lounge",
-      time: "Fri 4:00 pm - 5:30 pm",
-      dates: "Mar 19, 2024",
-      type: "Optional",
     },
   ]
 
@@ -140,7 +110,12 @@ export default function Dashboard() {
         </header>
 
         <main className="flex-1 overflow-auto p-6">
-          {userID && (<div className="mb-6"><h2 className="text-3xl font-light text-gray-800">Hello {userID}!</h2></div>)}
+          {userID && (
+            <div className="mb-6">
+              <h2 className="text-3xl font-light text-gray-800">Hello {userID}!</h2>
+              {dorm && <p className="text-lg text-gray-600">Dorm: {dorm}</p>}
+            </div>
+          )}
           <Tabs defaultValue="general" className="space-y-6">
             <TabsContent value="general" className="space-y-6">
               <div className="grid gap-6 md:grid-cols-2">
@@ -151,8 +126,8 @@ export default function Dashboard() {
                   <CardContent>
                     <div className="space-y-4">
                       {events.length > 0 ? (
-                        events.map((event) => (
-                          <div key={event.name} className="space-y-2">
+                        events.map((event, index) => (
+                          <div key={index} className="space-y-2">
                             <div className="flex items-center justify-between">
                               <p className="font-medium">{event.name}</p>
                             </div>
@@ -178,43 +153,44 @@ export default function Dashboard() {
                     </div>
                   </CardContent>
                 </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between">
-                  <CardTitle>Tasks</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {tasks.map((task) => (
-                      <div
-                        key={task.name}
-                        className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0"
-                      >
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium">{task.name}</p>
-                            {task.priority === 'high' && (
-                              <AlertCircle className="h-4 w-4 text-red-500" />
-                            )}
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between">
+                    <CardTitle>Tasks</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {tasks.map((task) => (
+                        <div
+                          key={task.name}
+                          className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0"
+                        >
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <p className="font-medium">{task.name}</p>
+                              {task.priority === 'high' && (
+                                <AlertCircle className="h-4 w-4 text-red-500" />
+                              )}
+                            </div>
+                            <p className="text-sm text-muted-foreground">{task.dueDate}</p>
                           </div>
-                          <p className="text-sm text-muted-foreground">{task.dueDate}</p>
+                          <span className={`text-sm ${
+                            task.status === 'Due Today' ? 'text-red-500' :
+                            task.status === 'In Progress' ? 'text-yellow-500' :
+                            'text-muted-foreground'
+                          }`}>
+                            {task.status}
+                          </span>
                         </div>
-                        <span className={`text-sm ${
-                          task.status === 'Due Today' ? 'text-red-500' : 
-                          task.status === 'In Progress' ? 'text-yellow-500' : 
-                          'text-muted-foreground'
-                        }`}>
-                          {task.status}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
           </Tabs>
         </main>
       </div>
     </div>
   )
 }
+

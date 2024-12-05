@@ -1,4 +1,3 @@
-// pages/api/getActivities.js
 import prisma from '../../../lib/prisma';
 import { format } from 'date-fns';
 
@@ -31,7 +30,6 @@ export default async function handler(req, res) {
     } catch (error) {
       res.status(500).json({ error: 'Database query failed', details: error.message });
     }
-    // No need to disconnect Prisma client; it manages connections automatically
   } else {
     res.status(405).json({ message: 'Only GET requests are allowed' });
   }

@@ -65,24 +65,20 @@ model users {
   availability availability[]
 }
 
-model tasks {
-  id           Int            @id @default(autoincrement())
-  name         String         @db.VarChar(255)
-  description  String?
-  created_at   DateTime?      @default(now()) @db.Timestamp(6)
-  updated_at   DateTime?      @default(now()) @db.Timestamp(6)
-  availability availability[]
+model availability {
+  id           Int      @id @default(autoincrement())
+  user_id      String
+  event_id     Int
+  is_available Boolean
+
+  event        events   @relation(fields: [event_id], references: [id])
+
+  @@unique([user_id, event_id])
 }
 
-model availability {
-  id         Int       @id @default(autoincrement())
-  user_id    String    @db.VarChar(10)
-  task_id    Int
-  date       DateTime  @db.Date
-  start_time DateTime  @db.Time(6)
-  end_time   DateTime  @db.Time(6)
-  created_at DateTime? @default(now()) @db.Timestamp(6)
-  updated_at DateTime? @default(now()) @db.Timestamp(6)
-  tasks      tasks     @relation(fields: [task_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users      users     @relation(fields: [user_id], references: [netid], onDelete: NoAction, onUpdate: NoAction)
+model events {
+  id             Int             @id @default(autoincrement())
+  name           String
+  date           DateTime
+  availabilities availability[]
 }
