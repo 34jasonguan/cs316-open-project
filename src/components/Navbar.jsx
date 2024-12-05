@@ -33,18 +33,35 @@ const NavBar = () => {
         <h1 className="text-xl font-bold">ResiDevils</h1>
       </div>
       <nav className="flex-1 p-4 space-y-2">
+
+        {/* Dashboard */}
         <a href="/dashboard" className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10">
           <LayoutDashboard className="h-5 w-5" />
           <span>Dashboard</span>
         </a>
+        {/* Search */}
         <a href="/search" className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10">
           <Search className="h-5 w-5" />
           <span>Search User</span>
         </a>
-        <a href="/schedule" className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10">
-          <Calendar className="h-5 w-5" />
-          <span>Schedule</span>
-        </a>
+        {/* Schedule */}
+        <div className="space-y-2">
+          <div
+            className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer"
+            onClick={() => toggleSubbar('scheduleInfo')}
+          >
+            <Calendar className="h-5 w-5" />
+            <span>Schedule</span>
+            <ChevronDown className={`h-4 w-4 ml-auto transition-transform ${openSubbar === 'scheduleInfo' ? 'rotate-180' : ''}`} />
+          </div>
+          {openSubbar === 'scheduleInfo' && (
+            <div className="ml-8 space-y-1">
+              <a href="/availability" className="block px-3 py-2 rounded-lg hover:bg-white/10">Submit Availability</a>
+              <a href="/availability_history" className="block px-3 py-2 rounded-lg hover:bg-white/10">Availability History</a>
+            </div>
+          )}
+        </div>
+        {/* Report */}
         <div className="space-y-2">
           <div
             className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer"
@@ -61,6 +78,7 @@ const NavBar = () => {
             </div>
           )}
         </div>
+        {/* Activity */}
         <div className="space-y-2">
           <div
             className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer"

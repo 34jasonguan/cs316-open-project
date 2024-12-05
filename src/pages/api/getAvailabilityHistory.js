@@ -6,24 +6,22 @@ export default async function handler(req, res) {
     const { userID } = req.query;
 
     try {
-      // Fetch the user's availability records, including event details
       const availabilities = await prisma.availability.findMany({
         where: {
           user_id: userID,
         },
         include: {
-          event: true, // Include event details
+          event: true, 
         },
       });
 
       if (availabilities.length === 0) {
-        return res.status(200).json({ history: [] }); // Return empty history
+        return res.status(200).json({ history: [] }); 
       }
 
-      // Group availabilities by event name
       const history = availabilities.reduce((acc, availability) => {
         const eventName = availability.event.name;
-        const eventDate = availability.event.date.toISOString().split('T')[0]; // Format date as 'YYYY-MM-DD'
+        const eventDate = availability.event.date.toISOString().split('T')[0];
         const isAvailable = availability.is_available;
 
         if (!acc[eventName]) {

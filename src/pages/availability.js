@@ -1,18 +1,14 @@
-// pages/schedule.js
+// pages/availability.js
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Settings, Menu } from 'lucide-react';
 import NavBar from '@/components/NavBar';
-import EventList from '@/components/EventList';
 import AvailabilityForm from '@/components/AvailabilityForm';
-import AvailabilityHistory from '@/components/AvailabilityHistory';
 
-export default function SchedulePage() {
+export default function AvailabilityPage() {
   const [userID, setUserID] = useState('');
-  const [hasStaffAccess, setHasStaffAccess] = useState(false);
   const [events, setEvents] = useState([]);
   const router = useRouter();
 
@@ -20,12 +16,10 @@ export default function SchedulePage() {
     const storedUserID = localStorage.getItem('userID');
     if (storedUserID) {
       setUserID(storedUserID);
-      checkStaffAccess(storedUserID);
     } else {
       router.push('/');
     }
 
-    // Fetch events from the API
     fetchEvents();
   }, [router]);
 
@@ -37,15 +31,9 @@ export default function SchedulePage() {
       }
       const data = await response.json();
       setEvents(data);
-      console.log
     } catch (error) {
       console.error('Failed to fetch events:', error);
     }
-  };
-
-  const checkStaffAccess = async (userID) => {
-    // TODO: Implement staff access
-    setHasStaffAccess(false);
   };
 
   const handleLogout = () => {
@@ -63,7 +51,7 @@ export default function SchedulePage() {
             <Button variant="ghost" size="icon" className="md:hidden mr-2">
               <Menu className="h-6 w-6" />
             </Button>
-            <h1 className="text-xl font-semibold">Schedule</h1>
+            <h1 className="text-xl font-semibold">Submit Availability</h1>
           </div>
           <div className="ml-auto flex items-center space-x-4">
             <Button variant="ghost" size="icon">
@@ -76,32 +64,14 @@ export default function SchedulePage() {
         </header>
 
         <main className="flex-1 overflow-auto p-6">
-          <Tabs defaultValue="submit-availability" className="space-y-6">
-            <TabsList>
-              <TabsTrigger value="submit-availability">Submit Availability</TabsTrigger>
-              <TabsTrigger value="availability-history">Availability History</TabsTrigger>
-            </TabsList>
-            <TabsContent value="submit-availability" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Submit Availability</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <AvailabilityForm events={events} userID={userID} />
-                </CardContent>
-              </Card>
-            </TabsContent>
-            <TabsContent value="availability-history" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Availability History</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <AvailabilityHistory events={events} userID={userID} />
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+          <Card>
+            <CardHeader>
+              <CardTitle>Submit Availability</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AvailabilityForm events={events} userID={userID} />
+            </CardContent>
+          </Card>
         </main>
       </div>
     </div>

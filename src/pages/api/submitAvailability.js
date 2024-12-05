@@ -8,11 +8,8 @@ export default async function handler(req, res) {
     try {
       console.log('Received data:', { userID, availabilities });
 
-      // Parse event IDs from the availabilities object
       const eventIds = Object.keys(availabilities).map((id) => parseInt(id, 10));
       console.log('Parsed event IDs:', eventIds);
-
-      // Fetch event names for the submitted event IDs
       const events = await prisma.events.findMany({
         where: {
           id: { in: eventIds },
@@ -25,7 +22,6 @@ export default async function handler(req, res) {
       const eventNames = events.map((event) => event.name);
       console.log('Event names:', eventNames);
 
-      // Fetch all event IDs that have these names
       const allEventsWithNames = await prisma.events.findMany({
         where: {
           name: { in: eventNames },
@@ -38,11 +34,8 @@ export default async function handler(req, res) {
       const eventIdsToDelete = allEventsWithNames.map((event) => event.id);
       console.log('Event IDs to delete:', eventIdsToDelete);
 
-      // Begin transaction
       await prisma.$transaction(async (tx) => {
         console.log('Starting transaction');
-
-        // Delete existing availabilities for the user for events with the same names
         const deleteResult = await tx.availability.deleteMany({
           where: {
             user_id: userID,
@@ -51,7 +44,6 @@ export default async function handler(req, res) {
         });
         console.log('Deleted existing availabilities:', deleteResult);
 
-        // Insert new availability records
         for (const [eventIdStr, isAvailable] of Object.entries(availabilities)) {
           const eventId = parseInt(eventIdStr, 10);
           console.log(`Processing event ID ${eventId}, isAvailable: ${isAvailable}`);
