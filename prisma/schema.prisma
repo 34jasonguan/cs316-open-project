@@ -40,16 +40,18 @@ model password {
 }
 
 model report {
-  id           Int       @id
+  id           Int       @id @default(autoincrement())
   type         String?
   urgency      String?
   description  String?
-  submitted_by String?   @db.VarChar(255)
   is_anonymous Boolean?
+  submitted_by String?   @db.VarChar(255)
   location     String?
   issue_type   String?
   equipment    String?
   attachment   String?
+  status       String?   @default("Unread") 
+  messages     String?   
   timestamp    DateTime? @db.Timestamp(6)
 }
 

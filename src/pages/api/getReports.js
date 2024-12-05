@@ -1,10 +1,9 @@
-// pages/api/getReports.js
 import prisma from '../../../lib/prisma';
 import { format } from 'date-fns';
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    const { userId, reportId, type, urgency, inputValue } = req.query;
+    const { userId, reportId, type, urgency, inputValue, status } = req.query;
 
     try {
       const whereConditions = {};
@@ -30,6 +29,10 @@ export default async function handler(req, res) {
         whereConditions.urgency = urgency;
       }
 
+      if (status) {
+        whereConditions.status = status;
+      }
+
       if (inputValue) {
         whereConditions.OR = [
           { description: { contains: inputValue, mode: 'insensitive' } },
@@ -49,12 +52,15 @@ export default async function handler(req, res) {
       });
 
       console.log('Reports fetched:', reports.length);
-      const formattedReports = reports.map(report => ({
+
+      const formattedReports = reports.map((report) => ({
         ...report,
         timestamp: report.timestamp
           ? format(new Date(report.timestamp), 'MMM dd, yyyy hh:mm a')
           : null,
+        messages: report.messages ? JSON.parse(report.messages) : [], 
       }));
+
       res.status(200).json(formattedReports);
     } catch (error) {
       console.error('Error fetching reports:', error);

@@ -82,7 +82,7 @@ export default function AvailabilityHistory({ userID }) {
                   const isAvailable = availabilities[dateKey];
 
                   let bgColor = 'bg-red-100';
-                  let statusText = 'No Response';
+                  let statusText = 'Unavailable';
 
                   if (isAvailable === true) {
                     bgColor = 'bg-green-100';
