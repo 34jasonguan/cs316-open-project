@@ -58,6 +58,7 @@ const NavBar = () => {
             <div className="ml-8 space-y-1">
               <a href="/availability" className="block px-3 py-2 rounded-lg hover:bg-white/10">Submit Availability</a>
               <a href="/availability_history" className="block px-3 py-2 rounded-lg hover:bg-white/10">Availability History</a>
+              <a href="/search_availability" className="block px-3 py-2 rounded-lg hover:bg-white/10">Search Availability</a>
             </div>
           )}
         </div>
