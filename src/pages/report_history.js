@@ -1,18 +1,12 @@
-// pages/report_history.js
-
 import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   LayoutDashboard,
-  Calendar as CalendarIcon,
-  MessageSquareWarning,
-  ChevronDown,
   Menu,
   Settings,
   Search,
-  Dices,
 } from "lucide-react";
 import NavBar from "@/components/Navbar";
 
@@ -23,7 +17,9 @@ const ReportHistory = () => {
   const [searchReportId, setSearchReportId] = useState('');
   const [searchType, setSearchType] = useState('');
   const [searchUrgency, setSearchUrgency] = useState('');
+  const [searchStatus, setSearchStatus] = useState('');
   const [inputValue, setInputValue] = useState('');
+  const [message, setMessage] = useState('');
 
   // Fetch reports from the API
   const fetchReports = async () => {
@@ -43,6 +39,9 @@ const ReportHistory = () => {
       }
       if (searchUrgency) {
         params.append('urgency', searchUrgency);
+      }
+      if (searchStatus) {
+        params.append('status', searchStatus);
       }
       if (inputValue.trim()) {
         params.append('inputValue', inputValue.trim());
@@ -64,7 +63,7 @@ const ReportHistory = () => {
     }
   };
 
-  // Update report status
+  // Update report status with message
   const updateReportStatus = async (reportId, newStatus) => {
     try {
       const response = await fetch('/api/updateReportStatus', {
@@ -72,12 +71,13 @@ const ReportHistory = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ reportId, newStatus }),
+        body: JSON.stringify({ reportId, newStatus, message }),
       });
 
       if (response.ok) {
         console.log('Report status updated successfully');
         fetchReports(); // Refresh data after update
+        setMessage(''); // Clear message input after submission
       } else {
         console.error('Failed to update report status');
       }
@@ -137,7 +137,7 @@ const ReportHistory = () => {
               <select
                 value={searchType}
                 onChange={(e) => setSearchType(e.target.value)}
-                className="w-full mt-1 px-3 py-2 border border-black text-black rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+                className="w-full mt-1 px-3 py-2 border rounded-md"
               >
                 <option value="">All Types</option>
                 <option value="Noise Complaint">Noise Complaint</option>
@@ -150,7 +150,7 @@ const ReportHistory = () => {
               <select
                 value={searchUrgency}
                 onChange={(e) => setSearchUrgency(e.target.value)}
-                className="w-full mt-1 px-3 py-2 border border-black text-black rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+                className="w-full mt-1 px-3 py-2 border rounded-md"
               >
                 <option value="">All Urgencies</option>
                 <option value="low">Low</option>
@@ -158,7 +158,20 @@ const ReportHistory = () => {
                 <option value="high">High</option>
               </select>
             </div>
-
+            <div>
+              <label className="text-grey-700">Status:</label>
+              <select
+                value={searchStatus}
+                onChange={(e) => setSearchStatus(e.target.value)}
+                className="w-full mt-1 px-3 py-2 border rounded-md"
+              >
+                <option value="">All Statuses</option>
+                <option value="Submitted">Submitted</option>
+                <option value="Pending">Pending</option>
+                <option value="Solving">Solving</option>
+                <option value="Resolved">Resolved</option>
+              </select>
+            </div>
             <Button onClick={handleSearch} className="w-full md:w-auto mt-4">
               <Search className="mr-2 h-4 w-4" />
               Search
@@ -196,7 +209,7 @@ const ReportHistory = () => {
                         </a>
                       </p>
                     )}
-                    <div>
+                    <div className="mt-4">
                       <label className="block text-gray-700">Status:</label>
                       <select
                         value={report.status}
@@ -206,8 +219,20 @@ const ReportHistory = () => {
                         <option value="Submitted">Submitted</option>
                         <option value="Pending">Pending</option>
                         <option value="Solving">Solving</option>
-                        <option value="Solved">Solved</option>
+                        <option value="Resolved">Resolved</option>
                       </select>
+                      <textarea
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        placeholder="Leave a message"
+                        className="w-full mt-2 px-3 py-2 border rounded-md"
+                      />
+                      <Button
+                        className="mt-2"
+                        onClick={() => updateReportStatus(report.id, report.status)}
+                      >
+                        Update Status and Send Message
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>

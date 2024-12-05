@@ -1,12 +1,9 @@
-// pages/api/insertReport.js
-
 import prisma from '../../../lib/prisma'; 
 import multer from "multer";
 import { promisify } from "util";
-import fs from "fs";
 
 const upload = multer({ dest: "public/uploads/" });
-const uploadMiddleware = promisify(upload.single("attachment")); 
+const uploadMiddleware = promisify(upload.single("attachment"));
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -15,6 +12,7 @@ export default async function handler(req, res) {
 
   try {
     await uploadMiddleware(req, res);
+
     const {
       type,
       urgency,
@@ -23,11 +21,11 @@ export default async function handler(req, res) {
       location,
       issueType,
       equipment,
+      submitted_by = isAnonymous ? null : 'Anonymous', 
     } = req.body;
 
-    const attachmentPath = req.file ? `/uploads/${req.file.filename}` : null; 
+    const attachmentPath = req.file ? `/uploads/${req.file.filename}` : null;
 
-    // increment last ID by 1 to find new ID
     const lastReport = await prisma.report.findFirst({
       orderBy: { id: 'desc' },
     });
@@ -42,16 +40,18 @@ export default async function handler(req, res) {
         is_anonymous: isAnonymous,
         submitted_by,
         location,
-        issue_type: type === 'safety' ? issueType : null,
-        equipment: type === 'maintenance' ? equipment : null,
+        issue_type: type === 'Safety Issue' ? issueType : null,
+        equipment: type === 'Maintenance Request' ? equipment : null,
         attachment: attachmentPath, 
+        status: 'Submitted', 
+        messages: JSON.stringify([]), 
         timestamp: new Date(),
       },
     });
 
     res.status(200).json({ message: 'Report submitted successfully', report: newReport });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to submit report' });
+    console.error('Error submitting report:', error);
+    res.status(500).json({ error: 'Failed to submit report', details: error.message });
   }
 }
