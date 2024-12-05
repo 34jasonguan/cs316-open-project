@@ -57,7 +57,7 @@ export default function LoginPage() {
     if (response1.ok && response2.ok && response3.ok) {
         const returnedJSON1 = await response1.json();
         const returnedJSON2 = await response2.json();
-        const returnedJSON3 = await response2.json();
+        const returnedJSON3 = await response3.json();
         const passwordTrue = returnedJSON1['password'];
         const hasStaffAccess = (['RA', 'RC'].includes(returnedJSON2['class'])) || false;
         const userFirstName = returnedJSON3['firstname'];
