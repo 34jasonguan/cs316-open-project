@@ -64,12 +64,12 @@ export default function AvailabilityPage() {
         </header>
 
         <main className="flex-1 overflow-auto p-6">
-          <Card>
+          <Card >
             <CardHeader>
               <CardTitle>Submit Availability</CardTitle>
             </CardHeader>
             <CardContent>
-              <AvailabilityForm events={events} userID={userID} />
+              <AvailabilityForm  events={events} userID={userID} />
             </CardContent>
           </Card>
         </main>

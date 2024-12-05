@@ -17,6 +17,28 @@ const SearchAvailabilityPage = () => {
   const [selectedRows, setSelectedRows] = useState({}); // Keep track of selection for each row
   const [loading, setLoading] = useState(false);
 
+  const handleRowClick = async (student) => {
+    setSelectedStudent(student); 
+    try {
+      const response = await fetch(`/api/getProfileData?netid=${student.netid}&userClass=${student.class}`);
+      if (response.ok) {
+        const data = await response.json();
+        setProfileData(data);
+      } else {
+        console.error('Error fetching profile data:', response.statusText);
+        setProfileData(null);
+      }
+    } catch (error) {
+      console.error('Error fetching profile data:', error);
+      setProfileData(null);
+    }
+  };
+
+    const handleCloseProfile = () => {
+        setSelectedStudent(null);
+        setProfileData(null); 
+    };
+
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -145,7 +167,9 @@ const SearchAvailabilityPage = () => {
               <TableBody>
                 {output.length > 0 ? (
                   output.map((availability, index) => (
-                    <TableRow key={index}>
+                    <TableRow 
+                        key={index}
+                    >
                       <TableCell>
                         <input
                           type="checkbox"

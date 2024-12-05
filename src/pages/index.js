@@ -52,7 +52,7 @@ export default function LoginPage() {
     
     const response1 = await fetch(`/api/getPassword?netID=${userIDInput}`);
     const response2 = await fetch(`/api/getAccessLevel?netID=${userIDInput}`);
-    const response3 = await fetch(`/api/getUserByClassNetID?netID=${userIDInput}`);
+    const response3 = await fetch(`/api/getUsersByClassNetID?filter=netid&inputValue=${userIDInput}`);
 
     if (response1.ok && response2.ok && response3.ok) {
         const returnedJSON1 = await response1.json();
@@ -60,7 +60,7 @@ export default function LoginPage() {
         const returnedJSON3 = await response3.json();
         const passwordTrue = returnedJSON1['password'];
         const hasStaffAccess = (['RA', 'RC'].includes(returnedJSON2['class'])) || false;
-        const userFirstName = returnedJSON3['firstname'];
+        const userFirstName = returnedJSON3[0]['firstname'];
         //const hasStaffAccess = (returnedJSON2['class'] && returnedJSON2['class'] in ['RA', 'RC']) || false; -- this always evals to false
 
         // Check if the userID exists and the password is correct
