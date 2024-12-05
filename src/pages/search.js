@@ -51,16 +51,19 @@ const HomePage = () => {
     const [output, setOutput] = useState([]);
     const [filterOption, setFilterOption] = useState('netid');  //new filter
     const [userID, setUserID] = useState('');
+    const [userFirstName, setUserFirstName] = useState('');
     const [hasStaffAccess, setHasStaffAccess] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [profileData, setProfileData] = useState(null);
 
     useEffect(() => {
       const storedUserID = localStorage.getItem('userID');
+      const storedUserFirstName = localStorage.getItem('userFirstName');
       const storedHasStaffAccess = (localStorage.getItem('hasStaffAccess') === 'true');
       if (storedUserID) {
         setUserID(storedUserID);
         setHasStaffAccess(storedHasStaffAccess);
+        setUserFirstName(storedUserFirstName);
       }
     }, []);
 
@@ -163,7 +166,7 @@ const HomePage = () => {
             <div className="ml-auto flex items-center space-x-4">
               {userID ? (
                 <div className="flex items-center space-x-4">
-                  <span>Hello, {userID}!</span>
+                  <span>Hello, {userFirstName}!</span>
                   <Button onClick={handleLogout} variant="ghost" className="text-red-400">Logout</Button>
                 </div>
               ) : (

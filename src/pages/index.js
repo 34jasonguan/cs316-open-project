@@ -52,18 +52,22 @@ export default function LoginPage() {
     
     const response1 = await fetch(`/api/getPassword?netID=${userIDInput}`);
     const response2 = await fetch(`/api/getAccessLevel?netID=${userIDInput}`);
+    const response3 = await fetch(`/api/getUserByClassNetID?netID=${userIDInput}`);
 
-    if (response1.ok && response2.ok) {
+    if (response1.ok && response2.ok && response3.ok) {
         const returnedJSON1 = await response1.json();
         const returnedJSON2 = await response2.json();
+        const returnedJSON3 = await response2.json();
         const passwordTrue = returnedJSON1['password'];
         const hasStaffAccess = (['RA', 'RC'].includes(returnedJSON2['class'])) || false;
+        const userFirstName = returnedJSON3['firstname'];
         //const hasStaffAccess = (returnedJSON2['class'] && returnedJSON2['class'] in ['RA', 'RC']) || false; -- this always evals to false
 
         // Check if the userID exists and the password is correct
         if (passwordTrue && passwordInput && passwordTrue == passwordInput) {
             localStorage.setItem('userID', userIDInput);
             localStorage.setItem('hasStaffAccess', hasStaffAccess);
+            localStorage.setItem('userFirstName', userFirstName);
             toast({
                 title: 'Login Successful',
                 description: 'You have successfully logged in.',

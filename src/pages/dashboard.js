@@ -9,15 +9,18 @@ import NavBar from "@/components/NavBar"
 
 export default function Dashboard() {
   const [userID, setUserID] = useState('');
+  const [userFirstName, setUserFirstName] = useState('');
   const [dorm, setDorm] = useState('');
   const [events, setEvents] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
     const storedUserID = localStorage.getItem('userID');
+    const storedUserFirstName = localStorage.getItem('userFirstName');
     if (storedUserID) {
       setUserID(storedUserID);
       fetchUserDorm(storedUserID);
+      setUserFirstName(storedUserFirstName);
     } else {
       router.push('/');
     }
@@ -112,7 +115,7 @@ export default function Dashboard() {
         <main className="flex-1 overflow-auto p-6">
           {userID && (
             <div className="mb-6">
-              <h2 className="text-3xl font-light text-gray-800">Hello {userID}!</h2>
+              <h2 className="text-3xl font-light text-gray-800">Hello {userFirstName}!</h2>
               {dorm && <p className="text-lg text-gray-600">Dorm: {dorm}</p>}
             </div>
           )}
