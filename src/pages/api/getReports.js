@@ -1,74 +1,63 @@
-import prisma from '../../../lib/prisma';
-import { format } from 'date-fns';
+import prisma from "../../../lib/prisma";
 
 export default async function handler(req, res) {
-  if (req.method === 'GET') {
-    const { userId, reportId, type, urgency, inputValue, status } = req.query;
+  if (req.method !== "POST") {
+    return res.status(405).json({ message: "Method not allowed" });
+  }
 
-    try {
-      const whereConditions = {};
+  const { reportId, newStatus, message } = req.body;
 
-      if (userId) {
-        whereConditions.submitted_by = userId;
-      }
+  if (!reportId || !newStatus) {
+    return res.status(400).json({
+      message: "Missing required fields: reportId and newStatus",
+    });
+  }
 
-      if (reportId) {
-        const id = parseInt(reportId);
-        if (!isNaN(id)) {
-          whereConditions.id = id;
-        } else {
-          return res.status(400).json({ error: 'Invalid reportId' });
-        }
-      }
+  const validStatuses = ["Submitted", "Pending", "Solving", "Resolved"];
+  if (!validStatuses.includes(newStatus)) {
+    return res.status(400).json({
+      message: `Invalid status. Valid statuses are: ${validStatuses.join(", ")}`,
+    });
+  }
 
-      if (type) {
-        whereConditions.type = type;
-      }
+  try {
+    const report = await prisma.report.findUnique({
+      where: { id: parseInt(reportId, 10) },
+    });
 
-      if (urgency) {
-        whereConditions.urgency = urgency;
-      }
-
-      if (status) {
-        whereConditions.status = status;
-      }
-
-      if (inputValue) {
-        whereConditions.OR = [
-          { description: { contains: inputValue, mode: 'insensitive' } },
-          { location: { contains: inputValue, mode: 'insensitive' } },
-          { issue_type: { contains: inputValue, mode: 'insensitive' } },
-          { equipment: { contains: inputValue, mode: 'insensitive' } },
-        ];
-      }
-
-      console.log('Query Conditions:', whereConditions);
-
-      const reports = await prisma.report.findMany({
-        where: whereConditions,
-        orderBy: {
-          timestamp: 'desc',
-        },
-      });
-
-      console.log('Reports fetched:', reports.length);
-
-      const formattedReports = reports.map((report) => ({
-        ...report,
-        timestamp: report.timestamp
-          ? format(new Date(report.timestamp), 'MMM dd, yyyy hh:mm a')
-          : null,
-        messages: report.messages ? JSON.parse(report.messages) : [], 
-      }));
-
-      res.status(200).json(formattedReports);
-    } catch (error) {
-      console.error('Error fetching reports:', error);
-      res.status(500).json({ error: 'Failed to fetch reports', details: error.message });
-    } finally {
-      await prisma.$disconnect();
+    if (!report) {
+      return res.status(404).json({ message: "Report not found" });
     }
-  } else {
-    res.status(405).json({ message: 'Only GET requests are allowed' });
+
+    // 处理消息字段
+    const currentMessages = report.messages ? JSON.parse(report.messages) : [];
+    const timestamp = new Date().toISOString();
+
+    if (message) {
+      currentMessages.push({
+        sender: "RA", 
+        content: message,
+        timestamp,
+      });
+    }
+
+    const updatedReport = await prisma.report.update({
+      where: { id: parseInt(reportId, 10) },
+      data: {
+        status: newStatus,
+        messages: JSON.stringify(currentMessages),
+      },
+    });
+
+    return res.status(200).json({
+      message: "Report status and message updated successfully",
+      report: updatedReport,
+    });
+  } catch (error) {
+    console.error("Error updating report status:", error);
+    return res.status(500).json({
+      message: "Failed to update report status",
+      error: error.message,
+    });
   }
 }

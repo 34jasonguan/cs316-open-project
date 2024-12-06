@@ -247,21 +247,25 @@ CREATE TABLE report (
     location TEXT,  
     issue_type TEXT,  
     equipment TEXT, 
+    attachment TEXT,
+    status TEXT NOT NULL DEFAULT 'Submitted' CHECK (status IN ('Submitted', 'Pending', 'Solving', 'Solved')), 
+    messages JSONB DEFAULT '[]',
     timestamp TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO report (type, urgency, description, submitted_by, is_anonymous, location, issue_type, equipment, timestamp) 
+INSERT INTO report (type, urgency, description, submitted_by, is_anonymous, location, issue_type, equipment, attachment, status, messages, timestamp) 
 VALUES 
-    ('Safety Issues', 'High', 'Fire hazard near Belltower', 'ir918', FALSE, 'Belltower', 'Fire Hazard', NULL, '2024-10-21 14:30:00'),
-    ('Maintenance Request', 'Low', 'Air conditioning needs repair in room 102', 'mk120', FALSE, 'East House, Room 102', NULL, 'Air Conditioning', '2024-10-21 09:00:00'),
-    ('Maintenance Request', 'Medium', 'Water leakage in restroom', 'zb625', FALSE, 'Trinity, Room 203', NULL, 'Water Pipe', '2024-10-21 11:15:00'),
-    ('Safety Issues', 'High', 'Slip risk due to wet floor', 'at211', FALSE, 'Belltower, Hallway', 'Slip/Fall', NULL, '2024-10-21 13:45:00'),
-    ('Safety Issues', 'High', 'Suspicious person sighted', NULL, TRUE, 'Parking Lot near Trinity', 'Suspicious Activity', NULL, '2024-10-21 15:20:00'), 
-    ('Safety Issues', 'High', 'Fire alarm malfunctioning', 'sm110', FALSE, 'East House, Building C', 'Fire Alarm', NULL, '2024-10-21 17:00:00'),
-    ('Safety Issues', 'High', 'Smoke detected in hallway', 'rb432', FALSE, 'Trinity, Hallway 3', 'Smoke Detected', NULL, '2024-10-21 18:30:00'),
-    ('Maintenance Request', 'High', 'Elevator malfunction', 'kv735', FALSE, 'Belltower, Elevator', NULL, 'Elevator', '2024-10-21 08:45:00'),
-    ('Noise Complaint', 'Low', 'Loud music from East House, Room 204', NULL, TRUE, 'East House, Room 204', NULL, NULL, '2024-10-20 22:30:00'),  
-    ('Noise Complaint', 'Medium', 'Construction noise during quiet hours', 'bs514', FALSE, 'Trinity, North Wing', NULL, NULL, '2024-10-22 14:00:00');
+
+    ('Safety Issues', 'High', 'Fire hazard near Belltower', 'ir918', FALSE, 'Belltower', 'Fire Hazard', NULL, NULL, 'Submitted', '[]', '2024-10-21 14:30:00'),
+    ('Safety Issues', 'High', 'Slip risk due to wet floor', 'at211', FALSE, 'Belltower, Hallway', 'Slip/Fall', NULL, NULL, 'Pending', '[{"sender": "RA", "content": "Wet floor signs have been placed.", "timestamp": "2024-10-21T15:00:00Z"}]', '2024-10-21 13:45:00'),
+    ('Safety Issues', 'High', 'Suspicious person sighted', NULL, TRUE, 'Parking Lot near Trinity', 'Suspicious Activity', NULL, NULL, 'Submitted', '[]', '2024-10-21 15:20:00'),
+    ('Safety Issues', 'High', 'Fire alarm malfunctioning', 'sm110', FALSE, 'East House, Building C', 'Fire Alarm', NULL, NULL, 'Solving', '[{"sender": "RA", "content": "Technician has been contacted.", "timestamp": "2024-10-21T17:30:00Z"}]', '2024-10-21 17:00:00'),
+    ('Safety Issues', 'High', 'Smoke detected in hallway', 'rb432', FALSE, 'Trinity, Hallway 3', 'Smoke Detected', NULL, NULL, 'Submitted', '[]', '2024-10-21 18:30:00'),
+    ('Maintenance Request', 'Low', 'Air conditioning needs repair in room 102', 'mk120', FALSE, 'East House, Room 102', NULL, 'Air Conditioning', '/uploads/ac_repair_request.png', 'Submitted', '[]', '2024-10-21 09:00:00'),
+    ('Maintenance Request', 'Medium', 'Water leakage in restroom', 'zb625', FALSE, 'Trinity, Room 203', NULL, 'Water Pipe', NULL, 'Pending', '[{"sender": "RA", "content": "Plumber scheduled for tomorrow.", "timestamp": "2024-10-21T12:00:00Z"}]', '2024-10-21 11:15:00'),
+    ('Maintenance Request', 'High', 'Elevator malfunction', 'kv735', FALSE, 'Belltower, Elevator', NULL, 'Elevator', NULL, 'Submitted', '[]', '2024-10-21 08:45:00'),
+    ('Noise Complaint', 'Low', 'Loud music from East House, Room 204', NULL, TRUE, 'East House, Room 204', NULL, NULL, NULL, 'Submitted', '[]', '2024-10-20 22:30:00'),
+    ('Noise Complaint', 'Medium', 'Construction noise during quiet hours', 'bs514', FALSE, 'Trinity, North Wing', NULL, NULL, NULL, 'Submitted', '[]', '2024-10-22 14:00:00');
 
 CREATE TABLE password (
     netID VARCHAR(10),
