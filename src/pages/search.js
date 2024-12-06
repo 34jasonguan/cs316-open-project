@@ -1,6 +1,7 @@
 // pages/search.js
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import { Button } from "@/components/ui/button"
 import {
@@ -55,6 +56,7 @@ const HomePage = () => {
     const [hasStaffAccess, setHasStaffAccess] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [profileData, setProfileData] = useState(null);
+    const router = useRouter();
 
     useEffect(() => {
       const storedUserID = localStorage.getItem('userID');
@@ -151,6 +153,7 @@ const HomePage = () => {
     const handleLogout = () => {
         setUserID('');
         localStorage.removeItem('userID');
+        router.push('/');
     };
 
     return (

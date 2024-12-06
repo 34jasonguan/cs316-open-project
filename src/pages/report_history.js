@@ -76,8 +76,8 @@ const ReportHistory = () => {
 
       if (response.ok) {
         console.log('Report status updated successfully');
-        fetchReports(); // Refresh data after update
-        setMessage(''); // Clear message input after submission
+        fetchReports();
+        setMessage('');
       } else {
         console.error('Failed to update report status');
       }
